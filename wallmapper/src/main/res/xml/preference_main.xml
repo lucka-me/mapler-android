@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+            android:title="@string/pref_mapbox_category_title"
+            app:iconSpaceReserved="false" >
+
+        <CheckBoxPreference
+                android:key="@string/pref_mapbox_use_default_token"
+                android:defaultValue="true"
+                android:title="@string/pref_mapbox_use_default_token_title"
+                android:summaryOn="@string/pref_mapbox_use_default_token_summary_on"
+                android:summaryOff="@string/pref_mapbox_use_default_token_summary_off"
+                android:disableDependentsState="true"
+                app:iconSpaceReserved="false"/>
+
+        <EditTextPreference
+                android:key="@string/pref_mapbox_token"
+                android:title="@string/pref_mapbox_token_title"
+                android:summary="@string/pref_mapbox_token_summary"
+                android:hint="@string/pref_mapbox_token_hint"
+                android:dependency="@string/pref_mapbox_use_default_token"
+                app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_display_category_title"
+        app:iconSpaceReserved="false" >
+
+        <SwitchPreference
+            android:key="@string/pref_display_label"
+            android:defaultValue="true"
+            android:title="@string/pref_display_label_title"
+            android:summaryOn="@string/pref_display_label_summary_on"
+            android:summaryOff="@string/pref_display_label_summary_off"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_live_wallpaper_category_title"
+        app:iconSpaceReserved="false" >
+
+        <Preference
+                android:key="@string/pref_live_wallpaper_set"
+                android:title="@string/pref_live_wallpaper_set_title"
+                android:summary="@string/pref_live_wallpaper_set_summary"
+                app:iconSpaceReserved="false">
+        </Preference>
+
+        <EditTextPreference
+                android:key="@string/pref_live_wallpaper_radius"
+                android:title="@string/pref_live_wallpaper_radius_title"
+                android:summary="@string/pref_live_wallpaper_radius_summary"
+                android:defaultValue="1"
+                app:iconSpaceReserved="false"/>
+
+        <ListPreference
+            android:key="@string/pref_live_wallpaper_provider"
+            android:title="@string/pref_live_wallpaper_provider_title"
+            android:summary="@string/pref_live_wallpaper_provider_summary"
+            android:entries="@array/pref_live_wallpaper_provider_entries"
+            android:entryValues="@array/pref_live_wallpaper_provider_values"
+            android:defaultValue="1"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreference
+                android:key="@string/pref_live_wallpaper_designate_camera"
+                android:title="@string/pref_live_wallpaper_designate_camera_title"
+                android:summaryOn="@string/pref_live_wallpaper_designate_camera_summary_on"
+                android:summaryOff="@string/pref_live_wallpaper_designate_camera_summary_off"
+                android:defaultValue="true"
+                app:iconSpaceReserved="false" />
+
+        <SeekBarPreference
+                android:key="@string/pref_live_wallpaper_zoom"
+                android:dependency="@string/pref_live_wallpaper_designate_camera"
+                android:title="@string/pref_live_wallpaper_zoom_title"
+                app:min="5"
+                android:max="16"
+                app:seekBarIncrement="1"
+                android:defaultValue="15"
+                app:iconSpaceReserved="false" />
+
+        <SeekBarPreference
+                android:key="@string/pref_live_wallpaper_bearing"
+                android:dependency="@string/pref_live_wallpaper_designate_camera"
+                android:title="@string/pref_live_wallpaper_bearing_title"
+                app:min="0"
+                android:max="60"
+                app:seekBarIncrement="1"
+                android:defaultValue="0"
+                app:iconSpaceReserved="false" />
+
+        <SeekBarPreference
+                android:key="@string/pref_live_wallpaper_tilt"
+                android:dependency="@string/pref_live_wallpaper_designate_camera"
+                android:title="@string/pref_live_wallpaper_tilt_title"
+                app:min="0"
+                android:max="359"
+                app:seekBarIncrement="1"
+                android:defaultValue="0"
+                app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

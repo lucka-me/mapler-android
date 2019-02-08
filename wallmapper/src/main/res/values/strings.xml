@@ -1,0 +1,35 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:override="true">Wallmapper</string>
+    <string name="label_style_manager">Styles</string>
+    <string name="file_style_index_list_default_token">styleIndexList.json</string>
+    <string name="file_style_index_list_own_token">styleIndexListOwnToken.json</string>
+    <string name="path_save_folder">Wallmapper</string>
+    <!--<string name="mapbox_default_access_token">YOUR_OWN_MAPBOX_TOKEN</string>-->
+
+    <!-- Service -->
+    <string name="service_live_label">Wallmapper Live</string>
+    <string name="service_live_description">Update automatically to follow your position</string>
+
+    <!-- Menu -->
+    <string name="menu_add_style">Add</string>
+    <string name="menu_preference">Preference</string>
+    <string name="menu_about">About</string>
+
+    <!-- SnackBar -->
+    <string name="snack_saved_text">Image saved.</string>
+    <string name="snack_saved_action_set">SET</string>
+
+    <!-- Activity Result -->
+    <string name="activity_result_should_reset_style">activity_result_should_reset_style</string>
+    <string name="activity_result_should_reset_token">activity_result_should_reset_token</string>
+
+    <!-- Style Card -->
+    <string name="card_style_author">By %s</string>
+
+    <!-- File MIME -->
+    <string name="mime_json">application/octet-stream</string>
+    <string name="mime_png">image/png</string>
+
+    <!-- Error -->
+    <string name="error_snapshot_another_being_generated">Another snapshot is being generated.</string>
+</resources>

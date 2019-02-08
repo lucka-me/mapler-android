@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:id="@+id/mainLayout">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mainMapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    </com.mapbox.mapboxsdk.maps.MapView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_anchorGravity="bottom|end"
+            android:layout_gravity="bottom|end">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                app:srcCompat="@drawable/ic_snapshot"
+                android:id="@+id/fabSnapshot"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:fabSize="normal" android:tint="@color/colorWhite" android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                app:srcCompat="@drawable/ic_style"
+                android:id="@+id/fabManageStyle"
+                app:fabSize="normal" android:tint="@color/colorWhite" android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:backgroundTint="@color/colorPrimary" app:layout_constraintBottom_toTopOf="@+id/fabSnapshot"
+                android:layout_marginBottom="16dp"/>
+
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+                android:id="@+id/progressBarSnapshot"
+                style="@style/Widget.MaterialProgressBar.ProgressBar.Large.NoPadding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@+id/fabSnapshot"
+                app:layout_constraintStart_toStartOf="@+id/fabSnapshot"
+                app:layout_constraintBottom_toBottomOf="@+id/fabSnapshot"
+                app:layout_constraintTop_toTopOf="@+id/fabSnapshot"
+                android:visibility="invisible"
+                android:indeterminate="true"
+                app:mpb_indeterminateTint="@color/colorPrimary"
+                app:mpb_progressStyle="circular"
+                app:mpb_useIntrinsicPadding="false"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
