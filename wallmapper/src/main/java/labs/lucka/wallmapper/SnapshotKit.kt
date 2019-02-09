@@ -7,12 +7,7 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.snapshotter.MapSnapshot
 import com.mapbox.mapboxsdk.snapshotter.MapSnapshotter
 import org.jetbrains.anko.defaultSharedPreferences
-import android.provider.MediaStore
-import android.content.ContentValues
-import android.net.Uri
 import com.mapbox.mapboxsdk.camera.CameraPosition
-import java.io.File
-
 
 class SnapshotKit(private val context: Context) {
 
@@ -124,49 +119,6 @@ class SnapshotKit(private val context: Context) {
                 }
             }
             return jsonObject.toString()
-        }
-
-        /**
-         * Convert image file to content URI, which is required by WallpaperManager.getCropAndSetWallpaperIntent().
-         *
-         * @param [context] The context.
-         * @param [imageFile] Target file.
-         *
-         * @return The content URI of [imageFile].
-         *
-         * @author lucka-me
-         * @since 0.1
-         * @see <a href="https://stackoverflow.com/a/13338647/10276204">Convert file uri to content uri | Stack Overflow</a>
-         */
-        fun getImageContentUri(context: Context, imageFile: File): Uri? {
-            val filePath = imageFile.absolutePath
-            val cursor = context.contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                arrayOf(MediaStore.Images.Media._ID),
-                MediaStore.Images.Media.DATA + "=? ",
-                arrayOf(filePath), null
-            )
-
-            if (cursor != null && cursor.moveToFirst()) {
-                val id = cursor.getInt(
-                    cursor
-                        .getColumnIndex(MediaStore.MediaColumns._ID)
-                )
-                val baseUri = Uri.parse("content://media/external/images/media")
-                cursor.close()
-                return Uri.withAppendedPath(baseUri, "" + id)
-            } else {
-                cursor?.close()
-                return if (imageFile.exists()) {
-                    val values = ContentValues()
-                    values.put(MediaStore.Images.Media.DATA, filePath)
-                    context.contentResolver.insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
-                    )
-                } else {
-                    null
-                }
-            }
         }
 
     }

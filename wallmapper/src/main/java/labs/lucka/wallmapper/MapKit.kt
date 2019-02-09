@@ -21,7 +21,7 @@ class MapKit(private val context: Context) {
 
     init {
         Mapbox.getInstance(context, context.getString(R.string.mapbox_default_access_token))
-        setToken()
+        setToken(context)
         snapshotKit = SnapshotKit(context)
     }
 
@@ -38,15 +38,15 @@ class MapKit(private val context: Context) {
 
 
             val centerLat: Float = context.defaultSharedPreferences
-                .getFloat(context.getString(R.string.pref_map_last_position_latitude), 22.308F)
+                .getFloat(context.getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat())
             val centerLng: Float = context.defaultSharedPreferences
-                .getFloat(context.getString(R.string.pref_map_last_position_longitude), 114.174F)
+                .getFloat(context.getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat())
             val zoom: Float = context.defaultSharedPreferences
-                .getFloat(context.getString(R.string.pref_map_last_position_zoom), 15F)
+                .getFloat(context.getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat())
             val tilt: Float = context.defaultSharedPreferences
-                .getFloat(context.getString(R.string.pref_map_last_position_tilt), 0F)
+                .getFloat(context.getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat())
             val bearing: Float = context.defaultSharedPreferences
-                .getFloat(context.getString(R.string.pref_map_last_position_bearing), 0F)
+                .getFloat(context.getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat())
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(centerLat.toDouble(), centerLng.toDouble()))
                 .zoom(zoom.toDouble())
@@ -58,8 +58,6 @@ class MapKit(private val context: Context) {
 
         }
     }
-
-    fun setToken() { Mapbox.setAccessToken(getToken(context)) }
 
     fun setStyle(callback: () -> Unit = { }) {
         val selectedStyleIndex = getSelectedStyleIndex(context)
@@ -135,6 +133,10 @@ class MapKit(private val context: Context) {
                 }
             if (token.isBlank()) token = context.getString(R.string.pref_mapbox_token_default)
             return token
+        }
+
+        fun setToken(context: Context) {
+            Mapbox.setAccessToken(getToken(context))
         }
 
         private fun initializeStyleList(context: Context, list: ArrayList<MapStyleIndex>) {

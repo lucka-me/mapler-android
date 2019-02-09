@@ -10,7 +10,7 @@
 
         <Preference
                 android:key="@string/pref_about_summary_version_key"
-                android:title="@string/app_name"
+                android:title="@string/application_name"
                 android:summary="@string/pref_about_summary_version_summary"
                 app:iconSpaceReserved="false"
                 tools:ignore="PrivateResource"/>

@@ -1,12 +1,18 @@
 package labs.lucka.wallmapper
 
+import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.provider.MediaStore
 import com.google.gson.Gson
 import org.jetbrains.anko.defaultSharedPreferences
 import java.io.BufferedReader
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStreamReader
+import java.util.*
 
 class DataKit {
     companion object {
@@ -69,6 +75,28 @@ class DataKit {
             }
         }
 
+        fun loadStylePreviewImage(context: Context, path: String): Bitmap? {
+            val file = File(context.filesDir, path)
+            return if (file.exists()) {
+                BitmapFactory.decodeFile(file.absolutePath)
+            } else {
+                null
+            }
+        }
+
+        fun saveStylePreviewImage(context: Context, style: MapStyleIndex, image: Bitmap) {
+            style.imagePath =
+                if (style.type == MapStyleIndex.StyleType.LOCAL || style.type == MapStyleIndex.StyleType.CUSTOMIZED) {
+                    style.path
+                } else {
+                    UUID.randomUUID().toString()
+                } + ".png"
+            val file = File(context.filesDir, style.imagePath)
+            val fos = FileOutputStream(file)
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.close()
+        }
+
         fun loadStyleJson(context: Context, path: String): String {
             val file = File(context.filesDir, path)
             return if (file.exists()) file.readText() else ""
@@ -81,6 +109,49 @@ class DataKit {
         fun deleteStyleJson(context: Context, path: String) {
             val file = File(context.filesDir, path)
             file.delete()
+        }
+
+        /**
+         * Convert image file to content URI, which is required by WallpaperManager.getCropAndSetWallpaperIntent().
+         *
+         * @param [context] The context.
+         * @param [imageFile] Target file.
+         *
+         * @return The content URI of [imageFile].
+         *
+         * @author lucka-me
+         * @since 0.1
+         * @see <a href="https://stackoverflow.com/a/13338647/10276204">Convert file uri to content uri | Stack Overflow</a>
+         */
+        fun getImageContentUri(context: Context, imageFile: File): Uri? {
+            val filePath = imageFile.absolutePath
+            val cursor = context.contentResolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                arrayOf(MediaStore.Images.Media._ID),
+                MediaStore.Images.Media.DATA + "=? ",
+                arrayOf(filePath), null
+            )
+
+            if (cursor != null && cursor.moveToFirst()) {
+                val id = cursor.getInt(
+                    cursor
+                        .getColumnIndex(MediaStore.MediaColumns._ID)
+                )
+                val baseUri = Uri.parse("content://media/external/images/media")
+                cursor.close()
+                return Uri.withAppendedPath(baseUri, "" + id)
+            } else {
+                cursor?.close()
+                return if (imageFile.exists()) {
+                    val values = ContentValues()
+                    values.put(MediaStore.Images.Media.DATA, filePath)
+                    context.contentResolver.insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+                    )
+                } else {
+                    null
+                }
+            }
         }
 
     }

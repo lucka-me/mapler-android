@@ -30,7 +30,8 @@
     <string name="title_desc">Description</string>
 
     <!-- Style Information-->
-    <string name="diaog_title_style_information">Style Information</string>
+    <string name="dialog_title_style_information">Style Information</string>
+    <string name="dialog_style_information_preview_description">Style Preview</string>
 
     <!-- Delete Style -->
     <string name="dialog_title_delete_style">Delete</string>

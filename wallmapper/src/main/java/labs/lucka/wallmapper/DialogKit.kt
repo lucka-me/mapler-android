@@ -231,14 +231,18 @@ class DialogKit {
             }
         }
 
-        fun showStyleInformationDialog(context: Context, style: MapStyleIndex, onSaveClick: () -> Unit) {
+        fun showStyleInformationDialog(
+            context: Context, style: MapStyleIndex,
+            onSaveClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit, onDismiss: () -> Unit
+        ) {
             val layout = View.inflate(context, R.layout.dialog_style_info, null)
             val editTextName: EditText = layout.findViewById(R.id.editTextName)
             val editTextAuthor: EditText = layout.findViewById(R.id.editTextAuthor)
             val editTextUrl: EditText = layout.findViewById(R.id.editTextUrl)
+            val imageViewPreview: ImageView = layout.findViewById(R.id.imageViewPreview)
 
             val dialog = AlertDialog.Builder(context)
-                .setTitle(R.string.diaog_title_style_information)
+                .setTitle(R.string.dialog_title_style_information)
                 .setView(layout)
                 .setIcon(when (style.type) {
                     MapStyleIndex.StyleType.MAPBOX, MapStyleIndex.StyleType.ONLINE, MapStyleIndex.StyleType.LUCKA -> {
@@ -259,6 +263,7 @@ class DialogKit {
                     onSaveClick()
                 }
                 .setNegativeButton(R.string.button_cancel, null)
+                .setOnDismissListener { onDismiss() }
                 .show()
 
             editTextName.setText(style.name)
@@ -297,6 +302,12 @@ class DialogKit {
 
                 else -> { }
 
+            }
+            val imagePath = style.imagePath
+            if (imagePath == null) {
+                onShouldLoadPreviewImage(imageViewPreview)
+            } else {
+                imageViewPreview.setImageBitmap(DataKit.loadStylePreviewImage(context, imagePath))
             }
 
         }

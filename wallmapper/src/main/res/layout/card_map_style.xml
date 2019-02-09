@@ -2,7 +2,6 @@
 <androidx.cardview.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/cardStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
                 android:layout_marginStart="16dp" android:layout_marginTop="16dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/radioSelected"
-                android:layout_marginEnd="8dp" android:text="Name"
+                android:layout_marginEnd="8dp" android:text="@string/application_name"
                 android:textStyle="bold" android:textAllCaps="true"/>
         <RadioButton
                 android:layout_width="wrap_content"
@@ -44,4 +43,5 @@
                 app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toStartOf="@+id/radioSelected"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>

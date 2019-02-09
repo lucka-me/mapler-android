@@ -2,6 +2,8 @@ package labs.lucka.wallmapper
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Point
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -71,9 +73,31 @@ class MapStyleManagerActivity: AppCompatActivity() {
             override fun onSwipeToInfo(position: Int) {
 
                 val target = mapStyleIndexList[position]
-                DialogKit.showStyleInformationDialog(this@MapStyleManagerActivity, target) {
-                    recyclerViewAdapter.notifyItemChanged(position)
-                }
+                DialogKit.showStyleInformationDialog(this@MapStyleManagerActivity, target,
+                    { recyclerViewAdapter.notifyItemChanged(position) },
+                    { imageView ->
+                        val size = Point()
+                        windowManager.defaultDisplay.getSize(size)
+                        val onSnapshotReady: (Bitmap) -> Unit = { image ->
+                            DataKit.saveStylePreviewImage(this@MapStyleManagerActivity, target, image)
+                            imageView.setImageBitmap(image)
+                        }
+                        when (target.type) {
+                            MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
+                                snapshotKit.takeSnapshotJson(
+                                    size.x, size.y, target.path, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
+                                ) { }
+                            }
+
+                            else -> {
+                                snapshotKit.takeSnapshotUrl(
+                                    size.x, size.y, target.path, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
+                                ) { }
+                            }
+                        }
+                    },
+                    { snapshotKit.onPause() }
+                )
             }
         }
     private lateinit var snapshotKit: SnapshotKit
@@ -87,7 +111,6 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
         MapKit.checkAndUpdateStyleList(this)
         mapStyleIndexList = DataKit.loadStyleIndexList(this)
-
         recyclerViewAdapter =
                 MapStyleManagerRecyclerViewAdapter(this, mapStyleIndexList, recyclerViewAdapterListener)
         recyclerViewMapStyleList.layoutManager = LinearLayoutManager(this)
@@ -102,6 +125,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
     override fun onPause() {
         DataKit.saveStyleIndexList(this, mapStyleIndexList)
+        snapshotKit.onPause()
         super.onPause()
     }
 
@@ -169,6 +193,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                         data.getBooleanExtra(getString(R.string.activity_result_should_reset_token), false)
                     ) {
                         resultIntent.putExtra(getString(R.string.activity_result_should_reset_token), true)
+                        MapKit.setToken(this)
                         setResult(Activity.RESULT_OK, resultIntent)
                         MapKit.checkAndUpdateStyleList(this)
                         mapStyleIndexList.clear()

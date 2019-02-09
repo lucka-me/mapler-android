@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                 )
             ) {
                 deactivateButtons()
-                mapKit.setToken()
+                MapKit.setToken(this)
                 mapKit.setStyle { activateButtons() }
             } else if (
                 data.getBooleanExtra(getString(R.string.activity_result_should_reset_style), false)
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                     .setAction(R.string.snack_saved_action_set) {
                         startActivity(
                             wallpaperManager.getCropAndSetWallpaperIntent(
-                                SnapshotKit.getImageContentUri(this, file)
+                                DataKit.getImageContentUri(this, file)
                             )
                         )
                     }
