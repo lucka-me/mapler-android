@@ -97,6 +97,13 @@ class DataKit {
             fos.close()
         }
 
+        fun deleteStylePreviewImage(context: Context, style: MapStyleIndex) {
+            if (style.imagePath == null) return
+            val file = File(context.filesDir, style.imagePath)
+            style.imagePath = null
+            file.delete()
+        }
+
         fun loadStyleJson(context: Context, path: String): String {
             val file = File(context.filesDir, path)
             return if (file.exists()) file.readText() else ""

@@ -233,7 +233,7 @@ class DialogKit {
 
         fun showStyleInformationDialog(
             context: Context, style: MapStyleIndex,
-            onSaveClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit, onDismiss: () -> Unit
+            onSaveClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit
         ) {
             val layout = View.inflate(context, R.layout.dialog_style_info, null)
             val editTextName: EditText = layout.findViewById(R.id.editTextName)
@@ -263,7 +263,6 @@ class DialogKit {
                     onSaveClick()
                 }
                 .setNegativeButton(R.string.button_cancel, null)
-                .setOnDismissListener { onDismiss() }
                 .show()
 
             editTextName.setText(style.name)

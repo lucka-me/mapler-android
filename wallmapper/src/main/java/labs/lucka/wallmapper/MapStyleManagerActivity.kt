@@ -43,6 +43,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                     ),
                     positiveButtonListener = { _, _ ->
 
+                        DataKit.deleteStylePreviewImage(this@MapStyleManagerActivity, target)
                         DataKit.deleteStyleJson(this@MapStyleManagerActivity, target.path)
                         mapStyleIndexList.removeAt(position)
                         recyclerViewAdapter.notifyItemRemoved(position)
@@ -72,6 +73,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
             override fun onSwipeToInfo(position: Int) {
 
+                snapshotKit.refresh()
                 val target = mapStyleIndexList[position]
                 DialogKit.showStyleInformationDialog(this@MapStyleManagerActivity, target,
                     { recyclerViewAdapter.notifyItemChanged(position) },
@@ -95,8 +97,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                                 ) { }
                             }
                         }
-                    },
-                    { snapshotKit.onPause() }
+                    }
                 )
             }
         }
@@ -160,7 +161,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                                     Intent(Intent.ACTION_GET_CONTENT)
                                         .addCategory(Intent.CATEGORY_OPENABLE)
                                         .setType(getString(R.string.mime_json)),
-                                    RequestCode.OpenJsonFile.code
+                                    DefaultValue.Request.OpenJsonFile.code
                                 )
                             }
 
@@ -171,7 +172,8 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
                 R.id.menu_preference -> {
                     startActivityForResult(
-                        Intent(this, PreferenceMainActivity::class.java), RequestCode.SetPreference.code
+                        Intent(this, PreferenceMainActivity::class.java),
+                        DefaultValue.Request.SetPreference.code
                     )
                 }
 
@@ -187,7 +189,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
 
-            RequestCode.SetPreference.code -> {
+            DefaultValue.Request.SetPreference.code -> {
                 if (data != null) {
                     if (
                         data.getBooleanExtra(getString(R.string.activity_result_should_reset_token), false)
@@ -211,7 +213,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                 }
             }
 
-            RequestCode.OpenJsonFile.code -> {
+            DefaultValue.Request.OpenJsonFile.code -> {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     val json: String = DataKit.readFile(this, data.data)
                     DialogKit.showAddNewStyleFromJsonDialog(this) { newStyleIndex ->

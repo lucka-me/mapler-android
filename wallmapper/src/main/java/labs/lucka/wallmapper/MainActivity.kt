@@ -35,7 +35,8 @@ class MainActivity : AppCompatActivity() {
 
         fabManageStyle.setOnClickListener {
             startActivityForResult(
-                Intent(this, MapStyleManagerActivity::class.java), RequestCode.ManageMapStyle.code
+                Intent(this, MapStyleManagerActivity::class.java),
+                DefaultValue.Request.ManageMapStyle.code
             )
         }
 
@@ -104,7 +105,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            RequestCode.RequestPermissionWriteExternalStorage.code -> {
+            DefaultValue.Request.RequestPermissionWriteExternalStorage.code -> {
                 saveImage(mapKit.snapshot as Bitmap)
             }
         }
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RequestCode.ManageMapStyle.code && data != null) {
+        if (requestCode == DefaultValue.Request.ManageMapStyle.code && data != null) {
             if (
                 data.getBooleanExtra(
                     getString(R.string.activity_result_should_reset_token), false
@@ -191,7 +192,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    RequestCode.RequestPermissionWriteExternalStorage.code
+                    DefaultValue.Request.RequestPermissionWriteExternalStorage.code
                 )
             }
         }

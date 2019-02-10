@@ -11,7 +11,6 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.SurfaceHolder
 import androidx.core.content.ContextCompat
 import com.mapbox.mapboxsdk.Mapbox
@@ -35,8 +34,7 @@ class WallmapperLiveService : WallpaperService() {
             redraw(image)
         }
         val onSnapshotError: (String?) -> Unit = { error ->
-            Log.i("WMTEST", "ERROR: $error")
-            Log.i("WMTEST", "onSnapshotError going to refresh")
+            System.out.println(error)
             refresh()
         }
 
@@ -44,10 +42,8 @@ class WallmapperLiveService : WallpaperService() {
 
             override fun onLocationChanged(location: Location?) {
                 if (location == null) return
-                Log.i("WMTEST", "Location Changed")
                 lastLatLng.latitude = location.latitude
                 lastLatLng.longitude = location.longitude
-                Log.i("WMTEST", "onLocationChanged going to refresh")
                 refresh()
             }
 
@@ -83,9 +79,7 @@ class WallmapperLiveService : WallpaperService() {
                 if (lastLocation != null) {
                     lastLatLng.latitude = lastLocation.latitude
                     lastLatLng.longitude = lastLocation.longitude
-                    Log.i("WMTEST", "Last location: " + lastLocation.latitude + ", " + lastLocation.longitude)
                 } else {
-                    Log.i("WMTEST", "Last location: UNKNOWN")
                 }
             }
             requestLocationUpdates()
@@ -94,20 +88,16 @@ class WallmapperLiveService : WallpaperService() {
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                Log.i("WMTEST", "VISIBLE")
                 resetFromPreferences()
-                Log.i("WMTEST", "onVisibilityChanged going to refresh")
                 refresh()
                 requestLocationUpdates()
             } else {
-                Log.i("WMTEST", "INVISIBLE")
                 locationManager.removeUpdates(locationListener)
             }
         }
 
         override fun onSurfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(holder, format, width, height)
-            Log.i("WMTEST", "onSurfaceChanged going to refresh")
             refresh()
         }
 
@@ -149,6 +139,7 @@ class WallmapperLiveService : WallpaperService() {
         }
 
         private fun refresh() {
+            snapshotKit.refresh()
             when (styleIndex.type) {
 
                 MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {

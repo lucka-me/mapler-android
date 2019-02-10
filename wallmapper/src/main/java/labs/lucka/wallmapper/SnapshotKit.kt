@@ -11,27 +11,22 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 
 class SnapshotKit(private val context: Context) {
 
-    private val pixelRatio: Float = context.resources.displayMetrics.density
-    private val snapshotter = MapSnapshotter(
+    private var pixelRatio: Float = context.resources.displayMetrics.density
+    private var snapshotter = MapSnapshotter(
         context,  MapSnapshotter.Options(100, 100).withLogo(false).withPixelRatio(pixelRatio)
     )
-    private var isShotting = false
 
     private fun takeSnapshot(
         width: Int, height: Int, setCallback: () -> Unit,
         onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
     ) {
-        if (isShotting) { return }
         snapshotter.setSize((width / pixelRatio).toInt(), (height / pixelRatio).toInt())
         setCallback()
         snapshotter.cancel()
-        isShotting = true
         snapshotter.start(
             { mapSnapshot: MapSnapshot ->
-                isShotting = false
                 onSnapshotReady(mapSnapshot.bitmap)
             }, { error: String? ->
-                isShotting = false
                 onError(error)
             }
         )
@@ -87,7 +82,21 @@ class SnapshotKit(private val context: Context) {
 
     fun onPause() {
         snapshotter.cancel()
-        isShotting = false
+    }
+
+    /**
+     * Refresh the [snapshotter] so that the next snapshot can be taken immediately.
+     *
+     * @author lucka-me
+     * @since 0.1.1
+     */
+    fun refresh() {
+        snapshotter.cancel()
+        pixelRatio = context.resources.displayMetrics.density
+        snapshotter = MapSnapshotter(
+            context,
+            MapSnapshotter.Options(100, 100).withLogo(false).withPixelRatio(pixelRatio)
+        )
     }
 
     companion object {

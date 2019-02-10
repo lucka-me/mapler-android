@@ -17,9 +17,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            //minifyEnabled true
-            //shrinkResources true
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,7 +33,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.preference:preference:1.1.0-alpha03'
     // Mapbox
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.1.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.1.2'
     // Anko
     implementation "org.jetbrains.anko:anko:$anko_version"
     // Gson

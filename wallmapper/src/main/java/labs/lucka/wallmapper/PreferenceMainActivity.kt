@@ -69,7 +69,7 @@ class PreferenceMainActivity : AppCompatActivity() {
                                     ActivityCompat.requestPermissions(
                                         requireActivity(),
                                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                        RequestCode.RequestPermissionFineLocation.code
+                                        DefaultValue.Request.RequestPermissionFineLocation.code
                                     )
                                 }
                             }
