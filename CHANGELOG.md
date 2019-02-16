@@ -3,6 +3,18 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.1] - 2019-02-16
+- 0.1.0(419) -> 0.1.1(471)
+- New function: Style Preview
+
+### Added
+- Style Preview: Display a sample of the style in the information dialog
+
+### Changed
+- Reduce the apk size
+```
+
+```markdown
 ## [0.1.0] - 2019-02-08
 - 0.1.0(419)
 - Initial version

@@ -61,9 +61,9 @@ class WallmapperLiveService : WallpaperService() {
             snapshotKit = SnapshotKit(this@WallmapperLiveService)
 
             lastLatLng.latitude = defaultSharedPreferences
-                .getFloat(getString(R.string.pref_map_last_position_latitude), 22.308F).toDouble()
+                .getFloat(getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat()).toDouble()
             lastLatLng.longitude = defaultSharedPreferences
-                .getFloat(getString(R.string.pref_map_last_position_longitude), 114.174F).toDouble()
+                .getFloat(getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat()).toDouble()
             cameraBuilder.target(lastLatLng)
 
             resetFromPreferences()
@@ -178,28 +178,28 @@ class WallmapperLiveService : WallpaperService() {
             cameraBuilder.zoom(
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_zoom), 15).toDouble()
+                        .getInt(getString(R.string.pref_live_wallpaper_zoom), DefaultValue.Map.ZOOM.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_zoom), 15F).toDouble()
+                        .getFloat(getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat()).toDouble()
                 }
             )
             cameraBuilder.bearing(
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_bearing), 0).toDouble()
+                        .getInt(getString(R.string.pref_live_wallpaper_bearing), DefaultValue.Map.BEARING.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_bearing), 0F).toDouble()
+                        .getFloat(getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat()).toDouble()
                 }
             )
             cameraBuilder.tilt(
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_tilt), 0).toDouble()
+                        .getInt(getString(R.string.pref_live_wallpaper_tilt), DefaultValue.Map.TILT.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_tilt), 0F).toDouble()
+                        .getFloat(getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat()).toDouble()
                 }
             )
 

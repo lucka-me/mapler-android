@@ -31,4 +31,8 @@ class DefaultValue {
         OpenJsonFile(3001)
     }
 
+    companion object {
+        const val DATA_VERSION: Int = 1
+    }
+
 }

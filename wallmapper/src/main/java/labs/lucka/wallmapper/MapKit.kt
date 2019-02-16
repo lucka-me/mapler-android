@@ -196,7 +196,7 @@ class MapKit(private val context: Context) {
                 return
             }
             if (
-                context.defaultSharedPreferences.getInt(context.getString(R.string.pref_data_version), 1)
+                context.defaultSharedPreferences.getInt(context.getString(R.string.pref_data_version), DefaultValue.DATA_VERSION)
                 == DataKit.CURRENT_DATA_VERSION
             ) return
 

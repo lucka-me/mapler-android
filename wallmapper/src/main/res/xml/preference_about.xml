@@ -25,6 +25,15 @@
                     android:data="@string/pref_about_summary_github_url" />
         </Preference>
 
+        <Preference
+                android:title="@string/pref_about_summary_license_title"
+                android:summary="@string/pref_about_summary_license_summary"
+                app:iconSpaceReserved="false">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="@string/pref_about_summary_license_url" />
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory

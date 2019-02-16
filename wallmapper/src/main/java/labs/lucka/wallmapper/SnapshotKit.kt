@@ -22,7 +22,6 @@ class SnapshotKit(private val context: Context) {
     ) {
         snapshotter.setSize((width / pixelRatio).toInt(), (height / pixelRatio).toInt())
         setCallback()
-        snapshotter.cancel()
         snapshotter.start(
             { mapSnapshot: MapSnapshot ->
                 onSnapshotReady(mapSnapshot.bitmap)

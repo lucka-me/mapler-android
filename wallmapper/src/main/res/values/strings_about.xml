@@ -8,6 +8,9 @@
     <string name="pref_about_summary_github_title">GitHub</string>
     <string name="pref_about_summary_github_summary">Source code</string>
     <string name="pref_about_summary_github_url">https://github.com/lucka-me/Wallmapper-android</string>
+    <string name="pref_about_summary_license_title">License</string>
+    <string name="pref_about_summary_license_summary">Mozilla Public License 2.0</string>
+    <string name="pref_about_summary_license_url">https://github.com/lucka-me/Wallmapper-android/blob/master/LICENSE</string>
 
     <string name="pref_about_developer_category_title">Developer</string>
     <string name="pref_about_developer_lucka_title">Lucka</string>
