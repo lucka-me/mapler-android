@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_live_wallpaper_provider_entries">
+        <item>GPS</item>
+        <item>网络</item>
+    </string-array>
+</resources>

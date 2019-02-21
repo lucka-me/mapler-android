@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Buttons -->
+    <string name="button_cancel">取消</string>
+    <string name="button_dismiss">关闭</string>
+    <string name="button_save">保存</string>
+    <string name="button_confirm">确认</string>
+
+    <!-- Titles -->
+    <string name="dialog_title_result">结果</string>
+    <string name="dialog_title_error">糟糕…</string>
+    <string name="dialog_title_request_permission">请求权限</string>
+
+    <!-- Permission Request -->
+    <string name="request_permission_write_external_permission">Wallmapper需要写入外部存储的权限以保存图片。</string>
+    <string name="request_permission_fine_location">Wallmapper需要访问位置的权限以更新动态壁纸。</string>
+
+    <!-- Add Style From -->
+    <string name="dialog_add_style_from_url">URL</string>
+    <string name="dialog_add_style_from_json">JSON</string>
+
+    <!-- Add Style From JSON/URL -->
+    <string name="dialog_title_add_style_from_json">从JSON添加样式</string>
+    <string name="dialog_title_add_style_from_url">从URL添加样式</string>
+    <string name="title_url">URL</string>
+    <string name="title_name">名称</string>
+    <string name="title_author">作者</string>
+    <string name="title_desc">描述</string>
+
+    <!-- Style Information-->
+    <string name="dialog_title_style_information">样式信息</string>
+    <string name="dialog_style_information_preview_description">样式预览</string>
+
+    <!-- Delete Style -->
+    <string name="dialog_title_delete_style">删除</string>
+    <string name="dialog_content_delete_style">确认删除样式「%s」（作者：%s），这一操作无法撤销。</string>
+    <string name="dialog_content_delete_default_style">无法删除默认样式。</string>
+</resources>

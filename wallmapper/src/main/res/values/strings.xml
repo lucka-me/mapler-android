@@ -1,10 +1,10 @@
 <resources>
-    <string name="application_name">Wallmapper</string>
+    <string name="application_name" translatable="false">Wallmapper</string>
     <string name="label_style_manager">Styles</string>
-    <string name="file_style_index_list_default_token">styleIndexList.json</string>
-    <string name="file_style_index_list_own_token">styleIndexListOwnToken.json</string>
-    <string name="path_save_folder">Wallmapper</string>
-    <!--<string name="mapbox_default_access_token">YOUR_OWN_MAPBOX_TOKEN</string>-->
+    <string name="file_style_index_list_default_token" translatable="false">styleIndexList.json</string>
+    <string name="file_style_index_list_own_token" translatable="false">styleIndexListOwnToken.json</string>
+    <string name="path_save_folder" translatable="false">Wallmapper</string>
+    <!--<string name="mapbox_default_access_token" translatable="false">YOUR_OWN_MAPBOX_TOKEN</string>-->
 
     <!-- Service -->
     <string name="service_live_label">Wallmapper Live</string>
@@ -20,15 +20,15 @@
     <string name="snack_saved_action_set">SET</string>
 
     <!-- Activity Result -->
-    <string name="activity_result_should_reset_style">activity_result_should_reset_style</string>
-    <string name="activity_result_should_reset_token">activity_result_should_reset_token</string>
+    <string name="activity_result_should_reset_style" translatable="false">activity_result_should_reset_style</string>
+    <string name="activity_result_should_reset_token" translatable="false">activity_result_should_reset_token</string>
 
     <!-- Style Card -->
     <string name="card_style_author">By %s</string>
 
     <!-- File MIME -->
-    <string name="mime_json">application/octet-stream</string>
-    <string name="mime_png">image/png</string>
+    <string name="mime_json" translatable="false">application/octet-stream</string>
+    <string name="mime_png" translatable="false">image/png</string>
 
     <!-- Error -->
     <string name="error_snapshot_another_being_generated">Another snapshot is being generated.</string>

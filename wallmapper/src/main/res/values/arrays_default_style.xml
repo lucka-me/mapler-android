@@ -9,7 +9,7 @@
         <item>Mapbox Satellite</item>
         <item>Mapbox Satellite Streets</item>
     </string-array>
-    <string name="map_style_default_author">Mapbox</string>
+    <string name="map_style_default_author" translatable="false">Mapbox</string>
 
     <string-array name="style_lucka_name">
         <item>Minimo</item>

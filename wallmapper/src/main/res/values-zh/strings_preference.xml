@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="pref_main_title">首选项</string>
+
+    <string name="pref_mapbox_use_default_token_title">使用默认访问令牌</string>
+    <string name="pref_mapbox_use_default_token_summary_on">使用Lucka提供的令牌和样式</string>
+    <string name="pref_mapbox_use_default_token_summary_off">使用您自己的令牌并从URL添加自己的样式</string>
+    <string name="pref_mapbox_token_title">访问令牌</string>
+    <string name="pref_mapbox_token_summary">您的Mapbox访问令牌</string>
+    <string name="pref_mapbox_token_hint">您的Mapbox访问令牌</string>
+
+    <string name="pref_display_category_title">显示</string>
+    <string name="pref_display_label_title">地图注记</string>
+    <string name="pref_display_label_summary_on">在浏览地图和生成图片时显示注记</string>
+    <string name="pref_display_label_summary_off">在浏览地图和生成图片时隐藏注记</string>
+
+    <string name="pref_live_wallpaper_category_title">动态壁纸</string>
+    <string name="pref_live_wallpaper_set_title">预览&amp;设置</string>
+    <string name="pref_live_wallpaper_set_summary">打开预览与设置页面</string>
+    <string name="pref_live_wallpaper_radius_title">更新半径</string>
+    <string name="pref_live_wallpaper_radius_summary">当移动超过%s千米时更新壁纸</string>
+    <string name="pref_live_wallpaper_provider_summary">选择动态壁纸的定位方式</string>
+    <string name="pref_live_wallpaper_designate_camera_title">指定地图视角</string>
+    <string name="pref_live_wallpaper_designate_camera_summary_on">在下方设置地图视角</string>
+    <string name="pref_live_wallpaper_designate_camera_summary_off">地图视角将与主页面地图一致</string>
+    <string name="pref_live_wallpaper_zoom_title">缩放等级</string>
+    <string name="pref_live_wallpaper_bearing_title">方位角</string>
+    <string name="pref_live_wallpaper_tilt_title">倾斜角</string>
+</resources>
