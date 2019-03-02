@@ -3,6 +3,15 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.2] - 2019-03-02
+- 0.1.1(471) -> 0.1.2(476)
+- Localized: Chinese (Simplified)
+
+### Added
+- Localization for Chinese (Simplified)
+```
+
+```markdown
 ## [0.1.1] - 2019-02-16
 - 0.1.0(419) -> 0.1.1(471)
 - New function: Style Preview
