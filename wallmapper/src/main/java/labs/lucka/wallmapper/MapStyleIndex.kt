@@ -1,5 +1,8 @@
 package labs.lucka.wallmapper
 
+import androidx.annotation.Keep
+
+@Keep
 data class MapStyleIndex(
     var name: String,
     var author: String,
@@ -8,6 +11,7 @@ data class MapStyleIndex(
     var imagePath: String? = null
 ) {
 
+    @Keep
     enum class StyleType {
         ONLINE, LOCAL, CUSTOMIZED, MAPBOX, LUCKA
     }

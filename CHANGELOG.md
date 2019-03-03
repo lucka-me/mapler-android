@@ -3,6 +3,15 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.3] - 2019-03-03
+- 0.1.2(476) -> 0.1.3(492)
+- Fixed: Crash when launch
+
+### Fixed
+- App crashes when launch, which caused by minifying
+```
+
+```markdown
 ## [0.1.2] - 2019-03-02
 - 0.1.1(471) -> 0.1.2(476)
 - Localized: Chinese (Simplified)
