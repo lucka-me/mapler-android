@@ -51,11 +51,20 @@
                 app:iconSpaceReserved="false">
         </Preference>
 
+        <SwitchPreference
+                android:key="@string/pref_live_wallpaper_follow_location"
+                android:title="@string/pref_live_wallpaper_follow_location_title"
+                android:summaryOn="@string/pref_live_wallpaper_follow_location_summary_on"
+                android:summaryOff="@string/pref_live_wallpaper_follow_location_summary_off"
+                android:defaultValue="false"
+                app:iconSpaceReserved="false" />
+
         <EditTextPreference
                 android:key="@string/pref_live_wallpaper_radius"
                 android:title="@string/pref_live_wallpaper_radius_title"
                 android:summary="@string/pref_live_wallpaper_radius_summary"
                 android:defaultValue="1"
+                android:dependency="@string/pref_live_wallpaper_follow_location"
                 app:iconSpaceReserved="false"/>
 
         <ListPreference
@@ -65,6 +74,7 @@
             android:entries="@array/pref_live_wallpaper_provider_entries"
             android:entryValues="@array/pref_live_wallpaper_provider_values"
             android:defaultValue="1"
+            android:dependency="@string/pref_live_wallpaper_follow_location"
             app:iconSpaceReserved="false" />
 
         <SwitchPreference

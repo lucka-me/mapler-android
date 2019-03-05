@@ -3,6 +3,7 @@ package labs.lucka.wallmapper
 import android.Manifest
 import android.app.Service
 import android.app.WallpaperColors
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
@@ -22,6 +23,7 @@ class WallmapperLiveService : WallpaperService() {
 
     private inner class WallmapperLiveEngine : Engine() {
 
+        private var followLocation: Boolean = false
         private lateinit var locationManager: LocationManager
         private val cameraBuilder: CameraPosition.Builder = CameraPosition.Builder()
         private lateinit var styleIndex: MapStyleIndex
@@ -35,7 +37,7 @@ class WallmapperLiveService : WallpaperService() {
         }
         val onSnapshotError: (String?) -> Unit = { error ->
             System.out.println(error)
-            refresh()
+            takeSnapshot()
         }
 
         val locationListener: LocationListener = object : LocationListener {
@@ -44,12 +46,24 @@ class WallmapperLiveService : WallpaperService() {
                 if (location == null) return
                 lastLatLng.latitude = location.latitude
                 lastLatLng.longitude = location.longitude
-                refresh()
+                takeSnapshot()
             }
 
             override fun onProviderDisabled(provider: String?) { }
             override fun onProviderEnabled(provider: String?) { }
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) { }
+        }
+
+        val onSharedPreferenceChangeListener: (SharedPreferences, String) -> Unit = { _, key ->
+            when (key) {
+                getString(R.string.pref_live_wallpaper_designate_camera),
+                getString(R.string.pref_live_wallpaper_zoom),
+                getString(R.string.pref_live_wallpaper_bearing),
+                getString(R.string.pref_live_wallpaper_tilt),
+                getString(R.string.pref_live_wallpaper_tilt) -> {
+                    resetFromPreferences()
+                }
+            }
         }
 
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
@@ -67,22 +81,10 @@ class WallmapperLiveService : WallpaperService() {
             cameraBuilder.target(lastLatLng)
 
             resetFromPreferences()
+            defaultSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
 
             locationManager = getSystemService(Service.LOCATION_SERVICE) as LocationManager
-            if (
-                ContextCompat.checkSelfPermission(
-                    this@WallmapperLiveService, Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                val lastLocation = locationManager.getLastKnownLocation(getProvider())
-                if (lastLocation != null) {
-                    lastLatLng.latitude = lastLocation.latitude
-                    lastLatLng.longitude = lastLocation.longitude
-                } else {
-                }
-            }
-            requestLocationUpdates()
+            refresh()
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
@@ -90,7 +92,6 @@ class WallmapperLiveService : WallpaperService() {
             if (visible) {
                 resetFromPreferences()
                 refresh()
-                requestLocationUpdates()
             } else {
                 locationManager.removeUpdates(locationListener)
             }
@@ -98,13 +99,14 @@ class WallmapperLiveService : WallpaperService() {
 
         override fun onSurfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
             super.onSurfaceChanged(holder, format, width, height)
-            refresh()
+            takeSnapshot()
         }
 
         override fun onSurfaceDestroyed(holder: SurfaceHolder?) {
             super.onSurfaceDestroyed(holder)
             snapshotKit.onPause()
             locationManager.removeUpdates(locationListener)
+            defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
         }
 
         override fun onComputeColors(): WallpaperColors? {
@@ -117,6 +119,22 @@ class WallmapperLiveService : WallpaperService() {
                 }
             } else {
                 super.onComputeColors()
+            }
+        }
+
+        private fun refresh() {
+            if (followLocation) {
+                requestLocationUpdates()
+            } else {
+                lastLatLng.latitude = defaultSharedPreferences
+                    .getFloat(getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat())
+                    .toDouble()
+                lastLatLng.longitude = defaultSharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat()
+                    )
+                    .toDouble()
+                takeSnapshot()
             }
         }
 
@@ -135,10 +153,16 @@ class WallmapperLiveService : WallpaperService() {
                     radius * 1000,
                     locationListener
                 )
+            } else {
+                defaultSharedPreferences.edit()
+                    .putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+                    .apply()
+                followLocation = false
+                refresh()
             }
         }
 
-        private fun refresh() {
+        private fun takeSnapshot() {
             snapshotKit.refresh()
             when (styleIndex.type) {
 
@@ -172,6 +196,9 @@ class WallmapperLiveService : WallpaperService() {
         }
 
         private fun resetFromPreferences() {
+
+            followLocation = defaultSharedPreferences
+                .getBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
 
             val isCameraPositionDesignated = defaultSharedPreferences
                 .getBoolean(getString(R.string.pref_live_wallpaper_designate_camera), true)

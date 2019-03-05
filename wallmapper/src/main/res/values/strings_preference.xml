@@ -33,6 +33,10 @@
     <string name="pref_live_wallpaper_set" translatable="false">pref_live_wallpaper_set</string>
     <string name="pref_live_wallpaper_set_title">Preview &amp; Set</string>
     <string name="pref_live_wallpaper_set_summary">Open the preview and set page</string>
+    <string name="pref_live_wallpaper_follow_location" translatable="false">pref_live_wallpaper_follow_location</string>
+    <string name="pref_live_wallpaper_follow_location_title">Follow Location</string>
+    <string name="pref_live_wallpaper_follow_location_summary_on">The center will be your location</string>
+    <string name="pref_live_wallpaper_follow_location_summary_off">The center will be the same as the main map</string>
     <string name="pref_live_wallpaper_radius" translatable="false">pref_live_wallpaper_radius</string>
     <string name="pref_live_wallpaper_radius_title">Refresh Radius</string>
     <string name="pref_live_wallpaper_radius_summary">Refresh the wallpaper when move further than %s km</string>
