@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
 import org.jetbrains.anko.defaultSharedPreferences
 
 class PreferenceMainActivity : AppCompatActivity() {
@@ -28,6 +29,17 @@ class PreferenceMainActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preference_main, rootKey)
 
+            if (
+                ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                requireContext().defaultSharedPreferences.edit()
+                    .putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+                    .apply()
+            }
+
             val prefLiveRadius = findPreference<EditTextPreference>(getString(R.string.pref_live_wallpaper_radius))
             prefLiveRadius.setOnBindEditTextListener { editText ->
                 editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -36,47 +48,53 @@ class PreferenceMainActivity : AppCompatActivity() {
                 String.format(getString(R.string.pref_live_wallpaper_radius_summary), preference.text)
             }
 
-            findPreference<Preference>(getString(R.string.pref_live_wallpaper_set)).onPreferenceClickListener =
-                    object : Preference.OnPreferenceClickListener {
-                        override fun onPreferenceClick(preference: Preference?): Boolean {
-                            if (preference == null) return false
-                            if (
-                                ContextCompat.checkSelfPermission(
-                                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                                )
-                                == PackageManager.PERMISSION_GRANTED
-                            ) {
-                                startActivity(
-                                    Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER)
-                                        .putExtra(
-                                            WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                                            ComponentName(requireContext(), WallmapperLiveService::class.java)
-                                        )
-                                )
-                            } else {
-                                if (
-                                    ActivityCompat.shouldShowRequestPermissionRationale(
-                                        requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
-                                    )
-                                ) {
-                                    DialogKit.showDialog(
-                                        requireContext(),
-                                        R.string.dialog_title_request_permission,
-                                        R.string.request_permission_fine_location,
-                                        cancelable = false
-                                    )
-                                } else {
-                                    ActivityCompat.requestPermissions(
-                                        requireActivity(),
-                                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                        DefaultValue.Request.RequestPermissionFineLocation.code
-                                    )
-                                }
-                            }
+            findPreference<Preference>(getString(R.string.pref_live_wallpaper_set))
+                .onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                startActivity(
+                    Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER)
+                        .putExtra(
+                            WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                            ComponentName(requireContext(), WallmapperLiveService::class.java)
+                        )
+                )
+                true
+            }
 
-                            return true
+            findPreference<SwitchPreference>(getString(R.string.pref_live_wallpaper_follow_location))
+                .onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                if (newValue as Boolean) {
+                    if (
+                        ContextCompat.checkSelfPermission(
+                            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        true
+                    } else {
+                        if (
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+                            )
+                        ) {
+                            DialogKit.showDialog(
+                                requireContext(),
+                                R.string.dialog_title_request_permission,
+                                R.string.request_permission_fine_location,
+                                cancelable = false
+                            )
+                        } else {
+                            ActivityCompat.requestPermissions(
+                                requireActivity(),
+                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                DefaultValue.Request.RequestPermissionFineLocation.code
+                            )
                         }
+                        false
                     }
+                } else {
+                    true
+                }
+            }
         }
 
         override fun onResume() {
@@ -149,5 +167,16 @@ class PreferenceMainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            DefaultValue.Request.RequestPermissionFineLocation.code -> {
+                defaultSharedPreferences.edit()
+                    .putBoolean(getString(R.string.pref_live_wallpaper_follow_location), true)
+                    .apply()
+            }
+        }
     }
 }
