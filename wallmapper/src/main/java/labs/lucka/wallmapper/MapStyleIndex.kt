@@ -16,4 +16,16 @@ data class MapStyleIndex(
         ONLINE, LOCAL, CUSTOMIZED, MAPBOX, LUCKA
     }
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is MapStyleIndex) {
+            name == other.name
+                    && author == other.author
+                    && path == other.path
+                    && type == other.type
+                    && imagePath == other.imagePath
+        } else {
+            false
+        }
+    }
+
 }

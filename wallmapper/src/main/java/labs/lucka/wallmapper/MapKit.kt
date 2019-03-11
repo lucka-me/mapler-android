@@ -11,11 +11,17 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import org.jetbrains.anko.defaultSharedPreferences
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.random.Random
 
 class MapKit(private val context: Context) {
 
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
+    private var mapInitialized: Boolean = false
+    private val preInitializationTaskList: ArrayList<() -> Unit> = arrayListOf()
+    private var selectedStyleIndex: MapStyleIndex = MapStyleIndex("", "", "")
     private val snapshotKit: SnapshotKit
     var snapshot: Bitmap? = null
 
@@ -53,14 +59,24 @@ class MapKit(private val context: Context) {
                 .tilt(tilt.toDouble())
                 .bearing(bearing.toDouble())
                 .build()
+            mapInitialized = true
+            preInitializationTaskList.forEach { task -> task() }
+            preInitializationTaskList.clear()
             onMapReady(map)
-            setStyle()
-
         }
     }
 
     fun setStyle(callback: () -> Unit = { }) {
-        val selectedStyleIndex = getSelectedStyleIndex(context)
+        if (!mapInitialized) {
+            preInitializationTaskList.add { setStyle(callback) }
+            return
+        }
+        val newSelectedStyleIndex: MapStyleIndex = getSelectedStyleIndex(context)
+        if (newSelectedStyleIndex == selectedStyleIndex) {
+            callback()
+            return
+        }
+        selectedStyleIndex = newSelectedStyleIndex
         val styleBuilder: Style.Builder =
             when (selectedStyleIndex.type) {
 
@@ -79,6 +95,11 @@ class MapKit(private val context: Context) {
     }
 
     fun takeSnapshot(width: Int, height: Int, onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit) {
+
+        if (!mapInitialized) {
+            preInitializationTaskList.add { takeSnapshot(width, height, onSnapshotReady, onError) }
+            return
+        }
 
         map.getStyle { style: Style ->
             handleLabels(context, style)
@@ -102,14 +123,16 @@ class MapKit(private val context: Context) {
     fun onResume  () {  mapView.onResume   () }
 
     fun onPause() {
-        val position = map.cameraPosition
-        context.defaultSharedPreferences.edit()
-            .putFloat(context.getString(R.string.pref_map_last_position_latitude), position.target.latitude.toFloat())
-            .putFloat(context.getString(R.string.pref_map_last_position_longitude), position.target.longitude.toFloat())
-            .putFloat(context.getString(R.string.pref_map_last_position_zoom), position.zoom.toFloat())
-            .putFloat(context.getString(R.string.pref_map_last_position_tilt), position.tilt.toFloat())
-            .putFloat(context.getString(R.string.pref_map_last_position_bearing), position.bearing.toFloat())
-            .apply()
+        if (mapInitialized) {
+            val position = map.cameraPosition
+            context.defaultSharedPreferences.edit()
+                .putFloat(context.getString(R.string.pref_map_last_position_latitude), position.target.latitude.toFloat())
+                .putFloat(context.getString(R.string.pref_map_last_position_longitude), position.target.longitude.toFloat())
+                .putFloat(context.getString(R.string.pref_map_last_position_zoom), position.zoom.toFloat())
+                .putFloat(context.getString(R.string.pref_map_last_position_tilt), position.tilt.toFloat())
+                .putFloat(context.getString(R.string.pref_map_last_position_bearing), position.bearing.toFloat())
+                .apply()
+        }
         mapView.onPause()
         snapshotKit.onPause()
     }
@@ -196,7 +219,8 @@ class MapKit(private val context: Context) {
                 return
             }
             if (
-                context.defaultSharedPreferences.getInt(context.getString(R.string.pref_data_version), DefaultValue.DATA_VERSION)
+                context.defaultSharedPreferences
+                    .getInt(context.getString(R.string.pref_data_version), DefaultValue.DATA_VERSION)
                 == DataKit.CURRENT_DATA_VERSION
             ) return
 
@@ -232,12 +256,27 @@ class MapKit(private val context: Context) {
         }
 
         fun getSelectedStyleIndex(context: Context): MapStyleIndex {
-            val selectedStyleIndex: Int = context.defaultSharedPreferences.getInt(
+            val selectedStyleIndex =
+                context.defaultSharedPreferences.getInt(
+                    context.getString(R.string.pref_style_manager_selected_index), 0
+                )
+            MapKit.checkAndUpdateStyleList(context)
+            val mapStyleIndexList = DataKit.loadStyleIndexList(context)
+            return mapStyleIndexList[if (selectedStyleIndex >= mapStyleIndexList.size) 0 else selectedStyleIndex]
+        }
+
+        fun getRandomStyleIndex(context: Context): MapStyleIndex {
+            val selectedStyleIndex = context.defaultSharedPreferences.getInt(
                 context.getString(R.string.pref_style_manager_selected_index), 0
             )
             MapKit.checkAndUpdateStyleList(context)
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
-            return mapStyleIndexList[if (selectedStyleIndex >= mapStyleIndexList.size) 0 else selectedStyleIndex]
+            var randomIndex = Random(Date().time).nextInt(0, mapStyleIndexList.size - 2)
+            if (randomIndex >= selectedStyleIndex) randomIndex++
+            context.defaultSharedPreferences.edit()
+                .putInt(context.getString(R.string.pref_style_manager_selected_index), randomIndex)
+                .apply()
+            return mapStyleIndexList[randomIndex]
         }
 
         fun handleLabels(context: Context, style: Style) {

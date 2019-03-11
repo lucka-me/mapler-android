@@ -4,6 +4,7 @@
     <string name="button_cancel">取消</string>
     <string name="button_dismiss">关闭</string>
     <string name="button_save">保存</string>
+    <string name="button_add">添加</string>
     <string name="button_confirm">确认</string>
 
     <!-- Titles -->
@@ -16,6 +17,7 @@
     <string name="request_permission_fine_location">Wallmapper需要访问位置的权限以更新动态壁纸。</string>
 
     <!-- Add Style From -->
+    <string name="dialog_title_add_style_from">选择样式来源</string>
     <string name="dialog_add_style_from_url">URL</string>
     <string name="dialog_add_style_from_json">JSON</string>
 

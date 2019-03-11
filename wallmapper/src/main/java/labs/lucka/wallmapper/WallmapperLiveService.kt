@@ -18,16 +18,31 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.runOnUiThread
+import java.util.*
+import kotlin.concurrent.timer
 
 class WallmapperLiveService : WallpaperService() {
 
     private inner class WallmapperLiveEngine : Engine() {
 
+        private var timerRandomStyle: Timer = Timer()
+        private var timerRandomStyleEnabled: Boolean = false
+        private var timerRandomStyleInterval: Int = 0
+        private val  timerTaskRandomStyle: TimerTask.() -> Unit =  {
+            styleIndex = MapKit.getRandomStyleIndex(this@WallmapperLiveService)
+            runOnUiThread {
+                takeSnapshot()
+            }
+        }
+
         private var followLocation: Boolean = false
         private lateinit var locationManager: LocationManager
+
         private val cameraBuilder: CameraPosition.Builder = CameraPosition.Builder()
         private lateinit var styleIndex: MapStyleIndex
         private lateinit var snapshotKit: SnapshotKit
+
         private val lastLatLng: LatLng = LatLng()
         private var lastImage: Bitmap? = null
 
@@ -56,12 +71,20 @@ class WallmapperLiveService : WallpaperService() {
 
         val onSharedPreferenceChangeListener: (SharedPreferences, String) -> Unit = { _, key ->
             when (key) {
+                getString(R.string.pref_live_wallpaper_random_style),
+                getString(R.string.pref_live_wallpaper_random_style_interval) -> {
+                    updateRandomStyleTimerFromPreferences()
+                }
+
+                getString(R.string.pref_live_wallpaper_follow_location) -> {
+
+                }
+
                 getString(R.string.pref_live_wallpaper_designate_camera),
                 getString(R.string.pref_live_wallpaper_zoom),
                 getString(R.string.pref_live_wallpaper_bearing),
-                getString(R.string.pref_live_wallpaper_tilt),
                 getString(R.string.pref_live_wallpaper_tilt) -> {
-                    resetFromPreferences()
+                    resetCameraFromPreferences()
                 }
             }
         }
@@ -80,7 +103,7 @@ class WallmapperLiveService : WallpaperService() {
                 .getFloat(getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat()).toDouble()
             cameraBuilder.target(lastLatLng)
 
-            resetFromPreferences()
+            resetAllFromPreferences()
             defaultSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
 
             locationManager = getSystemService(Service.LOCATION_SERVICE) as LocationManager
@@ -90,7 +113,7 @@ class WallmapperLiveService : WallpaperService() {
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                resetFromPreferences()
+                resetStyleIndexFromPreferences()
                 refresh()
             } else {
                 locationManager.removeUpdates(locationListener)
@@ -104,6 +127,7 @@ class WallmapperLiveService : WallpaperService() {
 
         override fun onSurfaceDestroyed(holder: SurfaceHolder?) {
             super.onSurfaceDestroyed(holder)
+            timerRandomStyle.cancel()
             snapshotKit.onPause()
             locationManager.removeUpdates(locationListener)
             defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
@@ -146,8 +170,9 @@ class WallmapperLiveService : WallpaperService() {
                 == PackageManager.PERMISSION_GRANTED
             ) {
                 var radius = defaultSharedPreferences
-                    .getString(getString(R.string.pref_live_wallpaper_radius), "1")?.toFloatOrNull()
-                if (radius == null) radius = 1F
+                    .getString(getString(R.string.pref_live_wallpaper_radius), DefaultValue.LiveWallpaper.RADIUS.toString())
+                    ?.toFloatOrNull()
+                if (radius == null) radius = DefaultValue.LiveWallpaper.RADIUS
                 locationManager.requestLocationUpdates(
                     getProvider(), 0L,
                     radius * 1000,
@@ -195,8 +220,39 @@ class WallmapperLiveService : WallpaperService() {
             }
         }
 
-        private fun resetFromPreferences() {
+        private fun resetAllFromPreferences() {
+            updateRandomStyleTimerFromPreferences()
+            resetCameraFromPreferences()
+            resetStyleIndexFromPreferences()
+        }
 
+        private fun updateRandomStyleTimerFromPreferences() {
+            if (
+                defaultSharedPreferences
+                    .getBoolean(getString(R.string.pref_live_wallpaper_random_style), false)
+            ) {
+                val newInterval =
+                    defaultSharedPreferences.getString(
+                        getString(R.string.pref_live_wallpaper_random_style_interval),
+                        DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
+                    )?.toIntOrNull()
+                if (newInterval == null || newInterval == 0) {
+                    timerRandomStyleEnabled = false
+                } else if (!timerRandomStyleEnabled || newInterval != timerRandomStyleInterval) {
+                    timerRandomStyle.cancel()
+                    timerRandomStyle =
+                        timer(
+                            initialDelay = newInterval * 60000L, period = newInterval * 60000L,
+                            action = timerTaskRandomStyle
+                        )
+                    timerRandomStyleInterval = newInterval
+                }
+            } else {
+                if (timerRandomStyleEnabled) timerRandomStyleEnabled = false
+            }
+        }
+
+        private fun resetCameraFromPreferences() {
             followLocation = defaultSharedPreferences
                 .getBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
 
@@ -229,7 +285,9 @@ class WallmapperLiveService : WallpaperService() {
                         .getFloat(getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat()).toDouble()
                 }
             )
+        }
 
+        private fun resetStyleIndexFromPreferences() {
             styleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
         }
 

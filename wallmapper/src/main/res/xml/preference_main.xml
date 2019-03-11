@@ -52,6 +52,22 @@
         </Preference>
 
         <SwitchPreference
+                android:key="@string/pref_live_wallpaper_random_style"
+                android:defaultValue="false"
+                android:title="@string/pref_live_wallpaper_random_style_title"
+                android:summaryOn="@string/pref_live_wallpaper_random_style_summary_on"
+                android:summaryOff="@string/pref_live_wallpaper_random_style_summary_off"
+                app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+                android:key="@string/pref_live_wallpaper_random_style_interval"
+                android:title="@string/pref_live_wallpaper_random_style_interval_title"
+                android:summary="@string/pref_live_wallpaper_random_style_interval_summary"
+                android:defaultValue="60"
+                android:dependency="@string/pref_live_wallpaper_random_style"
+                app:iconSpaceReserved="false"/>
+
+        <SwitchPreference
                 android:key="@string/pref_live_wallpaper_follow_location"
                 android:title="@string/pref_live_wallpaper_follow_location_title"
                 android:summaryOn="@string/pref_live_wallpaper_follow_location_summary_on"

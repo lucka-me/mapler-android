@@ -73,6 +73,11 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mapKit.onResume()
+        deactivateButtons()
+        mapKit.setStyle {
+            fabSnapshot.show()
+            activateButtons()
+        }
     }
 
     override fun onPause() {

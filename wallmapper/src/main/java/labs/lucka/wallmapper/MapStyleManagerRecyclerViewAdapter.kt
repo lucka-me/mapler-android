@@ -54,8 +54,6 @@ class MapStyleManagerRecyclerViewAdapter(
         if (selectedIndex != position) {
             val oldIndex = selectedIndex
             selectedIndex = position
-            context.defaultSharedPreferences
-                .edit().putInt(context.getString(R.string.pref_style_manager_selected_index), selectedIndex).apply()
             adapterListener.onSelectedIndexChanged(selectedIndex)
             notifyItemChanged(oldIndex)
             notifyItemChanged(selectedIndex)
@@ -145,16 +143,20 @@ class MapStyleManagerRecyclerViewAdapter(
     }
 
     fun updateSelectedIndex() {
-        selectedIndex = context.defaultSharedPreferences.getInt(
+        var newSelectedIndex = context.defaultSharedPreferences.getInt(
             context.getString(R.string.pref_style_manager_selected_index), 0
         )
-        if (selectedIndex >= mapStyleIndexList.size) {
-            selectedIndex = 0
+        if (newSelectedIndex == selectedIndex) return
+        if (newSelectedIndex >= mapStyleIndexList.size) {
+            newSelectedIndex = 0
             context.defaultSharedPreferences.edit()
-                .putInt(context.getString(R.string.pref_style_manager_selected_index), selectedIndex)
+                .putInt(context.getString(R.string.pref_style_manager_selected_index), newSelectedIndex)
                 .apply()
         }
         notifyItemChanged(selectedIndex)
+        notifyItemChanged(newSelectedIndex)
+        selectedIndex = newSelectedIndex
+        adapterListener.onSelectedIndexChanged(selectedIndex)
     }
 
     /**

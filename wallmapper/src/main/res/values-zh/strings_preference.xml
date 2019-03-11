@@ -18,11 +18,17 @@
     <string name="pref_live_wallpaper_category_title">动态壁纸</string>
     <string name="pref_live_wallpaper_set_title">预览&amp;设置</string>
     <string name="pref_live_wallpaper_set_summary">打开预览与设置页面</string>
+    <string name="pref_live_wallpaper_random_style_title">随机样式</string>
+    <string name="pref_live_wallpaper_random_style_summary_on">从列表中随机选择样式</string>
+    <string name="pref_live_wallpaper_random_style_summary_off">总是使用选定的样式</string>
+    <string name="pref_live_wallpaper_random_style_interval_title">随机样式间隔</string>
+    <string name="pref_live_wallpaper_random_style_interval_summary">每隔%s分钟随机更换样式</string>
     <string name="pref_live_wallpaper_follow_location_title">定位</string>
     <string name="pref_live_wallpaper_follow_location_summary_on">地图位置将根据定位更新</string>
     <string name="pref_live_wallpaper_follow_location_summary_off">地图位置将与主页面地图一致</string>
     <string name="pref_live_wallpaper_radius_title">更新半径</string>
     <string name="pref_live_wallpaper_radius_summary">当移动超过%s千米时更新壁纸</string>
+    <string name="pref_live_wallpaper_provider_title">定位方式</string>
     <string name="pref_live_wallpaper_provider_summary">选择动态壁纸的定位方式</string>
     <string name="pref_live_wallpaper_designate_camera_title">指定地图视角</string>
     <string name="pref_live_wallpaper_designate_camera_summary_on">在下方设置地图视角</string>

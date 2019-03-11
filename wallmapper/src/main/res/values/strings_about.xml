@@ -6,7 +6,7 @@
     <string name="pref_about_summary_version_key" translatable="false">pref_about_summary_version</string>
     <string name="pref_about_summary_version_summary">%s (Build %d)</string>
     <string name="pref_about_summary_github_title">GitHub</string>
-    <string name="pref_about_summary_github_summary">Source code</string>
+    <string name="pref_about_summary_github_summary">Source code &amp; Updates</string>
     <string name="pref_about_summary_github_url" translatable="false">https://github.com/lucka-me/Wallmapper-android</string>
     <string name="pref_about_summary_license_title">License</string>
     <string name="pref_about_summary_license_summary">Mozilla Public License 2.0</string>

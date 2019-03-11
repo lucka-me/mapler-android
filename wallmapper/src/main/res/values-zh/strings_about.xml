@@ -5,6 +5,7 @@
     <string name="pref_about_summary_category_title">概览</string>
     <string name="pref_about_summary_version_summary">%s (Build %d)</string>
     <string name="pref_about_summary_github_title">GitHub</string>
+    <string name="pref_about_summary_github_summary">源代码&amp;更新</string>
     <string name="pref_about_summary_license_title">许可证</string>
     <string name="pref_about_summary_license_summary">Mozilla Public License 2.0</string>
 

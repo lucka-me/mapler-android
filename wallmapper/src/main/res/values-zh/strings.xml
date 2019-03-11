@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="label_style_manager">样式</string>
+
     <!-- Service -->
     <string name="service_live_label">Wallmapper Live</string>
     <string name="service_live_description">根据您的位置更新地图</string>
 
     <!-- Menu -->
+    <string name="menu_add_style">添加</string>
     <string name="menu_preference">首选项</string>
     <string name="menu_about">关于</string>
 
     <!-- SnackBar -->
     <string name="snack_saved_text">图片已保存。</string>
+    <string name="snack_saved_action_set">应用</string>
 
     <!-- Activity Result -->
 
@@ -20,11 +24,5 @@
 
     <!-- Error -->
     <string name="error_snapshot_another_being_generated">正在生成另一个图片。</string>
-    <string name="label_style_manager">样式</string>
-    <string name="menu_add_style">添加</string>
-    <string name="snack_saved_action_set">应用</string>
-    <string name="pref_live_wallpaper_provider_title">定位方式</string>
-    <string name="pref_about_summary_github_summary">源代码</string>
-    <string name="button_add">添加</string>
-    <string name="dialog_title_add_style_from">选择样式来源</string>
+
 </resources>

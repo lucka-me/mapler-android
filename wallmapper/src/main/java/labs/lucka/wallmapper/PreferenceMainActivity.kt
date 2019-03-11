@@ -30,9 +30,7 @@ class PreferenceMainActivity : AppCompatActivity() {
             setPreferencesFromResource(R.xml.preference_main, rootKey)
 
             if (
-                ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                )
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 requireContext().defaultSharedPreferences.edit()
@@ -40,6 +38,15 @@ class PreferenceMainActivity : AppCompatActivity() {
                     .apply()
             }
 
+            // Set input type
+            val prefLiveRandomInterval =
+                findPreference<EditTextPreference>(getString(R.string.pref_live_wallpaper_random_style_interval))
+            prefLiveRandomInterval.setOnBindEditTextListener { editText ->
+                editText.inputType = InputType.TYPE_CLASS_NUMBER
+            }
+            prefLiveRandomInterval.summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
+                String.format(getString(R.string.pref_live_wallpaper_random_style_interval_summary), preference.text)
+            }
             val prefLiveRadius = findPreference<EditTextPreference>(getString(R.string.pref_live_wallpaper_radius))
             prefLiveRadius.setOnBindEditTextListener { editText ->
                 editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL

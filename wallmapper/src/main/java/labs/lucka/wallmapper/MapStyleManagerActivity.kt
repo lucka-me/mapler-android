@@ -20,8 +20,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
         object : MapStyleManagerRecyclerViewAdapter.Listener {
 
             override fun onSelectedIndexChanged(position: Int) {
-                resultIntent.putExtra(getString(R.string.activity_result_should_reset_style), true)
-                setResult(Activity.RESULT_OK, resultIntent)
+                lastSelectedIndex = position
             }
 
             override fun onSwipeToDelete(position: Int) {
@@ -103,6 +102,8 @@ class MapStyleManagerActivity: AppCompatActivity() {
         }
     private lateinit var snapshotKit: SnapshotKit
     private var resultIntent: Intent = Intent()
+    private var initSelectedIndex: Int = 0
+    private var lastSelectedIndex: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,17 +118,31 @@ class MapStyleManagerActivity: AppCompatActivity() {
         recyclerViewMapStyleList.layoutManager = LinearLayoutManager(this)
         recyclerViewMapStyleList.adapter = recyclerViewAdapter
         recyclerViewAdapter.attachItemTouchHelperTo(recyclerViewMapStyleList)
+
+        initSelectedIndex = defaultSharedPreferences.getInt(getString(R.string.pref_style_manager_selected_index), 0)
+        lastSelectedIndex = initSelectedIndex
     }
 
     override fun onResume() {
         super.onResume()
         resultIntent = Intent()
+        recyclerViewAdapter.updateSelectedIndex()
     }
 
     override fun onPause() {
         DataKit.saveStyleIndexList(this, mapStyleIndexList)
         snapshotKit.onPause()
         super.onPause()
+    }
+
+    override fun onBackPressed() {
+        if (lastSelectedIndex != initSelectedIndex) {
+            defaultSharedPreferences
+                .edit().putInt(getString(R.string.pref_style_manager_selected_index), lastSelectedIndex).apply()
+            //resultIntent.putExtra(getString(R.string.activity_result_should_reset_style), true)
+            //setResult(Activity.RESULT_OK, resultIntent)
+        }
+        super.onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

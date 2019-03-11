@@ -23,6 +23,13 @@ class DefaultValue {
         }
     }
 
+    class LiveWallpaper {
+        companion object {
+            const val RANDOM_STYLE_INTERVAL: Int = 60
+            const val RADIUS: Float = 1F
+        }
+    }
+
     enum class Request(val code: Int) {
         RequestPermissionWriteExternalStorage(1001),
         RequestPermissionFineLocation(1002),
