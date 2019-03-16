@@ -233,18 +233,26 @@ class DialogKit {
 
         fun showStyleInformationDialog(
             context: Context, style: MapStyleIndex,
-            onSaveClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit
+            onEditClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit
         ) {
             val layout = View.inflate(context, R.layout.dialog_style_info, null)
-            val editTextName: EditText = layout.findViewById(R.id.editTextName)
-            val editTextAuthor: EditText = layout.findViewById(R.id.editTextAuthor)
-            val editTextUrl: EditText = layout.findViewById(R.id.editTextUrl)
-            val imageViewPreview: ImageView = layout.findViewById(R.id.imageViewPreview)
+            val textName: TextView = layout.findViewById(R.id.textName)
+            val textAuthor: TextView = layout.findViewById(R.id.textAuthor)
+            val imageType: ImageView = layout.findViewById(R.id.imageType)
+            val imagePreview: ImageView = layout.findViewById(R.id.imagePreview)
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.dialog_title_style_information)
                 .setView(layout)
-                .setIcon(when (style.type) {
+                .setPositiveButton(R.string.button_edit) { _, _ -> onEditClick() }
+                .setNegativeButton(R.string.button_dismiss, null)
+                .show()
+
+            textName.text = style.name
+            textAuthor.text = String.format(context.getString(R.string.style_author), style.author)
+            imageType.setImageResource(
+                when (style.type) {
+
                     MapStyleIndex.StyleType.MAPBOX, MapStyleIndex.StyleType.ONLINE, MapStyleIndex.StyleType.LUCKA -> {
                         R.drawable.ic_online
                     }
@@ -252,7 +260,37 @@ class DialogKit {
                     else -> {
                         R.drawable.ic_local
                     }
-                })
+            })
+
+            // Disable Edit button if it's default style
+            when (style.type) {
+
+                MapStyleIndex.StyleType.MAPBOX, MapStyleIndex.StyleType.LUCKA -> {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                }
+
+                else -> {
+                }
+
+            }
+            val imagePath = style.imagePath
+            if (imagePath == null) {
+                onShouldLoadPreviewImage(imagePreview)
+            } else {
+                imagePreview.setImageBitmap(DataKit.loadStylePreviewImage(context, imagePath))
+            }
+
+        }
+
+        fun showEditStyleDialog(context: Context, style: MapStyleIndex, onSaveClick: () -> Unit) {
+            val layout = View.inflate(context, R.layout.dialog_edit_style, null)
+            val editTextName: EditText = layout.findViewById(R.id.editTextName)
+            val editTextAuthor: EditText = layout.findViewById(R.id.editTextAuthor)
+            val editTextUrl: EditText = layout.findViewById(R.id.editTextUrl)
+
+            val dialog = AlertDialog.Builder(context)
+                .setTitle(R.string.dialog_title_edit_style)
+                .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
                     context.defaultSharedPreferences.edit()
                         .putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
@@ -289,24 +327,6 @@ class DialogKit {
                     editTextUrl.visibility = View.GONE
                 }
 
-            }
-            // Disable EditTexts if it's default style
-            when (style.type) {
-
-                MapStyleIndex.StyleType.MAPBOX, MapStyleIndex.StyleType.LUCKA -> {
-                    editTextName.isEnabled = false
-                    editTextAuthor.isEnabled = false
-                    editTextUrl.isEnabled = false
-                }
-
-                else -> { }
-
-            }
-            val imagePath = style.imagePath
-            if (imagePath == null) {
-                onShouldLoadPreviewImage(imageViewPreview)
-            } else {
-                imageViewPreview.setImageBitmap(DataKit.loadStylePreviewImage(context, imagePath))
             }
 
         }

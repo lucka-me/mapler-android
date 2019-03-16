@@ -74,8 +74,13 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
                 snapshotKit.refresh()
                 val target = mapStyleIndexList[position]
-                DialogKit.showStyleInformationDialog(this@MapStyleManagerActivity, target,
-                    { recyclerViewAdapter.notifyItemChanged(position) },
+                DialogKit.showStyleInformationDialog(
+                    this@MapStyleManagerActivity, target,
+                    {
+                        DialogKit.showEditStyleDialog(this@MapStyleManagerActivity, target) {
+                            recyclerViewAdapter.notifyItemChanged(position)
+                        }
+                    },
                     { imageView ->
                         val size = Point()
                         windowManager.defaultDisplay.getSize(size)
@@ -84,6 +89,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                             imageView.setImageBitmap(image)
                         }
                         when (target.type) {
+
                             MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
                                 snapshotKit.takeSnapshotJson(
                                     size.x, size.y, target.path, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
@@ -91,6 +97,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                             }
 
                             else -> {
+
                                 snapshotKit.takeSnapshotUrl(
                                     size.x, size.y, target.path, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
                                 ) { }

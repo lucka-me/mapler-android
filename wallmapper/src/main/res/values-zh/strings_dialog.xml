@@ -6,6 +6,7 @@
     <string name="button_save">保存</string>
     <string name="button_add">添加</string>
     <string name="button_confirm">确认</string>
+    <string name="button_edit">编辑</string>
 
     <!-- Titles -->
     <string name="dialog_title_result">结果</string>
@@ -32,6 +33,9 @@
     <!-- Style Information-->
     <string name="dialog_title_style_information">样式信息</string>
     <string name="dialog_style_information_preview_description">样式预览</string>
+
+    <!-- Edit Style -->
+    <string name="dialog_title_edit_style">编辑样式</string>
 
     <!-- Delete Style -->
     <string name="dialog_title_delete_style">删除</string>

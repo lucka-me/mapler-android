@@ -42,7 +42,7 @@ class MapStyleManagerRecyclerViewAdapter(
 
         fun setFrom(context: Context, styleIndex: MapStyleIndex, isSelected: Boolean = false) {
             textName.text = styleIndex.name
-            textAuthor.text = String.format(context.getString(R.string.card_style_author), styleIndex.author)
+            textAuthor.text = String.format(context.getString(R.string.style_author), styleIndex.author)
             radioSelected.isChecked = isSelected
         }
     }

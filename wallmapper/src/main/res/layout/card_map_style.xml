@@ -33,7 +33,7 @@
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"/>
         <TextView
-                android:text="@string/card_style_author"
+                android:text="@string/style_author"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/textAuthor"

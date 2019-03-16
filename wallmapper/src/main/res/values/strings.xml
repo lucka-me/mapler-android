@@ -1,14 +1,17 @@
 <resources>
     <string name="application_name" translatable="false">Wallmapper</string>
-    <string name="label_style_manager">Styles</string>
     <string name="file_style_index_list_default_token" translatable="false">styleIndexList.json</string>
     <string name="file_style_index_list_own_token" translatable="false">styleIndexListOwnToken.json</string>
     <string name="path_save_folder" translatable="false">Wallmapper</string>
     <!--<string name="mapbox_default_access_token" translatable="false">YOUR_OWN_MAPBOX_TOKEN</string>-->
 
+    <!-- UI -->
+    <string name="label_style_manager">Styles</string>
+    <string name="style_author">By %s</string>
+
     <!-- Service -->
     <string name="service_live_label">Wallmapper Live</string>
-    <string name="service_live_description">Update automatically to follow your position</string>
+    <string name="service_live_description">Live wallpaper from map</string>
 
     <!-- Menu -->
     <string name="menu_add_style">Add</string>
@@ -24,7 +27,7 @@
     <string name="activity_result_should_reset_token" translatable="false">activity_result_should_reset_token</string>
 
     <!-- Style Card -->
-    <string name="card_style_author">By %s</string>
+
 
     <!-- File MIME -->
     <string name="mime_json" translatable="false">application/octet-stream</string>

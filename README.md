@@ -1,7 +1,7 @@
 <h1 align=center><img src="./Resource/Banner.svg"></img></h1>
 
 <p align=center>
-  <a href="./CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-0.1.4-yellow.svg"/></a>
+  <a href="./CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-0.1.5-yellow.svg"/></a>
   <a href="https://lucka.moe"><img alt="Author" src="https://img.shields.io/badge/author-Lucka-2578B5.svg"/></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MPL_2.0-000000.svg"/></a><br>
   <a href="https://www.android.com/versions/marshmallow-6-0/"><img alt="Minmum SDK 23" src="https://img.shields.io/badge/min_SDK-23-78C257.svg"/></a>

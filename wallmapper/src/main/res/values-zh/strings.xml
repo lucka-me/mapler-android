@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- UI -->
     <string name="label_style_manager">样式</string>
+    <string name="style_author">By %s</string>
 
     <!-- Service -->
     <string name="service_live_label">Wallmapper Live</string>
-    <string name="service_live_description">根据您的位置更新地图</string>
+    <string name="service_live_description">地图动态壁纸</string>
 
     <!-- Menu -->
     <string name="menu_add_style">添加</string>
@@ -18,7 +20,6 @@
     <!-- Activity Result -->
 
     <!-- Style Card -->
-    <string name="card_style_author">By %s</string>
 
     <!-- File MIME -->
 

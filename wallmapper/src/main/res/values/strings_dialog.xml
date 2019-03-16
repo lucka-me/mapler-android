@@ -6,6 +6,7 @@
     <string name="button_save">Save</string>
     <string name="button_add">Add</string>
     <string name="button_confirm">Confirm</string>
+    <string name="button_edit">Edit</string>
 
     <!-- Titles -->
     <string name="dialog_title_result">Result</string>
@@ -32,6 +33,9 @@
     <!-- Style Information-->
     <string name="dialog_title_style_information">Style Information</string>
     <string name="dialog_style_information_preview_description">Style Preview</string>
+
+    <!-- Edit Style -->
+    <string name="dialog_title_edit_style">Edit Style</string>
 
     <!-- Delete Style -->
     <string name="dialog_title_delete_style">Delete</string>

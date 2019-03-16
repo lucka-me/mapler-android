@@ -3,6 +3,20 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.5] - 2019-03-16
+- 0.1.4(523) -> 0.1.5(539)
+- UI improved
+
+### Added
+- A new style information dialog to display informations only
+- An edit style dialog to edit style informations
+
+### Changed
+- Update the dependencies to fix some invisible bugs
+- Minor text changed
+```
+
+```markdown
 ## [0.1.4] - 2019-03-11
 - 0.1.3(492) -> 0.1.4(523)
 - New feature: Random style for live wallpaper
