@@ -88,21 +88,9 @@ class MapStyleManagerActivity: AppCompatActivity() {
                             DataKit.saveStylePreviewImage(this@MapStyleManagerActivity, target, image)
                             imageView.setImageBitmap(image)
                         }
-                        when (target.type) {
-
-                            MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
-                                snapshotKit.takeSnapshotJson(
-                                    size.x, size.y, target.path, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
-                                ) { }
-                            }
-
-                            else -> {
-
-                                snapshotKit.takeSnapshotUrl(
-                                    size.x, size.y, target.path, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
-                                ) { }
-                            }
-                        }
+                        snapshotKit.takeSnapshot(
+                            size.x, size.y, target, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
+                        ) { }
                     }
                 )
             }

@@ -40,6 +40,8 @@ class DefaultValue {
 
     companion object {
         const val DATA_VERSION: Int = 1
+        const val DATA_STRUCTURE_VERSION: Int = 0
+        const val DATA_STRUCTURE_LATEST_VERSION: Int = 3
     }
 
 }

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import org.jetbrains.anko.defaultSharedPreferences
 import java.util.*
@@ -240,12 +241,15 @@ class DialogKit {
             val textAuthor: TextView = layout.findViewById(R.id.textAuthor)
             val imageType: ImageView = layout.findViewById(R.id.imageType)
             val imagePreview: ImageView = layout.findViewById(R.id.imagePreview)
+            val switchInRandom: Switch = layout.findViewById(R.id.switchInRandom)
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.dialog_title_style_information)
                 .setView(layout)
                 .setPositiveButton(R.string.button_edit) { _, _ -> onEditClick() }
-                .setNegativeButton(R.string.button_dismiss, null)
+                .setNegativeButton(R.string.button_dismiss) { _, _ ->
+                    style.inRandom = switchInRandom.isChecked
+                }
                 .show()
 
             textName.text = style.name
@@ -274,11 +278,14 @@ class DialogKit {
 
             }
             val imagePath = style.imagePath
-            if (imagePath == null) {
+            //if (imagePath == null) {
+            if (imagePath.isEmpty()) {
                 onShouldLoadPreviewImage(imagePreview)
             } else {
                 imagePreview.setImageBitmap(DataKit.loadStylePreviewImage(context, imagePath))
             }
+
+            switchInRandom.isChecked = style.inRandom
 
         }
 

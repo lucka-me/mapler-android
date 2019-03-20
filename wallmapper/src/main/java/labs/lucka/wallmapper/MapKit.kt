@@ -103,13 +103,12 @@ class MapKit(private val context: Context) {
 
         map.getStyle { style: Style ->
             handleLabels(context, style)
-            snapshotKit.takeSnapshotJson(
+            snapshotKit.takeSnapshot(
                 width, height, style.json, map.cameraPosition, { image ->
                     snapshot = image
                     onSnapshotReady(image)
                 }, { error: String? ->
-
-                onError(error)
+                    onError(error)
                 }
             )
         }
@@ -271,10 +270,19 @@ class MapKit(private val context: Context) {
             )
             MapKit.checkAndUpdateStyleList(context)
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
-            var randomIndex = Random(Date().time).nextInt(0, mapStyleIndexList.size - 2)
-            if (randomIndex >= selectedStyleIndex) randomIndex++
+            val onRandomIndexList = arrayListOf<Int>()
+            for (i in 0 until mapStyleIndexList.size) {
+                if (mapStyleIndexList[i].inRandom && i != selectedStyleIndex) onRandomIndexList.add(i)
+            }
+            if (onRandomIndexList.isEmpty()) {
+                return getSelectedStyleIndex(context)
+            }
+            if (onRandomIndexList.size == 1) {
+                return mapStyleIndexList[onRandomIndexList[0]]
+            }
+            val randomIndex = onRandomIndexList[Random(Date().time).nextInt(0, onRandomIndexList.size - 1)]
             context.defaultSharedPreferences.edit()
-                .putInt(context.getString(R.string.pref_style_manager_selected_index), randomIndex)
+                .putInt(context.getString(R.string.pref_style_manager_selected_index), onRandomIndexList[randomIndex])
                 .apply()
             return mapStyleIndexList[randomIndex]
         }

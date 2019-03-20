@@ -42,4 +42,23 @@
             android:id="@+id/imageType" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="24dp"
             android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/imagePreview"/>
+
+    <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@+id/textAuthor" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="24dp" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="24dp" android:layout_marginTop="8dp"/>
+
+    <Switch
+            android:text="@string/dialog_style_information_switch_on_random"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/switchInRandom" android:showText="false" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="24dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="24dp" app:layout_constraintTop_toBottomOf="@+id/divider"
+            android:layout_marginTop="8dp" android:checked="true"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

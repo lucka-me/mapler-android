@@ -77,7 +77,6 @@ class WallmapperLiveService : WallpaperService() {
                 }
 
                 getString(R.string.pref_live_wallpaper_follow_location) -> {
-
                 }
 
                 getString(R.string.pref_live_wallpaper_designate_camera),
@@ -113,8 +112,13 @@ class WallmapperLiveService : WallpaperService() {
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                resetStyleIndexFromPreferences()
-                refresh()
+                if (
+                    !defaultSharedPreferences
+                        .getBoolean(getString(R.string.pref_live_wallpaper_random_style), false)
+                ) {
+                    resetStyleIndexFromPreferences()
+                    refresh()
+                }
             } else {
                 locationManager.removeUpdates(locationListener)
             }
@@ -189,26 +193,10 @@ class WallmapperLiveService : WallpaperService() {
 
         private fun takeSnapshot() {
             snapshotKit.refresh()
-            when (styleIndex.type) {
-
-                MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
-                    snapshotKit.takeSnapshotJson(
-                        desiredMinimumWidth, desiredMinimumHeight,
-                        SnapshotKit.handleLabels(
-                            this@WallmapperLiveService,
-                            DataKit.loadStyleJson(this@WallmapperLiveService, styleIndex.path)
-                        ),
-                        cameraBuilder.build(), onSnapshotReady, onSnapshotError)
-                }
-
-                else -> {
-                    snapshotKit.takeSnapshotUrl(
-                        desiredMinimumWidth, desiredMinimumHeight,
-                        styleIndex.path,
-                        cameraBuilder.build(), onSnapshotReady, onSnapshotError)
-                }
-
-            }
+            snapshotKit.takeSnapshot(
+                desiredMinimumWidth, desiredMinimumHeight, styleIndex, cameraBuilder.build(),
+                onSnapshotReady, onSnapshotError
+            )
         }
 
         private fun redraw(image: Bitmap) {

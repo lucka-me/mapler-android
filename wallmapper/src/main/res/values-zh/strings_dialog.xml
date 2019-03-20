@@ -33,6 +33,7 @@
     <!-- Style Information-->
     <string name="dialog_title_style_information">样式信息</string>
     <string name="dialog_style_information_preview_description">样式预览</string>
+    <string name="dialog_style_information_switch_on_random">用于随机样式</string>
 
     <!-- Edit Style -->
     <string name="dialog_title_edit_style">编辑样式</string>

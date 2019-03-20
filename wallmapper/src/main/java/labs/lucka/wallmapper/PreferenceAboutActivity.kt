@@ -12,7 +12,7 @@ class PreferenceAboutActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preference_about, rootKey)
 
-            findPreference<Preference>(getString(R.string.pref_about_summary_version_key)).summary =
+            findPreference<Preference>(getString(R.string.pref_about_summary_version_key))?.summary =
                 String.format(
                     getString(R.string.pref_about_summary_version_summary),
                     BuildConfig.VERSION_NAME,

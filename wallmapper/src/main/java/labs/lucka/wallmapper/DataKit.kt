@@ -13,6 +13,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DataKit {
     companion object {
@@ -50,6 +51,38 @@ class DataKit {
         }
 
         fun loadStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
+
+            if (
+                context.defaultSharedPreferences.getInt(
+                    context.getString(R.string.pref_data_structure_version), DefaultValue.DATA_STRUCTURE_VERSION
+                )
+                < DefaultValue.DATA_STRUCTURE_LATEST_VERSION
+            ) {
+
+                val oldDataHandler = fun (file: File) {
+                    if (file.exists()) {
+                        try {
+                            val mapStyleIndexCompatList =
+                                Gson().fromJson(file.readText(), Array<MapStyleIndex.Compat>::class.java)
+                            val mapStyleIndexList: ArrayList<MapStyleIndex> = arrayListOf()
+                            mapStyleIndexCompatList.forEach { item ->
+                                mapStyleIndexList.add(item.toMapStyleIndex())
+                            }
+                            file.writeText(Gson().toJson(mapStyleIndexList.toArray()))
+                        } catch (error: Exception) {
+                            return
+                        }
+                    }
+                }
+
+                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list_default_token)))
+                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list_own_token)))
+                context.defaultSharedPreferences.edit()
+                    .putInt(context.getString(
+                        R.string.pref_data_structure_version), DefaultValue.DATA_STRUCTURE_LATEST_VERSION
+                    )
+                    .apply()
+            }
 
             val file = getStyleIndexListFile(context)
             var mapStyleIndexList: Array<MapStyleIndex> = arrayOf()
@@ -98,9 +131,10 @@ class DataKit {
         }
 
         fun deleteStylePreviewImage(context: Context, style: MapStyleIndex) {
-            if (style.imagePath == null) return
+            //if (style.imagePath == null) return
+            if (style.imagePath.isEmpty()) return
             val file = File(context.filesDir, style.imagePath)
-            style.imagePath = null
+            style.imagePath = ""
             file.delete()
         }
 

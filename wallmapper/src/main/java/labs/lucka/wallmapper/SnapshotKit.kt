@@ -3,7 +3,6 @@ package labs.lucka.wallmapper
 import android.content.Context
 import android.graphics.Bitmap
 import com.google.gson.JsonParser
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.snapshotter.MapSnapshot
 import com.mapbox.mapboxsdk.snapshotter.MapSnapshotter
 import org.jetbrains.anko.defaultSharedPreferences
@@ -16,67 +15,49 @@ class SnapshotKit(private val context: Context) {
         context,  MapSnapshotter.Options(100, 100).withLogo(false).withPixelRatio(pixelRatio)
     )
 
-    private fun takeSnapshot(
-        width: Int, height: Int, setCallback: () -> Unit,
-        onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
-    ) {
-        snapshotter.setSize((width / pixelRatio).toInt(), (height / pixelRatio).toInt())
-        setCallback()
-        snapshotter.start(
-            { mapSnapshot: MapSnapshot ->
-                onSnapshotReady(mapSnapshot.bitmap)
-            }, { error: String? ->
-                onError(error)
-            }
-        )
-    }
-
-    fun takeSnapshotJson(
-        width: Int, height: Int, styleJson: String, region: LatLngBounds,
+    fun takeSnapshot(
+        width: Int, height: Int, styleIndex: MapStyleIndex, cameraPosition: CameraPosition,
         onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
     ) {
         takeSnapshot(
-            width, height, {
-                snapshotter.setRegion(region)
-                snapshotter.setStyleJson(handleLabels(context, styleJson))
+            width, height, cameraPosition, {
+
+                when (styleIndex.type) {
+
+                    MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
+                        snapshotter.setStyleJson(SnapshotKit.handleLabels(
+                            context, DataKit.loadStyleJson(context, styleIndex.path)
+                        ))
+                    }
+
+                    else -> {
+                        snapshotter.setStyleUrl(styleIndex.path)
+                    }
+
+                }
             }, onSnapshotReady, onError
         )
     }
 
-    fun takeSnapshotJson(
+    fun takeSnapshot(
         width: Int, height: Int, styleJson: String, cameraPosition: CameraPosition,
         onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
     ) {
         takeSnapshot(
-            width, height, {
-                snapshotter.setCameraPosition(cameraPosition)
-                snapshotter.setStyleJson(handleLabels(context, styleJson))
+            width, height, cameraPosition, {
+                snapshotter.setStyleJson(styleJson)
             }, onSnapshotReady, onError
         )
     }
 
-    fun takeSnapshotUrl(
-        width: Int, height: Int, styleUrl: String, region: LatLngBounds,
-        onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
+    private fun takeSnapshot(
+        width: Int, height: Int, cameraPosition: CameraPosition,
+        setStyleCallback: () -> Unit, onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
     ) {
-        takeSnapshot(
-            width, height, {
-                snapshotter.setRegion(region)
-                snapshotter.setStyleUrl(styleUrl)
-            }, onSnapshotReady, onError
-        )
-    }
-
-    fun takeSnapshotUrl(
-        width: Int, height: Int, styleUrl: String, cameraPosition: CameraPosition,
-        onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
-    ) {
-        takeSnapshot(
-            width, height, {
-                snapshotter.setCameraPosition(cameraPosition)
-                snapshotter.setStyleUrl(styleUrl)
-            }, onSnapshotReady, onError
-        )
+        snapshotter.setSize((width / pixelRatio).toInt(), (height / pixelRatio).toInt())
+        snapshotter.setCameraPosition(cameraPosition)
+        setStyleCallback()
+        snapshotter.start({ mapSnapshot: MapSnapshot -> onSnapshotReady(mapSnapshot.bitmap) }, onError)
     }
 
     fun onPause() {

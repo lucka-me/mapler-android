@@ -41,22 +41,22 @@ class PreferenceMainActivity : AppCompatActivity() {
             // Set input type
             val prefLiveRandomInterval =
                 findPreference<EditTextPreference>(getString(R.string.pref_live_wallpaper_random_style_interval))
-            prefLiveRandomInterval.setOnBindEditTextListener { editText ->
+            prefLiveRandomInterval?.setOnBindEditTextListener { editText ->
                 editText.inputType = InputType.TYPE_CLASS_NUMBER
             }
-            prefLiveRandomInterval.summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
+            prefLiveRandomInterval?.summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
                 String.format(getString(R.string.pref_live_wallpaper_random_style_interval_summary), preference.text)
             }
             val prefLiveRadius = findPreference<EditTextPreference>(getString(R.string.pref_live_wallpaper_radius))
-            prefLiveRadius.setOnBindEditTextListener { editText ->
+            prefLiveRadius?.setOnBindEditTextListener { editText ->
                 editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             }
-            prefLiveRadius.summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
+            prefLiveRadius?.summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
                 String.format(getString(R.string.pref_live_wallpaper_radius_summary), preference.text)
             }
 
             findPreference<Preference>(getString(R.string.pref_live_wallpaper_set))
-                .onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 startActivity(
                     Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER)
                         .putExtra(
@@ -68,7 +68,7 @@ class PreferenceMainActivity : AppCompatActivity() {
             }
 
             findPreference<SwitchPreference>(getString(R.string.pref_live_wallpaper_follow_location))
-                .onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                ?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     if (
                         ContextCompat.checkSelfPermission(

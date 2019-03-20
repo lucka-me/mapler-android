@@ -29,7 +29,7 @@
                 android:name=".MapStyleManagerActivity"
                 android:theme="@style/AppTheme"
                 android:parentActivityName=".MainActivity"
-                android:label="@string/label_style_manager" />
+                android:label="@string/label_style_manager"/>
 
         <activity
                 android:name=".PreferenceMainActivity"

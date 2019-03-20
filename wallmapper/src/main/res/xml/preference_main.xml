@@ -109,6 +109,7 @@
                 android:max="16"
                 app:seekBarIncrement="1"
                 android:defaultValue="15"
+                app:showSeekBarValue="true"
                 app:iconSpaceReserved="false" />
 
         <SeekBarPreference
@@ -119,6 +120,7 @@
                 android:max="60"
                 app:seekBarIncrement="1"
                 android:defaultValue="0"
+                app:showSeekBarValue="true"
                 app:iconSpaceReserved="false" />
 
         <SeekBarPreference
@@ -129,6 +131,7 @@
                 android:max="359"
                 app:seekBarIncrement="1"
                 android:defaultValue="0"
+                app:showSeekBarValue="true"
                 app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
