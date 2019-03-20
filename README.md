@@ -1,7 +1,7 @@
 <h1 align=center><img src="./Resource/Banner.svg"></img></h1>
 
 <p align=center>
-  <a href="./CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-0.1.5-yellow.svg"/></a>
+  <a href="./CHANGELOG.md"><img alt="Version" src="https://img.shields.io/badge/version-0.1.6-yellow.svg"/></a>
   <a href="https://lucka.moe"><img alt="Author" src="https://img.shields.io/badge/author-Lucka-2578B5.svg"/></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MPL_2.0-000000.svg"/></a><br>
   <a href="https://www.android.com/versions/marshmallow-6-0/"><img alt="Minmum SDK 23" src="https://img.shields.io/badge/min_SDK-23-78C257.svg"/></a>
@@ -18,11 +18,14 @@ Under development<br/>
 ## Functions
 - Generate wallpaper-size images from map with different styles
 - Add new map style from URL or JSON file
-- Live wallpaper of map, following the device's location
+- Customizable live wallpaper of map:
+  - Follow location of the device
+  - Camera position
+  - Change style randomly
 
 ## Build
 Before building, please open the `res/values/strings.xml`, uncomment the `mapbox_default_access_token` and replace the string with your own Mapbox Token.  
-And in `res/values/arrays_default_style.xml`, all styles whose URL begin with `mapbox://styles/lucka-me/` should be removed (they are bound with my token), you can add your own styles from your Mapbox Studio.
+And in `res/values/arrays_default_style.xml`, all styles whose URL begin with `mapbox://styles/lucka-me/` should be removed (they are bound with my token), you can add URLs of your own styles in your Mapbox Studio.
 
 ## Changelog
 See [CHANGELOG.md](./CHANGELOG.md).
