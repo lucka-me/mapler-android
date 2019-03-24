@@ -134,6 +134,13 @@
                 app:showSeekBarValue="true"
                 app:iconSpaceReserved="false" />
 
+        <Preference
+            android:key="@string/pref_live_wallpaper_reset_camera"
+            android:title="@string/pref_live_wallpaper_reset_camera_title"
+            android:summary="@string/pref_live_wallpaper_reset_camera_summary"
+            android:dependency="@string/pref_live_wallpaper_designate_camera"
+            app:iconSpaceReserved="false" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

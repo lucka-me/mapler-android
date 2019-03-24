@@ -13,10 +13,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import org.jetbrains.anko.defaultSharedPreferences
 
 class PreferenceMainActivity : AppCompatActivity() {
@@ -101,6 +98,33 @@ class PreferenceMainActivity : AppCompatActivity() {
                 } else {
                     true
                 }
+            }
+
+            findPreference<Preference>(getString(R.string.pref_live_wallpaper_reset_camera))
+                ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                val sharedPreferences =  thisActivity.defaultSharedPreferences
+                val zoom =
+                    sharedPreferences.getFloat(
+                        getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat()
+                    ).toInt()
+                val tilt =
+                    sharedPreferences.getFloat(
+                        getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat()
+                    ).toInt()
+                val bearing =
+                    sharedPreferences.getFloat(
+                        getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat()
+                    ).toInt()
+                sharedPreferences.edit()
+                    .putInt(getString(R.string.pref_live_wallpaper_zoom), zoom)
+                    .putInt(getString(R.string.pref_live_wallpaper_tilt), tilt)
+                    .putInt(getString(R.string.pref_live_wallpaper_bearing), bearing)
+                    .apply()
+                // Refresh the preferences
+                findPreference<SeekBarPreference>(getString(R.string.pref_live_wallpaper_zoom))?.value = zoom
+                findPreference<SeekBarPreference>(getString(R.string.pref_live_wallpaper_tilt))?.value = tilt
+                findPreference<SeekBarPreference>(getString(R.string.pref_live_wallpaper_bearing))?.value = bearing
+                true
             }
         }
 

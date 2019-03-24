@@ -53,7 +53,7 @@
     <string name="pref_live_wallpaper_provider_summary">Choose which provider will the live wallpaper get location from</string>
     <string name="pref_live_wallpaper_designate_camera" translatable="false">pref_live_wallpaper_designate_camera</string>
     <string name="pref_live_wallpaper_designate_camera_title">Designate Camera Position</string>
-    <string name="pref_live_wallpaper_designate_camera_summary_on">Set the camera position below</string>
+    <string name="pref_live_wallpaper_designate_camera_summary_on">Set the camera parameters below</string>
     <string name="pref_live_wallpaper_designate_camera_summary_off">The camera position will be the same as the main map</string>
     <string name="pref_live_wallpaper_zoom" translatable="false">pref_live_wallpaper_zoom</string>
     <string name="pref_live_wallpaper_zoom_title">Zoom level</string>
@@ -61,4 +61,7 @@
     <string name="pref_live_wallpaper_bearing_title">Bearing</string>
     <string name="pref_live_wallpaper_tilt" translatable="false">pref_live_wallpaper_tilt</string>
     <string name="pref_live_wallpaper_tilt_title">Tilt</string>
+    <string name="pref_live_wallpaper_reset_camera" translatable="false">pref_live_wallpaper_reset_camera</string>
+    <string name="pref_live_wallpaper_reset_camera_title">Reset Camera</string>
+    <string name="pref_live_wallpaper_reset_camera_summary">Reset camera parameters from the main map</string>
 </resources>

@@ -3,6 +3,24 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.6] - 2019-03-24
+- 0.1.5(539) -> 0.1.6(582)
+- New feature: Avaliable for Random switch
+
+### Added
+- A switch in Style Information dialog to set if the style is available
+  for random style
+- A preference to reset designated camere from the main map
+
+### Changed
+- Minor text changed
+
+### Fixed
+- Live wallpaper will be refreshed to the selected style even if the
+  Random Style is on
+```
+
+```markdown
 ## [0.1.5] - 2019-03-16
 - 0.1.4(523) -> 0.1.5(539)
 - UI improved

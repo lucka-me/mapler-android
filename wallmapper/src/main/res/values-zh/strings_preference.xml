@@ -31,9 +31,11 @@
     <string name="pref_live_wallpaper_provider_title">定位方式</string>
     <string name="pref_live_wallpaper_provider_summary">选择动态壁纸的定位方式</string>
     <string name="pref_live_wallpaper_designate_camera_title">指定地图视角</string>
-    <string name="pref_live_wallpaper_designate_camera_summary_on">在下方设置地图视角</string>
+    <string name="pref_live_wallpaper_designate_camera_summary_on">在下方设置地图视角参数</string>
     <string name="pref_live_wallpaper_designate_camera_summary_off">地图视角将与主页面地图一致</string>
     <string name="pref_live_wallpaper_zoom_title">缩放等级</string>
     <string name="pref_live_wallpaper_bearing_title">方位角</string>
     <string name="pref_live_wallpaper_tilt_title">倾斜角</string>
+    <string name="pref_live_wallpaper_reset_camera_title">重置视角</string>
+    <string name="pref_live_wallpaper_reset_camera_summary">将参数重置为主视图地图视角</string>
 </resources>
