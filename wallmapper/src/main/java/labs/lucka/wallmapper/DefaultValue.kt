@@ -38,10 +38,13 @@ class DefaultValue {
         OpenJsonFile(3001)
     }
 
-    companion object {
-        const val DATA_VERSION: Int = 1
-        const val DATA_STRUCTURE_VERSION: Int = 0
-        const val DATA_STRUCTURE_LATEST_VERSION: Int = 3
+    class Data {
+        companion object {
+            const val VERSION: Int = 1
+            const val STRUCTURE_VERSION_DEFAULT: Int = 0
+            const val STRUCTURE_VERSION_3: Int = 3
+            const val STRUCTURE_VERSION_LATEST: Int = 4
+        }
     }
 
 }

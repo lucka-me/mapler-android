@@ -127,14 +127,6 @@ class MainActivity : AppCompatActivity() {
                 deactivateButtons()
                 MapKit.setToken(this)
                 mapKit.setStyle { activateButtons() }
-            } else if (
-                data.getBooleanExtra(getString(R.string.activity_result_should_reset_style), false)
-            ) {
-                deactivateButtons()
-                mapKit.setStyle {
-                    fabSnapshot.show()
-                    activateButtons()
-                }
             }
         }
     }

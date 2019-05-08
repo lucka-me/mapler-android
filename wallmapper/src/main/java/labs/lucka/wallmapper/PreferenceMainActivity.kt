@@ -13,6 +13,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.preference.*
 import org.jetbrains.anko.defaultSharedPreferences
 
@@ -30,9 +31,9 @@ class PreferenceMainActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
             ) {
-                requireContext().defaultSharedPreferences.edit()
-                    .putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
-                    .apply()
+                requireContext().defaultSharedPreferences.edit {
+                    putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+                }
             }
 
             // Set input type
@@ -115,11 +116,11 @@ class PreferenceMainActivity : AppCompatActivity() {
                     sharedPreferences.getFloat(
                         getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat()
                     ).toInt()
-                sharedPreferences.edit()
-                    .putInt(getString(R.string.pref_live_wallpaper_zoom), zoom)
-                    .putInt(getString(R.string.pref_live_wallpaper_tilt), tilt)
-                    .putInt(getString(R.string.pref_live_wallpaper_bearing), bearing)
-                    .apply()
+                sharedPreferences.edit {
+                    putInt(getString(R.string.pref_live_wallpaper_zoom), zoom)
+                    putInt(getString(R.string.pref_live_wallpaper_tilt), tilt)
+                    putInt(getString(R.string.pref_live_wallpaper_bearing), bearing)
+                }
                 // Refresh the preferences
                 findPreference<SeekBarPreference>(getString(R.string.pref_live_wallpaper_zoom))?.value = zoom
                 findPreference<SeekBarPreference>(getString(R.string.pref_live_wallpaper_tilt))?.value = tilt
@@ -204,9 +205,9 @@ class PreferenceMainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             DefaultValue.Request.RequestPermissionFineLocation.code -> {
-                defaultSharedPreferences.edit()
-                    .putBoolean(getString(R.string.pref_live_wallpaper_follow_location), true)
-                    .apply()
+                defaultSharedPreferences.edit {
+                    putBoolean(getString(R.string.pref_live_wallpaper_follow_location), true)
+                }
             }
         }
     }

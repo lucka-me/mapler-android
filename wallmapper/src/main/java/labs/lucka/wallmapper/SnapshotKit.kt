@@ -22,19 +22,12 @@ class SnapshotKit(private val context: Context) {
         takeSnapshot(
             width, height, cameraPosition, {
 
-                when (styleIndex.type) {
-
-                    MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
-                        snapshotter.setStyleJson(SnapshotKit.handleLabels(
-                            context, DataKit.loadStyleJson(context, styleIndex.path)
-                        ))
-                    }
-
-                    else -> {
-                        snapshotter.setStyleUrl(styleIndex.path)
-                    }
-
+                if (styleIndex.isLocal) {
+                    snapshotter.setStyleJson(handleLabels(context, DataKit.loadStyleJson(context, styleIndex)))
+                } else {
+                    snapshotter.setStyleUrl(styleIndex.url)
                 }
+
             }, onSnapshotReady, onError
         )
     }

@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -183,9 +184,9 @@ class WallmapperLiveService : WallpaperService() {
                     locationListener
                 )
             } else {
-                defaultSharedPreferences.edit()
-                    .putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
-                    .apply()
+                defaultSharedPreferences.edit {
+                    putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+                }
                 followLocation = false
                 refresh()
             }
@@ -279,14 +280,12 @@ class WallmapperLiveService : WallpaperService() {
             styleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
         }
 
-        private fun getProvider(): String {
-            val providerValue = defaultSharedPreferences
-                .getString(getString(R.string.pref_live_wallpaper_provider), "1")?.toIntOrNull()
-            return when(providerValue) {
+        private fun getProvider(): String =
+            when (defaultSharedPreferences
+                .getString(getString(R.string.pref_live_wallpaper_provider), "1")?.toIntOrNull()) {
                 0 -> LocationManager.GPS_PROVIDER
                 else -> LocationManager.NETWORK_PROVIDER
             }
-        }
     }
 
     override fun onCreateEngine(): Engine { return WallmapperLiveEngine() }

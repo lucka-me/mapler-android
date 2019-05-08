@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_map_style_manager.*
 import org.jetbrains.anko.defaultSharedPreferences
@@ -19,13 +20,12 @@ class MapStyleManagerActivity: AppCompatActivity() {
     private val recyclerViewAdapterListener: MapStyleManagerRecyclerViewAdapter.Listener =
         object : MapStyleManagerRecyclerViewAdapter.Listener {
 
-            override fun onSelectedIndexChanged(position: Int) {
-                lastSelectedIndex = position
+            override fun onSelectedStyleIndexChanged(newStyleIndex: MapStyleIndex) {
+                lastSelectedId = newStyleIndex.id
             }
 
-            override fun onSwipeToDelete(position: Int) {
+            override fun onSwipeToDelete(target: MapStyleIndex, position: Int) {
 
-                val target = mapStyleIndexList[position]
                 if (target.type == MapStyleIndex.StyleType.MAPBOX || target.type == MapStyleIndex.StyleType.LUCKA) {
                     DialogKit.showSimpleAlert(
                         this@MapStyleManagerActivity, R.string.dialog_content_delete_default_style
@@ -42,20 +42,20 @@ class MapStyleManagerActivity: AppCompatActivity() {
                     ),
                     positiveButtonListener = { _, _ ->
 
-                        DataKit.deleteStylePreviewImage(this@MapStyleManagerActivity, target)
-                        DataKit.deleteStyleJson(this@MapStyleManagerActivity, target.path)
+                        DataKit.deleteStyleFiles(this@MapStyleManagerActivity, target)
                         mapStyleIndexList.removeAt(position)
                         recyclerViewAdapter.notifyItemRemoved(position)
 
-                        var selectedIndex = defaultSharedPreferences.getInt(
-                            getString(R.string.pref_style_manager_selected_index), 0
-                        )
-                        if (selectedIndex >= position) {
-                            selectedIndex--
-                            defaultSharedPreferences.edit()
-                                .putInt(getString(R.string.pref_style_manager_selected_index), selectedIndex)
-                                .apply()
-                            recyclerViewAdapter.updateSelectedIndex()
+                        if (lastSelectedId == target.id) {
+                            var newSelectedPosition = position
+                            lastSelectedId = if (position == mapStyleIndexList.size) {
+                                newSelectedPosition--
+                                mapStyleIndexList.last().id
+                            } else {
+                                mapStyleIndexList[position].id
+                            }
+                            recyclerViewAdapter.notifyItemRemoved(position)
+                            recyclerViewAdapter.notifyNewSelectedPosition(newSelectedPosition)
 
                         }
                     },
@@ -70,10 +70,9 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
             }
 
-            override fun onSwipeToInfo(position: Int) {
+            override fun onSwipeToInfo(target: MapStyleIndex, position: Int) {
 
                 snapshotKit.refresh()
-                val target = mapStyleIndexList[position]
                 DialogKit.showStyleInformationDialog(
                     this@MapStyleManagerActivity, target,
                     {
@@ -97,8 +96,8 @@ class MapStyleManagerActivity: AppCompatActivity() {
         }
     private lateinit var snapshotKit: SnapshotKit
     private var resultIntent: Intent = Intent()
-    private var initSelectedIndex: Int = 0
-    private var lastSelectedIndex: Int = 0
+    private var initSelectedId: Int = 0
+    private var lastSelectedId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +105,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
 
         snapshotKit = SnapshotKit(this)
 
-        MapKit.checkAndUpdateStyleList(this)
+        MapKit.checkAndUpdateStyleIndexList(this)
         mapStyleIndexList = DataKit.loadStyleIndexList(this)
         recyclerViewAdapter =
                 MapStyleManagerRecyclerViewAdapter(this, mapStyleIndexList, recyclerViewAdapterListener)
@@ -114,14 +113,15 @@ class MapStyleManagerActivity: AppCompatActivity() {
         recyclerViewMapStyleList.adapter = recyclerViewAdapter
         recyclerViewAdapter.attachItemTouchHelperTo(recyclerViewMapStyleList)
 
-        initSelectedIndex = defaultSharedPreferences.getInt(getString(R.string.pref_style_manager_selected_index), 0)
-        lastSelectedIndex = initSelectedIndex
+        initSelectedId =
+            defaultSharedPreferences.getInt(getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id)
+        lastSelectedId = initSelectedId
     }
 
     override fun onResume() {
         super.onResume()
         resultIntent = Intent()
-        recyclerViewAdapter.updateSelectedIndex()
+        recyclerViewAdapter.refreshSelectedPositionFromPreferences()
     }
 
     override fun onPause() {
@@ -131,9 +131,10 @@ class MapStyleManagerActivity: AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (lastSelectedIndex != initSelectedIndex) {
-            defaultSharedPreferences
-                .edit().putInt(getString(R.string.pref_style_manager_selected_index), lastSelectedIndex).apply()
+        if (lastSelectedId != initSelectedId) {
+            defaultSharedPreferences.edit {
+                putInt(getString(R.string.pref_style_manager_selected_id), lastSelectedId)
+            }
             //resultIntent.putExtra(getString(R.string.activity_result_should_reset_style), true)
             //setResult(Activity.RESULT_OK, resultIntent)
         }
@@ -207,10 +208,9 @@ class MapStyleManagerActivity: AppCompatActivity() {
                         resultIntent.putExtra(getString(R.string.activity_result_should_reset_token), true)
                         MapKit.setToken(this)
                         setResult(Activity.RESULT_OK, resultIntent)
-                        MapKit.checkAndUpdateStyleList(this)
                         mapStyleIndexList.clear()
                         mapStyleIndexList.addAll(DataKit.loadStyleIndexList(this))
-                        recyclerViewAdapter.updateSelectedIndex()
+                        recyclerViewAdapter.refreshSelectedPositionFromPreferences()
                         recyclerViewAdapter.notifyDataSetChanged()
                         invalidateOptionsMenu()
                     }
@@ -229,7 +229,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                     DialogKit.showAddNewStyleFromJsonDialog(this) { newStyleIndex ->
                         mapStyleIndexList.add(newStyleIndex)
                         recyclerViewAdapter.notifyItemInserted(mapStyleIndexList.size - 1)
-                        DataKit.saveStyleJson(this, json, newStyleIndex.path)
+                        DataKit.saveStyleJson(this, json, newStyleIndex)
                     }
                 }
             }

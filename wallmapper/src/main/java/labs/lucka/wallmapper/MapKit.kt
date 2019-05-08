@@ -3,6 +3,7 @@ package labs.lucka.wallmapper
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
+import androidx.core.content.edit
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -21,7 +22,7 @@ class MapKit(private val context: Context) {
     private lateinit var map: MapboxMap
     private var mapInitialized: Boolean = false
     private val preInitializationTaskList: ArrayList<() -> Unit> = arrayListOf()
-    private var selectedStyleIndex: MapStyleIndex = MapStyleIndex("", "", "")
+    private var selectedStyleIndex: MapStyleIndex = MapStyleIndex(-1, "", "", fileId = "")
     private val snapshotKit: SnapshotKit
     var snapshot: Bitmap? = null
 
@@ -71,22 +72,17 @@ class MapKit(private val context: Context) {
             preInitializationTaskList.add { setStyle(callback) }
             return
         }
-        val newSelectedStyleIndex: MapStyleIndex = getSelectedStyleIndex(context)
+        val newSelectedStyleIndex = getSelectedStyleIndex(context)
         if (newSelectedStyleIndex == selectedStyleIndex) {
             callback()
             return
         }
         selectedStyleIndex = newSelectedStyleIndex
         val styleBuilder: Style.Builder =
-            when (selectedStyleIndex.type) {
-
-                MapStyleIndex.StyleType.LOCAL, MapStyleIndex.StyleType.CUSTOMIZED -> {
-                    Style.Builder().fromJson(DataKit.loadStyleJson(context, selectedStyleIndex.path))
-                }
-
-                else -> {
-                    Style.Builder().fromUrl(selectedStyleIndex.path)
-                }
+            if (selectedStyleIndex.isLocal) {
+                Style.Builder().fromJson(DataKit.loadStyleJson(context, selectedStyleIndex))
+            } else {
+                Style.Builder().fromUrl(selectedStyleIndex.url)
             }
         map.setStyle(styleBuilder) { style ->
             handleLabels(context, style)
@@ -124,13 +120,17 @@ class MapKit(private val context: Context) {
     fun onPause() {
         if (mapInitialized) {
             val position = map.cameraPosition
-            context.defaultSharedPreferences.edit()
-                .putFloat(context.getString(R.string.pref_map_last_position_latitude), position.target.latitude.toFloat())
-                .putFloat(context.getString(R.string.pref_map_last_position_longitude), position.target.longitude.toFloat())
-                .putFloat(context.getString(R.string.pref_map_last_position_zoom), position.zoom.toFloat())
-                .putFloat(context.getString(R.string.pref_map_last_position_tilt), position.tilt.toFloat())
-                .putFloat(context.getString(R.string.pref_map_last_position_bearing), position.bearing.toFloat())
-                .apply()
+            context.defaultSharedPreferences.edit {
+                putFloat(
+                    context.getString(R.string.pref_map_last_position_latitude), position.target.latitude.toFloat()
+                )
+                putFloat(
+                    context.getString(R.string.pref_map_last_position_longitude), position.target.longitude.toFloat()
+                )
+                putFloat(context.getString(R.string.pref_map_last_position_zoom), position.zoom.toFloat())
+                putFloat(context.getString(R.string.pref_map_last_position_tilt), position.tilt.toFloat())
+                putFloat(context.getString(R.string.pref_map_last_position_bearing), position.bearing.toFloat())
+            }
         }
         mapView.onPause()
         snapshotKit.onPause()
@@ -161,73 +161,77 @@ class MapKit(private val context: Context) {
             Mapbox.setAccessToken(getToken(context))
         }
 
-        private fun initializeStyleList(context: Context, list: ArrayList<MapStyleIndex>) {
-            list.clear()
-            val mapboxStyleNameList = context.resources.getStringArray(R.array.style_mapbox_name)
-            list.add(MapStyleIndex(
-                mapboxStyleNameList[0],
-                context.getString(R.string.map_style_default_author),
-                Style.MAPBOX_STREETS, MapStyleIndex.StyleType.MAPBOX
-            ))
-            list.add(MapStyleIndex(
-                mapboxStyleNameList[1],
-                context.getString(R.string.map_style_default_author),
-                Style.LIGHT, MapStyleIndex.StyleType.MAPBOX
-            ))
-            list.add(MapStyleIndex(
-                mapboxStyleNameList[2],
-                context.getString(R.string.map_style_default_author),
-                Style.DARK, MapStyleIndex.StyleType.MAPBOX
-            ))
-            list.add(MapStyleIndex(
-                mapboxStyleNameList[3],
-                context.getString(R.string.map_style_default_author),
-                Style.OUTDOORS, MapStyleIndex.StyleType.MAPBOX
-            ))
-            list.add(MapStyleIndex(
-                mapboxStyleNameList[4],
-                context.getString(R.string.map_style_default_author),
-                Style.SATELLITE, MapStyleIndex.StyleType.MAPBOX
-            ))
-            list.add(MapStyleIndex(
-                mapboxStyleNameList[5],
-                context.getString(R.string.map_style_default_author),
-                Style.SATELLITE_STREETS, MapStyleIndex.StyleType.MAPBOX
-            ))
-            if (context.defaultSharedPreferences.getBoolean(
-                    context.getString(R.string.pref_mapbox_use_default_token), true
-                )) {
-                val luckaStyleNameList = context.resources.getStringArray(R.array.style_lucka_name)
-                val luckaStyleAuthorList = context.resources.getStringArray(R.array.style_lucka_author)
-                val luckaStyleUrlList = context.resources.getStringArray(R.array.style_lucka_url)
-                val count = luckaStyleNameList.size
-                for (i in 0 until count) {
-                    list.add(MapStyleIndex(
-                        luckaStyleNameList[i], luckaStyleAuthorList[i], luckaStyleUrlList[i],
-                        MapStyleIndex.StyleType.LUCKA
-                    ))
-                }
+        fun useDefaultToken(context: Context) =
+            context.defaultSharedPreferences
+                .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
+
+        private fun getLuckaStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
+            val list = arrayListOf<MapStyleIndex>()
+            val luckaStyleNameList = context.resources.getStringArray(R.array.style_lucka_name)
+            val luckaStyleAuthorList = context.resources.getStringArray(R.array.style_lucka_author)
+            val luckaStyleUrlList = context.resources.getStringArray(R.array.style_lucka_url)
+            val count = luckaStyleNameList.size
+            for (i in 0 until count) {
+                list.add(
+                    MapStyleIndex(
+                        id = MapStyleIndex.generateNewId(context),
+                        name = luckaStyleNameList[i], author = luckaStyleAuthorList[i],
+                        type = MapStyleIndex.StyleType.LUCKA, url = luckaStyleUrlList[i]
+                    )
+                )
             }
+            return list
+        }
+
+        private fun initializeStyleIndexList(context: Context, list: ArrayList<MapStyleIndex>) {
+            list.clear()
+            MapStyleIndex.clearIdToZero(context)
+            val mapboxStyleNameList = context.resources.getStringArray(R.array.style_mapbox_name)
+            val authorMapbox = context.getString(R.string.map_style_default_author)
+            list.add(MapStyleIndex(
+                id = MapStyleIndex.generateNewId(context),
+                name = mapboxStyleNameList[0], author = authorMapbox,
+                type = MapStyleIndex.StyleType.MAPBOX, url = Style.MAPBOX_STREETS
+            ))
+            list.add(MapStyleIndex(
+                id = MapStyleIndex.generateNewId(context),
+                name = mapboxStyleNameList[1], author = authorMapbox,
+                type = MapStyleIndex.StyleType.MAPBOX, url = Style.LIGHT
+            ))
+            list.add(MapStyleIndex(
+                id = MapStyleIndex.generateNewId(context),
+                name = mapboxStyleNameList[2], author = authorMapbox,
+                type = MapStyleIndex.StyleType.MAPBOX, url = Style.DARK
+            ))
+            list.add(MapStyleIndex(
+                id = MapStyleIndex.generateNewId(context),
+                name = mapboxStyleNameList[3], author = authorMapbox,
+                type = MapStyleIndex.StyleType.MAPBOX, url = Style.OUTDOORS
+            ))
+            list.add(MapStyleIndex(
+                id = MapStyleIndex.generateNewId(context),
+                name = mapboxStyleNameList[4], author = authorMapbox,
+                type = MapStyleIndex.StyleType.MAPBOX, url = Style.SATELLITE
+            ))
+            list.add(MapStyleIndex(
+                id = MapStyleIndex.generateNewId(context),
+                name = mapboxStyleNameList[5], author = authorMapbox,
+                type = MapStyleIndex.StyleType.MAPBOX, url = Style.SATELLITE_STREETS
+            ))
+            list.addAll(getLuckaStyleIndexList(context))
             DataKit.saveStyleIndexList(context, list)
         }
 
-        fun checkAndUpdateStyleList(context: Context) {
-            val list = DataKit.loadStyleIndexList(context)
+        fun checkAndUpdateStyleIndexList(context: Context) {
+            val list = DataKit.loadFullStyleIndexList(context)
             if (list.size == 0) {
-                initializeStyleList(context, list)
+                initializeStyleIndexList(context, list)
                 return
             }
             if (
                 context.defaultSharedPreferences
-                    .getInt(context.getString(R.string.pref_data_version), DefaultValue.DATA_VERSION)
+                    .getInt(context.getString(R.string.pref_data_version), DefaultValue.Data.VERSION)
                 == DataKit.CURRENT_DATA_VERSION
-            ) return
-
-            // Update list when using default token
-            if (
-                !context.defaultSharedPreferences.getBoolean(
-                    context.getString(R.string.pref_mapbox_use_default_token), true
-                )
             ) return
 
             var startInsertPosition = list.size - 1
@@ -237,54 +241,58 @@ class MapKit(private val context: Context) {
                     startInsertPosition = i
                 }
             }
-            val luckaStyleNameList = context.resources.getStringArray(R.array.style_lucka_name)
-            val luckaStyleAuthorList = context.resources.getStringArray(R.array.style_lucka_author)
-            val luckaStyleUrlList = context.resources.getStringArray(R.array.style_lucka_url)
-            val count = luckaStyleNameList.size
-            for (i in 0 until count) {
-                list.add(startInsertPosition + i, MapStyleIndex(
-                    luckaStyleNameList[i], luckaStyleAuthorList[i], luckaStyleUrlList[i],
-                    MapStyleIndex.StyleType.LUCKA
-                ))
+            list.addAll(startInsertPosition, getLuckaStyleIndexList(context))
 
-            }
             DataKit.saveStyleIndexList(context, list)
-            context.defaultSharedPreferences.edit()
-                .putInt(context.getString(R.string.pref_data_version), DataKit.CURRENT_DATA_VERSION)
-                .apply()
+            context.defaultSharedPreferences.edit {
+                putInt(context.getString(R.string.pref_data_version), DataKit.CURRENT_DATA_VERSION)
+            }
         }
 
         fun getSelectedStyleIndex(context: Context): MapStyleIndex {
-            val selectedStyleIndex =
-                context.defaultSharedPreferences.getInt(
-                    context.getString(R.string.pref_style_manager_selected_index), 0
-                )
-            MapKit.checkAndUpdateStyleList(context)
+            checkAndUpdateStyleIndexList(context)
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
-            return mapStyleIndexList[if (selectedStyleIndex >= mapStyleIndexList.size) 0 else selectedStyleIndex]
+
+            val selectedStyleId =
+                context.defaultSharedPreferences.getInt(
+                    context.getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id
+                )
+            mapStyleIndexList.forEach {
+                if (it.id == selectedStyleId) return it
+            }
+            context.defaultSharedPreferences.edit {
+                putInt(context.getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id)
+            }
+            return mapStyleIndexList[0]
         }
 
         fun getRandomStyleIndex(context: Context): MapStyleIndex {
-            val selectedStyleIndex = context.defaultSharedPreferences.getInt(
-                context.getString(R.string.pref_style_manager_selected_index), 0
-            )
-            MapKit.checkAndUpdateStyleList(context)
+            checkAndUpdateStyleIndexList(context)
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
+            val selectedStyleId = context.defaultSharedPreferences.getInt(
+                context.getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id
+            )
             val onRandomIndexList = arrayListOf<Int>()
             for (i in 0 until mapStyleIndexList.size) {
-                if (mapStyleIndexList[i].inRandom && i != selectedStyleIndex) onRandomIndexList.add(i)
+                val style = mapStyleIndexList[i]
+                if (style.inRandom && style.id != selectedStyleId) onRandomIndexList.add(i)
             }
             if (onRandomIndexList.isEmpty()) {
                 return getSelectedStyleIndex(context)
             }
             if (onRandomIndexList.size == 1) {
-                return mapStyleIndexList[onRandomIndexList[0]]
+                val style = mapStyleIndexList[onRandomIndexList[0]]
+                context.defaultSharedPreferences.edit {
+                    putInt(context.getString(R.string.pref_style_manager_selected_id), style.id)
+                }
+                return style
             }
             val randomIndex = onRandomIndexList[Random(Date().time).nextInt(0, onRandomIndexList.size - 1)]
-            context.defaultSharedPreferences.edit()
-                .putInt(context.getString(R.string.pref_style_manager_selected_index), onRandomIndexList[randomIndex])
-                .apply()
-            return mapStyleIndexList[randomIndex]
+            val style = mapStyleIndexList[randomIndex]
+            context.defaultSharedPreferences.edit {
+                putInt(context.getString(R.string.pref_style_manager_selected_id), style.id)
+            }
+            return style
         }
 
         fun handleLabels(context: Context, style: Style) {

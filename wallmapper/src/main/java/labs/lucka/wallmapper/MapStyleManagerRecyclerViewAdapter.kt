@@ -19,9 +19,9 @@ class MapStyleManagerRecyclerViewAdapter(
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface Listener {
-        fun onSelectedIndexChanged(position: Int)
-        fun onSwipeToDelete(position: Int)
-        fun onSwipeToInfo(position: Int)
+        fun onSelectedStyleIndexChanged(newStyleIndex: MapStyleIndex)
+        fun onSwipeToDelete(target: MapStyleIndex, position: Int)
+        fun onSwipeToInfo(target: MapStyleIndex, position: Int)
     }
 
     private class ViewHolderStyleCard(
@@ -47,16 +47,16 @@ class MapStyleManagerRecyclerViewAdapter(
         }
     }
 
-    private var selectedIndex: Int = 0
+    private var selectedPosition: Int = 0
 
     private val onStyleSelected: (Int) -> Unit = { position: Int ->
 
-        if (selectedIndex != position) {
-            val oldIndex = selectedIndex
-            selectedIndex = position
-            adapterListener.onSelectedIndexChanged(selectedIndex)
-            notifyItemChanged(oldIndex)
-            notifyItemChanged(selectedIndex)
+        if (selectedPosition != position) {
+            val oldPosition = selectedPosition
+            selectedPosition = position
+            adapterListener.onSelectedStyleIndexChanged(mapStyleIndexList[position])
+            notifyItemChanged(oldPosition)
+            notifyItemChanged(selectedPosition)
         }
 
     }
@@ -80,12 +80,12 @@ class MapStyleManagerRecyclerViewAdapter(
                 when (direction) {
 
                     ItemTouchHelper.LEFT -> {
-                        adapterListener.onSwipeToDelete(position)
+                        adapterListener.onSwipeToDelete(mapStyleIndexList[position], position)
                     }
 
                     ItemTouchHelper.RIGHT -> {
                         notifyItemChanged(position)
-                        adapterListener.onSwipeToInfo(position)
+                        adapterListener.onSwipeToInfo(mapStyleIndexList[position], position)
                     }
 
                 }
@@ -124,7 +124,7 @@ class MapStyleManagerRecyclerViewAdapter(
     )
 
     init {
-        updateSelectedIndex()
+        refreshSelectedPositionFromPreferences()
     }
 
     override fun getItemCount(): Int {
@@ -138,25 +138,33 @@ class MapStyleManagerRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ViewHolderStyleCard) {
-            holder.setFrom(context, mapStyleIndexList[position], (selectedIndex == position))
+            holder.setFrom(context, mapStyleIndexList[position], (selectedPosition == position))
         }
     }
 
-    fun updateSelectedIndex() {
-        var newSelectedIndex = context.defaultSharedPreferences.getInt(
-            context.getString(R.string.pref_style_manager_selected_index), 0
+    fun refreshSelectedPositionFromPreferences() {
+        val selectedId = context.defaultSharedPreferences.getInt(
+            context.getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id
         )
-        if (newSelectedIndex == selectedIndex) return
-        if (newSelectedIndex >= mapStyleIndexList.size) {
-            newSelectedIndex = 0
-            context.defaultSharedPreferences.edit()
-                .putInt(context.getString(R.string.pref_style_manager_selected_index), newSelectedIndex)
-                .apply()
+        var newSelectedPosition = findPositionFrom(selectedId)
+        if (newSelectedPosition == selectedPosition) return
+        if (newSelectedPosition < 0) {
+            newSelectedPosition = 0
         }
-        notifyItemChanged(selectedIndex)
-        notifyItemChanged(newSelectedIndex)
-        selectedIndex = newSelectedIndex
-        adapterListener.onSelectedIndexChanged(selectedIndex)
+        notifyItemChanged(selectedPosition)
+        notifyItemChanged(newSelectedPosition)
+        selectedPosition = newSelectedPosition
+        adapterListener.onSelectedStyleIndexChanged(mapStyleIndexList[selectedPosition])
+    }
+
+    fun notifyNewSelectedPosition(position: Int) {
+        selectedPosition = position
+        notifyItemChanged(position)
+    }
+
+    private fun findPositionFrom(id: Int): Int {
+        for (i in 0 until mapStyleIndexList.size) if (mapStyleIndexList[i].id == id) return i
+        return -1
     }
 
     /**

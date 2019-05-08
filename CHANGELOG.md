@@ -3,6 +3,23 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.7] - To Be Released
+- 0.1.6(582) -> 0.1.7(607)
+- Data structure upgrated
+
+### Added
+- New data structure (v4) with id, fileId and so on, which is more flexible
+
+### Changed
+- Two json files merged to one
+- Methods updated
+- Implement with KTX more
+
+### Known Issues
+- Preview of styles added from JSON is incorrect
+```
+
+```markdown
 ## [0.1.6] - 2019-03-24
 - 0.1.5(539) -> 0.1.6(582)
 - New feature: Avaliable for Random switch

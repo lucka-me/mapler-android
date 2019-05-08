@@ -6,12 +6,16 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Base64
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import com.google.gson.Gson
 import org.jetbrains.anko.defaultSharedPreferences
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStreamReader
+import java.nio.ByteBuffer
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -33,68 +37,96 @@ class DataKit {
             return result
         }
 
-        private fun getStyleIndexListFile(context: Context): File {
-            return File(
-                context.filesDir,
-                context.getString(
-                    if (
-                        context.defaultSharedPreferences.getBoolean(
-                            context.getString(R.string.pref_mapbox_use_default_token), true
-                        )
-                    ) {
-                        R.string.file_style_index_list_default_token
-                    } else {
-                        R.string.file_style_index_list_own_token
-                    }
-                )
-            )
+        private fun getStyleIndexListFile(context: Context) =
+            File(context.filesDir, context.getString(R.string.file_style_index_list))
+
+        private fun renameFile(context: Context, oldFilename: String, newFilename: String) {
+            val oldFile = File(context.filesDir, oldFilename)
+            val newFile = File(context.filesDir, newFilename)
+            oldFile.renameTo(newFile)
         }
 
-        fun loadStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
-
-            if (
+        private fun upgradeDataStructure(context: Context) {
+            val currentVersion =
                 context.defaultSharedPreferences.getInt(
-                    context.getString(R.string.pref_data_structure_version), DefaultValue.DATA_STRUCTURE_VERSION
+                    context.getString(R.string.pref_data_structure_version), DefaultValue.Data.STRUCTURE_VERSION_DEFAULT
                 )
-                < DefaultValue.DATA_STRUCTURE_LATEST_VERSION
-            ) {
+            if (currentVersion == DefaultValue.Data.STRUCTURE_VERSION_LATEST) return
+
+            MapStyleIndex.clearIdToZero(context)
+
+            if (currentVersion <= DefaultValue.Data.STRUCTURE_VERSION_3) {
+
+                val mapStyleIndexList: ArrayList<MapStyleIndex> = arrayListOf()
 
                 val oldDataHandler = fun (file: File) {
                     if (file.exists()) {
                         try {
                             val mapStyleIndexCompatList =
-                                Gson().fromJson(file.readText(), Array<MapStyleIndex.Compat>::class.java)
-                            val mapStyleIndexList: ArrayList<MapStyleIndex> = arrayListOf()
+                                Gson().fromJson(file.readText(), Array<MapStyleIndex.CompatV3>::class.java)
                             mapStyleIndexCompatList.forEach { item ->
-                                mapStyleIndexList.add(item.toMapStyleIndex())
+                                val newStyle = item.toMapStyleIndex(context)
+                                val imagePath = item.imagePath
+                                if (!imagePath.isNullOrEmpty()) {
+                                    renameFile(
+                                        context, imagePath, newStyle.imagePath
+                                    )
+                                }
+                                if (newStyle.isLocal) {
+                                    renameFile(
+                                        context, item.path, newStyle.jsonPath
+                                    )
+                                }
+                                mapStyleIndexList.add(newStyle)
                             }
-                            file.writeText(Gson().toJson(mapStyleIndexList.toArray()))
                         } catch (error: Exception) {
                             return
                         }
                     }
                 }
 
-                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list_default_token)))
-                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list_own_token)))
-                context.defaultSharedPreferences.edit()
-                    .putInt(context.getString(
-                        R.string.pref_data_structure_version), DefaultValue.DATA_STRUCTURE_LATEST_VERSION
+                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list)))
+                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list_own_token_v3)))
+
+                saveStyleIndexList(context, mapStyleIndexList)
+
+                context.defaultSharedPreferences.edit {
+                    putInt(context.getString(
+                        R.string.pref_data_structure_version), DefaultValue.Data.STRUCTURE_VERSION_LATEST
                     )
-                    .apply()
+                }
+
+                return
             }
+        }
+
+        fun loadFullStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
+
+            upgradeDataStructure(context)
 
             val file = getStyleIndexListFile(context)
-            var mapStyleIndexList: Array<MapStyleIndex> = arrayOf()
+            var list: Array<MapStyleIndex> = arrayOf()
 
             if (file.exists()) {
                 try {
-                    mapStyleIndexList = Gson().fromJson(file.readText(), Array<MapStyleIndex>::class.java)
+                    list = Gson().fromJson(file.readText(), Array<MapStyleIndex>::class.java)
                 } catch (error: Exception) {
                     return arrayListOf()
                 }
             }
-            return mapStyleIndexList.toCollection(ArrayList())
+
+            return list.toCollection(ArrayList())
+        }
+
+        fun loadStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
+
+            val list = loadFullStyleIndexList(context)
+            if (MapKit.useDefaultToken(context)) {
+                list.removeAll { it.type == MapStyleIndex.StyleType.ONLINE }
+            } else {
+                list.removeAll { it.type == MapStyleIndex.StyleType.LUCKA }
+            }
+            return list
         }
 
         fun saveStyleIndexList(context: Context, list: ArrayList<MapStyleIndex>) {
@@ -108,8 +140,13 @@ class DataKit {
             }
         }
 
-        fun loadStylePreviewImage(context: Context, path: String): Bitmap? {
-            val file = File(context.filesDir, path)
+        fun deleteStyleFiles(context: Context, style: MapStyleIndex) {
+            deleteStylePreviewImage(context, style)
+            deleteStyleJson(context, style)
+        }
+
+        fun loadStylePreviewImage(context: Context, style: MapStyleIndex): Bitmap? {
+            val file = File(context.filesDir, style.imagePath)
             return if (file.exists()) {
                 BitmapFactory.decodeFile(file.absolutePath)
             } else {
@@ -118,37 +155,28 @@ class DataKit {
         }
 
         fun saveStylePreviewImage(context: Context, style: MapStyleIndex, image: Bitmap) {
-            style.imagePath =
-                if (style.type == MapStyleIndex.StyleType.LOCAL || style.type == MapStyleIndex.StyleType.CUSTOMIZED) {
-                    style.path
-                } else {
-                    UUID.randomUUID().toString()
-                } + ".png"
             val file = File(context.filesDir, style.imagePath)
             val fos = FileOutputStream(file)
             image.compress(Bitmap.CompressFormat.PNG, 100, fos)
             fos.close()
         }
 
-        fun deleteStylePreviewImage(context: Context, style: MapStyleIndex) {
-            //if (style.imagePath == null) return
-            if (style.imagePath.isEmpty()) return
+        private fun deleteStylePreviewImage(context: Context, style: MapStyleIndex) {
             val file = File(context.filesDir, style.imagePath)
-            style.imagePath = ""
-            file.delete()
+            if (file.exists()) file.delete()
         }
 
-        fun loadStyleJson(context: Context, path: String): String {
-            val file = File(context.filesDir, path)
+        fun loadStyleJson(context: Context, style: MapStyleIndex): String {
+            val file = File(context.filesDir, style.jsonPath)
             return if (file.exists()) file.readText() else ""
         }
 
-        fun saveStyleJson(context: Context, json: String, path: String) {
-            File(context.filesDir, path).writeText(json)
+        fun saveStyleJson(context: Context, json: String, style: MapStyleIndex) {
+            File(context.filesDir, style.jsonPath).writeText(json)
         }
 
-        fun deleteStyleJson(context: Context, path: String) {
-            val file = File(context.filesDir, path)
+        private fun deleteStyleJson(context: Context, style: MapStyleIndex) {
+            val file = File(context.filesDir, style.jsonPath)
             file.delete()
         }
 
@@ -162,7 +190,7 @@ class DataKit {
          *
          * @author lucka-me
          * @since 0.1
-         * @see <a href="https://stackoverflow.com/a/13338647/10276204">Convert file uri to content uri | Stack Overflow</a>
+         * @see <a href="https://stackoverflow.com/a/13338647">Convert file uri to content uri | Stack Overflow</a>
          */
         fun getImageContentUri(context: Context, imageFile: File): Uri? {
             val filePath = imageFile.absolutePath
@@ -174,11 +202,8 @@ class DataKit {
             )
 
             if (cursor != null && cursor.moveToFirst()) {
-                val id = cursor.getInt(
-                    cursor
-                        .getColumnIndex(MediaStore.MediaColumns._ID)
-                )
-                val baseUri = Uri.parse("content://media/external/images/media")
+                val id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
+                val baseUri = "content://media/external/images/media".toUri()
                 cursor.close()
                 return Uri.withAppendedPath(baseUri, "" + id)
             } else {
@@ -193,6 +218,24 @@ class DataKit {
                     null
                 }
             }
+        }
+
+        /**
+         * Get UUID encoded with Base64
+         *
+         * @return The UUID encoded with Base64
+         *
+         * @author lucka-me
+         * @since 0.1.7
+         * @see <a href="https://stackoverflow.com/a/15013205">Storing UUID as base64 String | Stack Overflow</a>
+         */
+        fun getUUID(): String {
+            val uuid = UUID.randomUUID()
+            val byteBuffer = ByteBuffer.wrap(ByteArray(16))
+            byteBuffer.putLong(uuid.mostSignificantBits)
+            byteBuffer.putLong(uuid.leastSignificantBits)
+            return Base64.encodeToString(byteBuffer.array(), Base64.DEFAULT)
+                .replace("=", "").replace("/", "-")
         }
 
     }

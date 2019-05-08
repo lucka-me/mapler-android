@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
+import androidx.core.content.edit
 import org.jetbrains.anko.defaultSharedPreferences
 import java.util.*
 
@@ -178,14 +179,13 @@ class DialogKit {
                 .setTitle(R.string.dialog_title_add_style_from_url)
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
-                    context.defaultSharedPreferences.edit()
-                        .putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
-                        .apply()
+                    context.defaultSharedPreferences.edit {
+                        putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
+                    }
                     onAddClick(MapStyleIndex(
-                        editTextName.text.toString(),
-                        editTextAuthor.text.toString(),
-                        UUID.randomUUID().toString(),
-                        MapStyleIndex.StyleType.LOCAL
+                        id = MapStyleIndex.generateNewId(context),
+                        name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
+                        type = MapStyleIndex.StyleType.LOCAL
                     ))
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -207,11 +207,13 @@ class DialogKit {
                 .setTitle(R.string.dialog_title_add_style_from_url)
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
-                    context.defaultSharedPreferences.edit()
-                        .putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
-                        .apply()
+                    context.defaultSharedPreferences.edit {
+                        putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
+                    }
                     onSaveClick(MapStyleIndex(
-                        editTextName.text.toString(), editTextAuthor.text.toString(), editTextUrl.text.toString()
+                        id = MapStyleIndex.generateNewId(context),
+                        name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
+                        url = editTextUrl.text.toString()
                     ))
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -254,17 +256,7 @@ class DialogKit {
 
             textName.text = style.name
             textAuthor.text = String.format(context.getString(R.string.style_author), style.author)
-            imageType.setImageResource(
-                when (style.type) {
-
-                    MapStyleIndex.StyleType.MAPBOX, MapStyleIndex.StyleType.ONLINE, MapStyleIndex.StyleType.LUCKA -> {
-                        R.drawable.ic_online
-                    }
-
-                    else -> {
-                        R.drawable.ic_local
-                    }
-            })
+            imageType.setImageResource(if (style.isLocal) R.drawable.ic_local else R.drawable.ic_online)
 
             // Disable Edit button if it's default style
             when (style.type) {
@@ -277,12 +269,11 @@ class DialogKit {
                 }
 
             }
-            val imagePath = style.imagePath
-            //if (imagePath == null) {
-            if (imagePath.isEmpty()) {
+            val image = DataKit.loadStylePreviewImage(context, style)
+            if (image == null) {
                 onShouldLoadPreviewImage(imagePreview)
             } else {
-                imagePreview.setImageBitmap(DataKit.loadStylePreviewImage(context, imagePath))
+                imagePreview.setImageBitmap(image)
             }
 
             switchInRandom.isChecked = style.inRandom
@@ -299,12 +290,12 @@ class DialogKit {
                 .setTitle(R.string.dialog_title_edit_style)
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
-                    context.defaultSharedPreferences.edit()
-                        .putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
-                        .apply()
+                    context.defaultSharedPreferences.edit {
+                        putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
+                    }
                     style.name = editTextName.text.toString()
                     style.author = editTextAuthor.text.toString()
-                    if (style.type == MapStyleIndex.StyleType.ONLINE) style.path = editTextUrl.text.toString()
+                    if (style.type == MapStyleIndex.StyleType.ONLINE) style.url = editTextUrl.text.toString()
                     onSaveClick()
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -317,7 +308,7 @@ class DialogKit {
             when (style.type) {
 
                 MapStyleIndex.StyleType.ONLINE -> {
-                    editTextUrl.setText(style.path)
+                    editTextUrl.setText(style.url)
                     val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                     saveButton.isEnabled = false
                     editTextUrl.setOnFocusChangeListener { _, hasFocus ->

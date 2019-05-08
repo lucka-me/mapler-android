@@ -1,7 +1,7 @@
 <resources>
     <string name="application_name" translatable="false">Wallmapper</string>
-    <string name="file_style_index_list_default_token" translatable="false">styleIndexList.json</string>
-    <string name="file_style_index_list_own_token" translatable="false">styleIndexListOwnToken.json</string>
+    <string name="file_style_index_list" translatable="false">styleIndexList.json</string>
+    <string name="file_style_index_list_own_token_v3" translatable="false">styleIndexListOwnToken.json</string>
     <string name="path_save_folder" translatable="false">Wallmapper</string>
     <!--<string name="mapbox_default_access_token" translatable="false">YOUR_OWN_MAPBOX_TOKEN</string>-->
 
