@@ -34,7 +34,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.preference:preference-ktx:1.1.0-alpha05'
     // Mapbox
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.2.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2'
     // Anko
     implementation "org.jetbrains.anko:anko:$anko_version"
     // Gson

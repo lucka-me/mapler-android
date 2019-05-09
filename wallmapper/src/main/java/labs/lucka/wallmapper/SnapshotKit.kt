@@ -83,7 +83,7 @@ class SnapshotKit(private val context: Context) {
             // { key: value } -> object
             // Parse to JsonObject
             val jsonObject = JsonParser().parse(json).asJsonObject
-            // Get value of "layer", it should be a list
+            // Get value of "layers", it should be a list
             val layers = jsonObject.getAsJsonArray("layers")
             // Scan the layer list and remove label layers
             for (i in layers.size() - 1 downTo 0) {

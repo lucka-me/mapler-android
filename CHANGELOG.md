@@ -4,7 +4,7 @@
 
 ```markdown
 ## [0.1.7] - To Be Released
-- 0.1.6(582) -> 0.1.7(607)
+- 0.1.6(582) -> 0.1.7(622)
 - Data structure upgrated
 
 ### Added
@@ -14,9 +14,14 @@
 - Two json files merged to one
 - Methods updated
 - Implement with KTX more
+- Use Material Edit Text in dialogs
+
+### Fixed
+- Selection of style will lost when open Preferences
 
 ### Known Issues
-- Preview of styles added from JSON is incorrect
+- Styles added from JSON can't work correctly in neither preview nor live
+  wallpaper - no direct solution yet
 ```
 
 ```markdown

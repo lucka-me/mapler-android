@@ -50,6 +50,9 @@ data class MapStyleIndex(
     val jsonPath: String
         get() = fileId + JSON_SUFFIX
 
+    val isLocal: Boolean
+        get() = (type == StyleType.LOCAL || type == StyleType.DOWNLOADED)
+
     override fun equals(other: Any?) =
         if (other is MapStyleIndex) {
             id == other.id
@@ -67,9 +70,6 @@ data class MapStyleIndex(
         result = 31 * result + fileId.hashCode()
         return result
     }
-
-    val isLocal: Boolean
-        get() = (type == StyleType.LOCAL || type == StyleType.DOWNLOADED)
 
     companion object {
 

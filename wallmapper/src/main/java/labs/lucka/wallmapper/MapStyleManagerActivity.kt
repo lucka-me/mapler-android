@@ -113,32 +113,26 @@ class MapStyleManagerActivity: AppCompatActivity() {
         recyclerViewMapStyleList.adapter = recyclerViewAdapter
         recyclerViewAdapter.attachItemTouchHelperTo(recyclerViewMapStyleList)
 
-        initSelectedId =
+        lastSelectedId =
             defaultSharedPreferences.getInt(getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id)
-        lastSelectedId = initSelectedId
     }
 
     override fun onResume() {
         super.onResume()
         resultIntent = Intent()
         recyclerViewAdapter.refreshSelectedPositionFromPreferences()
+        initSelectedId = lastSelectedId
     }
 
     override fun onPause() {
         DataKit.saveStyleIndexList(this, mapStyleIndexList)
         snapshotKit.onPause()
-        super.onPause()
-    }
-
-    override fun onBackPressed() {
         if (lastSelectedId != initSelectedId) {
             defaultSharedPreferences.edit {
                 putInt(getString(R.string.pref_style_manager_selected_id), lastSelectedId)
             }
-            //resultIntent.putExtra(getString(R.string.activity_result_should_reset_style), true)
-            //setResult(Activity.RESULT_OK, resultIntent)
         }
-        super.onBackPressed()
+        super.onPause()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

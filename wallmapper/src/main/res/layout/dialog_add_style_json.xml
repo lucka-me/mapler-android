@@ -2,57 +2,54 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <TextView
-            android:text="@string/title_name"
-            android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textTitleName"
-            android:textAllCaps="true"
+            android:id="@+id/text_input_layout_name"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"/>
-    <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:id="@+id/editTextName"
-            android:labelFor="@id/textTitleName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textTitleName"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/title_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:id="@+id/text_input_edit_name"
+                android:singleLine="true" android:inputType="text">
+            <requestFocus/>
+        </com.google.android.material.textfield.TextInputEditText>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_input_layout_author"
+            app:layout_constraintTop_toBottomOf="@+id/text_input_layout_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="8dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:singleLine="true" android:inputType="text">
-        <requestFocus/>
-    </EditText>
-    <TextView
-            android:text="@string/title_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textTitleAuthor"
-            android:textAllCaps="true"
-            app:layout_constraintTop_toBottomOf="@+id/editTextName"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"/>
-    <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pref_style_author_last_default"
-            android:ems="10"
-            android:id="@+id/editTextAuthor"
-            android:labelFor="@id/textTitleAuthor"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textTitleAuthor"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:singleLine="true" android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:inputType="textPersonName"/>
+            android:layout_marginBottom="16dp"
+            android:hint="@string/title_author"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:id="@+id/text_input_edit_author"
+                android:text="@string/pref_style_author_last_default"
+                android:singleLine="true" android:inputType="textPersonName"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
