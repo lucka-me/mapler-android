@@ -1,7 +1,6 @@
 package labs.lucka.wallmapper
 
 import android.Manifest
-import android.app.Service
 import android.app.WallpaperColors
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -32,17 +31,18 @@ class WallmapperLiveService : WallpaperService() {
         private var timerRandomStyleInterval: Int = 0
         private val  timerTaskRandomStyle: TimerTask.() -> Unit =  {
             styleIndex = MapKit.getRandomStyleIndex(this@WallmapperLiveService)
-            runOnUiThread {
-                takeSnapshot()
-            }
+            runOnUiThread { takeSnapshot() }
         }
 
         private var followLocation: Boolean = false
         private lateinit var locationManager: LocationManager
 
         private val cameraBuilder: CameraPosition.Builder = CameraPosition.Builder()
-        private lateinit var styleIndex: MapStyleIndex
-        private lateinit var snapshotKit: SnapshotKit
+        private var zoom: Double = -1.0
+        private var bearing: Double = -1.0
+        private var tilt: Double = -1.0
+        private var styleIndex: MapStyleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
+        private val snapshotKit: SnapshotKit = SnapshotKit(this@WallmapperLiveService)
 
         private val lastLatLng: LatLng = LatLng()
         private var lastImage: Bitmap? = null
@@ -79,23 +79,13 @@ class WallmapperLiveService : WallpaperService() {
 
                 getString(R.string.pref_live_wallpaper_follow_location) -> {
                 }
-
-                getString(R.string.pref_live_wallpaper_designate_camera),
-                getString(R.string.pref_live_wallpaper_zoom),
-                getString(R.string.pref_live_wallpaper_bearing),
-                getString(R.string.pref_live_wallpaper_tilt) -> {
-                    resetCameraFromPreferences()
-                }
             }
         }
 
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
             super.onSurfaceCreated(holder)
 
-            Mapbox.getInstance(this@WallmapperLiveService, getString(R.string.mapbox_default_access_token))
-            Mapbox.setAccessToken(MapKit.getToken(this@WallmapperLiveService))
-
-            snapshotKit = SnapshotKit(this@WallmapperLiveService)
+            Mapbox.getInstance(this@WallmapperLiveService, MapKit.getToken(this@WallmapperLiveService))
 
             lastLatLng.latitude = defaultSharedPreferences
                 .getFloat(getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat()).toDouble()
@@ -106,20 +96,20 @@ class WallmapperLiveService : WallpaperService() {
             resetAllFromPreferences()
             defaultSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
 
-            locationManager = getSystemService(Service.LOCATION_SERVICE) as LocationManager
-            refresh()
+            locationManager = getSystemService(LocationManager::class.java)
+            refresh(isFirst = true)
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
+                var preferencesChanged = resetCameraFromPreferences()
                 if (
                     !defaultSharedPreferences
                         .getBoolean(getString(R.string.pref_live_wallpaper_random_style), false)
-                ) {
-                    resetStyleIndexFromPreferences()
-                    refresh()
-                }
+                )
+                    preferencesChanged = resetStyleIndexFromPreferences()
+                refresh(preferencesChanged)
             } else {
                 locationManager.removeUpdates(locationListener)
             }
@@ -151,23 +141,30 @@ class WallmapperLiveService : WallpaperService() {
             }
         }
 
-        private fun refresh() {
+        private fun refresh(preferencesChanged: Boolean = true, isFirst: Boolean = false) {
+            var shouldTakeSnapshot = preferencesChanged
             if (followLocation) {
-                requestLocationUpdates()
+                requestLocationUpdates(isFirst)
+                if (isFirst) shouldTakeSnapshot = false // Will take snapshot
             } else {
-                lastLatLng.latitude = defaultSharedPreferences
+                val newLatitude = defaultSharedPreferences
                     .getFloat(getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat())
                     .toDouble()
-                lastLatLng.longitude = defaultSharedPreferences
+                val newLongitude = defaultSharedPreferences
                     .getFloat(
                         getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat()
                     )
                     .toDouble()
-                takeSnapshot()
+                if (newLatitude != lastLatLng.latitude || newLongitude != newLongitude) {
+                    lastLatLng.latitude = newLatitude
+                    lastLatLng.longitude = newLongitude
+                    shouldTakeSnapshot = true
+                }
             }
+            if (shouldTakeSnapshot) takeSnapshot()
         }
 
-        private fun requestLocationUpdates() {
+        private fun requestLocationUpdates(getLocationImmediately: Boolean = false) {
             if (
                 ContextCompat.checkSelfPermission(
                     this@WallmapperLiveService, Manifest.permission.ACCESS_FINE_LOCATION
@@ -178,17 +175,20 @@ class WallmapperLiveService : WallpaperService() {
                     .getString(getString(R.string.pref_live_wallpaper_radius), DefaultValue.LiveWallpaper.RADIUS.toString())
                     ?.toFloatOrNull()
                 if (radius == null) radius = DefaultValue.LiveWallpaper.RADIUS
+                val provider = getProvider()
                 locationManager.requestLocationUpdates(
-                    getProvider(), 0L,
+                    provider, 0L,
                     radius * 1000,
                     locationListener
                 )
+                // May not return a location immediately
+                if (getLocationImmediately)
+                    locationListener.onLocationChanged(locationManager.getLastKnownLocation(provider))
             } else {
                 defaultSharedPreferences.edit {
                     putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
                 }
                 followLocation = false
-                refresh()
             }
         }
 
@@ -226,6 +226,8 @@ class WallmapperLiveService : WallpaperService() {
                         DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
                     )?.toIntOrNull()
                 if (newInterval == null || newInterval == 0) {
+                    timerRandomStyleInterval = 0
+                    timerRandomStyle.cancel()
                     timerRandomStyleEnabled = false
                 } else if (!timerRandomStyleEnabled || newInterval != timerRandomStyleInterval) {
                     timerRandomStyle.cancel()
@@ -235,49 +237,102 @@ class WallmapperLiveService : WallpaperService() {
                             action = timerTaskRandomStyle
                         )
                     timerRandomStyleInterval = newInterval
+                    timerRandomStyleEnabled = true
                 }
             } else {
-                if (timerRandomStyleEnabled) timerRandomStyleEnabled = false
+                if (timerRandomStyleEnabled) {
+                    timerRandomStyle.cancel()
+                    timerRandomStyleEnabled = false
+                }
             }
         }
 
-        private fun resetCameraFromPreferences() {
-            followLocation = defaultSharedPreferences
-                .getBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+        /**
+         * Reset [followLocation] and [cameraBuilder] from preferences
+         *
+         * @return [Boolean] Whether the values are reset or not
+         * @author lucka-me
+         * @since 0.1.4
+         */
+        private fun resetCameraFromPreferences(): Boolean {
+            var isReset = false
+            val newFollowLocation =
+                defaultSharedPreferences
+                    .getBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+            if (followLocation != newFollowLocation) {
+                followLocation = newFollowLocation
+                isReset = true
+            }
 
             val isCameraPositionDesignated = defaultSharedPreferences
                 .getBoolean(getString(R.string.pref_live_wallpaper_designate_camera), true)
-            cameraBuilder.zoom(
+
+            val newZoom =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
                         .getInt(getString(R.string.pref_live_wallpaper_zoom), DefaultValue.Map.ZOOM.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat()).toDouble()
+                        .getFloat(getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat())
+                        .toDouble()
                 }
-            )
-            cameraBuilder.bearing(
+            if (zoom != newZoom) {
+                zoom = newZoom
+                cameraBuilder.zoom(zoom)
+                isReset = true
+            }
+
+            val newBearing =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_bearing), DefaultValue.Map.BEARING.toInt()).toDouble()
+                        .getInt(getString(R.string.pref_live_wallpaper_bearing), DefaultValue.Map.BEARING.toInt())
+                        .toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat()).toDouble()
+                        .getFloat(
+                            getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat()
+                        )
+                        .toDouble()
                 }
-            )
-            cameraBuilder.tilt(
+            if (bearing != newBearing) {
+                bearing = newBearing
+                cameraBuilder.bearing(bearing)
+                isReset = true
+            }
+
+            val newTilt =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
                         .getInt(getString(R.string.pref_live_wallpaper_tilt), DefaultValue.Map.TILT.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat()).toDouble()
+                        .getFloat(getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat())
+                        .toDouble()
                 }
-            )
+            if (tilt != newTilt) {
+                tilt = newTilt
+                cameraBuilder.tilt(tilt)
+                isReset = true
+            }
+
+            return isReset
         }
 
-        private fun resetStyleIndexFromPreferences() {
-            styleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
+        /**
+         * Reset [styleIndex] from preferences
+         *
+         * @return [Boolean] Whether the [styleIndex] is reset or not
+         * @author lucka-me
+         * @since 0.1.4
+         */
+        private fun resetStyleIndexFromPreferences(): Boolean {
+            val newStyleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
+            return if (styleIndex != newStyleIndex) {
+                styleIndex = newStyleIndex
+                true
+            } else {
+                false
+            }
         }
 
         private fun getProvider(): String =

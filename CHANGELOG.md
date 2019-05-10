@@ -4,20 +4,18 @@
 
 ```markdown
 ## [0.1.7] - To Be Released
-- 0.1.6(582) -> 0.1.7(622)
+- 0.1.6(582) -> 0.1.7(632)
 - Data structure upgrated
 
 ### Added
 - New data structure (v4) with id, fileId and so on, which is more flexible
 
 ### Changed
-- Two json files merged to one
-- Methods updated
-- Implement with KTX more
 - Use Material Edit Text in dialogs
 
 ### Fixed
 - Selection of style will lost when open Preferences
+- Some logical mistakes in Live Wallpaper Engine - not tested yet
 
 ### Known Issues
 - Styles added from JSON can't work correctly in neither preview nor live

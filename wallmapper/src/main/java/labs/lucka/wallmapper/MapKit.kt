@@ -27,8 +27,7 @@ class MapKit(private val context: Context) {
     var snapshot: Bitmap? = null
 
     init {
-        Mapbox.getInstance(context, context.getString(R.string.mapbox_default_access_token))
-        setToken(context)
+        Mapbox.getInstance(context, getToken(context))
         snapshotKit = SnapshotKit(context)
     }
 
