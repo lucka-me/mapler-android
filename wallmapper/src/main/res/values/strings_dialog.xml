@@ -34,6 +34,7 @@
     <string name="dialog_title_style_information">Style Information</string>
     <string name="dialog_style_information_preview_description">Style Preview</string>
     <string name="dialog_style_information_switch_on_random">Available For Random</string>
+    <string name="dialog_style_information_warning_json_issue">The style from JSON could not work properly in Live Wallpaper and Style Preview due to some unsolved issues.</string>
 
     <!-- Edit Style -->
     <string name="dialog_title_edit_style">Edit Style</string>

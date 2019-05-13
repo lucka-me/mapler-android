@@ -65,7 +65,7 @@ class PreferenceMainActivity : AppCompatActivity() {
                 true
             }
 
-            findPreference<SwitchPreference>(getString(R.string.pref_live_wallpaper_follow_location))
+            findPreference<SwitchPreferenceCompat>(getString(R.string.pref_live_wallpaper_follow_location))
                 ?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     if (

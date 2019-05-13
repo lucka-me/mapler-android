@@ -5,7 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp">
+        android:paddingBottom="16dp" android:paddingTop="8dp">
 
     <ImageView
             android:layout_width="0dp"
@@ -14,7 +14,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="W,1:3" android:scaleType="center" android:layout_marginTop="8dp"
+            app:layout_constraintDimensionRatio="W,1:3" android:scaleType="center"
             android:contentDescription="@string/dialog_style_information_preview_description"/>
 
     <TextView

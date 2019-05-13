@@ -187,7 +187,7 @@ class DialogKit {
                         MapStyleIndex(
                             id = MapStyleIndex.generateNewId(context),
                             name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
-                            type = MapStyleIndex.StyleType.LOCAL
+                            type = MapStyleIndex.StyleType.LOCAL, inRandom = false
                         )
                     )
                 }
@@ -276,7 +276,8 @@ class DialogKit {
             }
             val image = DataKit.loadStylePreviewImage(context, style)
             if (image == null) {
-                onShouldLoadPreviewImage(imagePreview)
+                // Prevent the snapshotter issue
+                if (style.type != MapStyleIndex.StyleType.LOCAL) onShouldLoadPreviewImage(imagePreview)
             } else {
                 imagePreview.setImageBitmap(image)
             }

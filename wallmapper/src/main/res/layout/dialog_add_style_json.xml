@@ -3,7 +3,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" android:paddingBottom="16dp" android:paddingTop="16dp"
+        android:paddingEnd="24dp" android:paddingStart="24dp">
 
     <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -12,9 +13,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
             android:hint="@string/title_name"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
@@ -35,11 +33,7 @@
             app:layout_constraintTop_toBottomOf="@+id/text_input_layout_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
             android:hint="@string/title_author"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
@@ -51,5 +45,23 @@
                 android:singleLine="true" android:inputType="textPersonName"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/ic_warning"
+            android:id="@+id/image_warning_json_issue"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/dialog_style_information_warning_json_issue"
+            app:layout_constraintTop_toBottomOf="@+id/text_input_layout_author"/>
+    <TextView
+            android:text="@string/dialog_style_information_warning_json_issue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_warning_json_issue"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/text_input_layout_author"
+            app:layout_constraintStart_toEndOf="@+id/image_warning_json_issue"
+            android:layout_marginStart="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

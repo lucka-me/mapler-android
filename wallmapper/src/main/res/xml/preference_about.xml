@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-        xmlns:tools="http://schemas.android.com/tools"
+<androidx.preference.PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -12,9 +11,7 @@
                 android:key="@string/pref_about_summary_version_key"
                 android:title="@string/application_name"
                 android:summary="@string/pref_about_summary_version_summary"
-                app:iconSpaceReserved="false"
-                tools:ignore="PrivateResource"/>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        tools:ignore="PrivateResource"/>
+                app:iconSpaceReserved="false"/>
 
         <Preference
                 android:title="@string/pref_about_summary_github_title"
@@ -117,4 +114,4 @@
 
     </PreferenceCategory>
 
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

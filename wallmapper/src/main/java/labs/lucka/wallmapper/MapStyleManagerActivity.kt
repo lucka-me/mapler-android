@@ -89,7 +89,7 @@ class MapStyleManagerActivity: AppCompatActivity() {
                         }
                         snapshotKit.takeSnapshot(
                             size.x, size.y, target, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady
-                        ) { }
+                        ) { DialogKit.showSimpleAlert(this@MapStyleManagerActivity, it) }
                     }
                 )
             }

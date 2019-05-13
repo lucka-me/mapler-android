@@ -51,10 +51,7 @@ class WallmapperLiveService : WallpaperService() {
             lastImage = image
             redraw(image)
         }
-        val onSnapshotError: (String?) -> Unit = { error ->
-            System.out.println(error)
-            takeSnapshot()
-        }
+        val onSnapshotError: (String?) -> Unit = { takeSnapshot() }
 
         val locationListener: LocationListener = object : LocationListener {
 

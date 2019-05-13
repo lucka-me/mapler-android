@@ -3,15 +3,16 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
-## [0.1.7] - To Be Released
-- 0.1.6(582) -> 0.1.7(632)
+## [0.1.7] - 2019-05-07
+- 0.1.6(582) -> 0.1.7(642)
 - Data structure upgrated
 
 ### Added
 - New data structure (v4) with id, fileId and so on, which is more flexible
 
 ### Changed
-- Use Material Edit Text in dialogs
+- Use Material Components
+- Reduce apk size
 
 ### Fixed
 - Selection of style will lost when open Preferences
