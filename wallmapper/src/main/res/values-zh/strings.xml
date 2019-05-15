@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- UI -->
+    <string name="button_snapshot">拍照</string>
     <string name="label_style_manager">样式</string>
     <string name="style_author">By %s</string>
 

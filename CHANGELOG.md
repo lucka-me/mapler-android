@@ -3,6 +3,18 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.8] - TBR
+- 0.1.7(642) -> 0.1.8(791)
+- UI redesigned
+
+### Changed
+- Redesigned UI, simpler and more Material
+
+### Fixed
+- The follow location won't turn on after permission granted at the first time
+```
+
+```markdown
 ## [0.1.7] - 2019-05-07
 - 0.1.6(582) -> 0.1.7(642)
 - Data structure upgrated

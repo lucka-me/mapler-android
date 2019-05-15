@@ -5,22 +5,22 @@ import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import org.jetbrains.anko.defaultSharedPreferences
 
 class MapStyleManagerRecyclerViewAdapter(
     private val context: Context,
-    private val mapStyleIndexList: ArrayList<MapStyleIndex>,
     private val adapterListener: Listener
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface Listener {
         fun onSelectedStyleIndexChanged(newStyleIndex: MapStyleIndex)
-        fun onSwipeToDelete(target: MapStyleIndex, position: Int)
+        fun onSwipeToDelete(target: MapStyleIndex, position: Int, onConfirmed: () -> MapStyleIndex)
         fun onSwipeToInfo(target: MapStyleIndex, position: Int)
     }
 
@@ -29,13 +29,12 @@ class MapStyleManagerRecyclerViewAdapter(
         private val onStyleSelected: (position: Int) -> Unit
     ): RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        val textName: TextView = itemView.findViewById(R.id.textName)
-        val textAuthor: TextView = itemView.findViewById(R.id.textAuthor)
-        val radioSelected: RadioButton = itemView.findViewById(R.id.radioSelected)
+        val cardView: MaterialCardView = itemView.findViewById(R.id.card_style)
+        val textName: TextView = itemView.findViewById(R.id.text_name)
+        val textAuthor: TextView = itemView.findViewById(R.id.text_author)
 
         init {
             itemView.setOnClickListener(this)
-            radioSelected.setOnClickListener { onStyleSelected(adapterPosition) }
         }
 
         override fun onClick(v: View?) { onStyleSelected(adapterPosition) }
@@ -43,9 +42,11 @@ class MapStyleManagerRecyclerViewAdapter(
         fun setFrom(context: Context, styleIndex: MapStyleIndex, isSelected: Boolean = false) {
             textName.text = styleIndex.name
             textAuthor.text = String.format(context.getString(R.string.style_author), styleIndex.author)
-            radioSelected.isChecked = isSelected
+            cardView.isChecked = isSelected
         }
     }
+
+    private val mapStyleIndexList: ArrayList<MapStyleIndex> = arrayListOf()
 
     private var selectedPosition: Int = 0
 
@@ -80,7 +81,20 @@ class MapStyleManagerRecyclerViewAdapter(
                 when (direction) {
 
                     ItemTouchHelper.LEFT -> {
-                        adapterListener.onSwipeToDelete(mapStyleIndexList[position], position)
+                        adapterListener.onSwipeToDelete(mapStyleIndexList[position], position) {
+                            val target = mapStyleIndexList[position]
+
+                            DataKit.deleteStyleFiles(context, target)
+                            mapStyleIndexList.removeAt(position)
+                            notifyItemRemoved(position)
+
+                            if (selectedPosition >= position) {
+                                selectedPosition--
+                                notifyItemChanged(selectedPosition)
+                            }
+
+                            return@onSwipeToDelete mapStyleIndexList[selectedPosition]
+                        }
                     }
 
                     ItemTouchHelper.RIGHT -> {
@@ -124,7 +138,8 @@ class MapStyleManagerRecyclerViewAdapter(
     )
 
     init {
-        refreshSelectedPositionFromPreferences()
+        MapKit.checkAndUpdateStyleIndexList(context)
+        reloadStyleIndexList()
     }
 
     override fun getItemCount(): Int {
@@ -142,12 +157,19 @@ class MapStyleManagerRecyclerViewAdapter(
         }
     }
 
-    fun refreshSelectedPositionFromPreferences() {
+    fun onPause() {
+        context.defaultSharedPreferences.edit {
+            putInt(context.getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[selectedPosition].id)
+        }
+        DataKit.saveStyleIndexList(context, mapStyleIndexList)
+    }
+
+    fun refreshSelectedStyleIndexFromPreferences(): MapStyleIndex {
         val selectedId = context.defaultSharedPreferences.getInt(
             context.getString(R.string.pref_style_manager_selected_id), mapStyleIndexList[0].id
         )
         var newSelectedPosition = findPositionFrom(selectedId)
-        if (newSelectedPosition == selectedPosition) return
+        if (newSelectedPosition == selectedPosition) return mapStyleIndexList[selectedPosition]
         if (newSelectedPosition < 0) {
             newSelectedPosition = 0
         }
@@ -155,16 +177,24 @@ class MapStyleManagerRecyclerViewAdapter(
         notifyItemChanged(newSelectedPosition)
         selectedPosition = newSelectedPosition
         adapterListener.onSelectedStyleIndexChanged(mapStyleIndexList[selectedPosition])
-    }
-
-    fun notifyNewSelectedPosition(position: Int) {
-        selectedPosition = position
-        notifyItemChanged(position)
+        return mapStyleIndexList[selectedPosition]
     }
 
     private fun findPositionFrom(id: Int): Int {
         for (i in 0 until mapStyleIndexList.size) if (mapStyleIndexList[i].id == id) return i
         return -1
+    }
+
+    fun reloadStyleIndexList(): MapStyleIndex {
+        mapStyleIndexList.clear()
+        mapStyleIndexList.addAll(DataKit.loadStyleIndexList(context))
+        notifyDataSetChanged()
+        return refreshSelectedStyleIndexFromPreferences()
+    }
+
+    fun add(mapStyleIndex: MapStyleIndex) {
+        mapStyleIndexList.add(mapStyleIndex)
+        notifyItemInserted(mapStyleIndexList.size - 1)
     }
 
     /**

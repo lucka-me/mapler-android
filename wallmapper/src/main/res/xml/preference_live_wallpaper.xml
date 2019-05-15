@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+            android:title="@string/pref_live_wallpaper_style_category_title"
+            app:iconSpaceReserved="false" >
+
+        <SwitchPreferenceCompat
+                android:key="@string/pref_live_wallpaper_style_random"
+                android:defaultValue="false"
+                android:title="@string/pref_live_wallpaper_style_random_title"
+                android:summaryOn="@string/pref_live_wallpaper_style_random_summary_on"
+                android:summaryOff="@string/pref_live_wallpaper_style_random_summary_off"
+                app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+                android:key="@string/pref_live_wallpaper_style_random_interval"
+                android:title="@string/pref_live_wallpaper_style_random_interval_title"
+                android:summary="@string/pref_live_wallpaper_style_random_interval_summary"
+                android:defaultValue="60"
+                android:dependency="@string/pref_live_wallpaper_style_random"
+                app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="@string/pref_live_wallpaper_location_category_title"
+            app:iconSpaceReserved="false" >
+
+        <SwitchPreferenceCompat
+                android:key="@string/pref_live_wallpaper_location_follow"
+                android:title="@string/pref_live_wallpaper_location_follow_title"
+                android:summaryOn="@string/pref_live_wallpaper_location_follow_summary_on"
+                android:summaryOff="@string/pref_live_wallpaper_location_follow_summary_off"
+                android:defaultValue="false"
+                app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+                android:key="@string/pref_live_wallpaper_location_radius"
+                android:title="@string/pref_live_wallpaper_location_radius_title"
+                android:summary="@string/pref_live_wallpaper_location_radius_summary"
+                android:defaultValue="1"
+                android:dependency="@string/pref_live_wallpaper_location_follow"
+                app:iconSpaceReserved="false"/>
+
+        <ListPreference
+                android:key="@string/pref_live_wallpaper_location_provider"
+                android:title="@string/pref_live_wallpaper_location_provider_title"
+                android:summary="@string/pref_live_wallpaper_location_provider_summary"
+                android:entries="@array/pref_live_wallpaper_provider_entries"
+                android:entryValues="@array/pref_live_wallpaper_provider_values"
+                android:defaultValue="1"
+                android:dependency="@string/pref_live_wallpaper_location_follow"
+                app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="@string/pref_live_wallpaper_camera_category_title"
+            app:iconSpaceReserved="false" >
+
+        <SwitchPreferenceCompat
+                android:key="@string/pref_live_wallpaper_camera_designate"
+                android:title="@string/pref_live_wallpaper_camera_designate_title"
+                android:summaryOn="@string/pref_live_wallpaper_camera_designate_summary_on"
+                android:summaryOff="@string/pref_live_wallpaper_camera_designate_summary_off"
+                android:defaultValue="true"
+                app:iconSpaceReserved="false" />
+
+        <SeekBarPreference
+                android:key="@string/pref_live_wallpaper_camera_zoom"
+                android:dependency="@string/pref_live_wallpaper_camera_designate"
+                android:title="@string/pref_live_wallpaper_camera_zoom_title"
+                app:min="5"
+                android:max="16"
+                app:seekBarIncrement="1"
+                android:defaultValue="15"
+                app:showSeekBarValue="true"
+                app:iconSpaceReserved="false" />
+
+        <SeekBarPreference
+                android:key="@string/pref_live_wallpaper_camera_bearing"
+                android:dependency="@string/pref_live_wallpaper_camera_designate"
+                android:title="@string/pref_live_wallpaper_camera_bearing_title"
+                app:min="0"
+                android:max="60"
+                app:seekBarIncrement="1"
+                android:defaultValue="0"
+                app:showSeekBarValue="true"
+                app:iconSpaceReserved="false" />
+
+        <SeekBarPreference
+                android:key="@string/pref_live_wallpaper_camera_tilt"
+                android:dependency="@string/pref_live_wallpaper_camera_designate"
+                android:title="@string/pref_live_wallpaper_camera_tilt_title"
+                app:min="0"
+                android:max="359"
+                app:seekBarIncrement="1"
+                android:defaultValue="0"
+                app:showSeekBarValue="true"
+                app:iconSpaceReserved="false" />
+
+        <Preference
+                android:key="@string/pref_live_wallpaper_camera_reset"
+                android:title="@string/pref_live_wallpaper_camera_reset_title"
+                android:summary="@string/pref_live_wallpaper_camera_reset_summary"
+                android:dependency="@string/pref_live_wallpaper_camera_designate"
+                app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

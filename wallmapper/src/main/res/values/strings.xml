@@ -6,6 +6,7 @@
     <!--<string name="mapbox_default_access_token" translatable="false">YOUR_OWN_MAPBOX_TOKEN</string>-->
 
     <!-- UI -->
+    <string name="button_snapshot">Snapshot</string>
     <string name="label_style_manager">Styles</string>
     <string name="style_author">By %s</string>
 
@@ -25,9 +26,6 @@
     <!-- Activity Result -->
     <string name="activity_result_should_reset_style" translatable="false">activity_result_should_reset_style</string>
     <string name="activity_result_should_reset_token" translatable="false">activity_result_should_reset_token</string>
-
-    <!-- Style Card -->
-
 
     <!-- File MIME -->
     <string name="mime_json" translatable="false">application/octet-stream</string>

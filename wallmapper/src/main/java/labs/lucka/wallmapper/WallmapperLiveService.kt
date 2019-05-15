@@ -69,12 +69,12 @@ class WallmapperLiveService : WallpaperService() {
 
         val onSharedPreferenceChangeListener: (SharedPreferences, String) -> Unit = { _, key ->
             when (key) {
-                getString(R.string.pref_live_wallpaper_random_style),
-                getString(R.string.pref_live_wallpaper_random_style_interval) -> {
+                getString(R.string.pref_live_wallpaper_style_random),
+                getString(R.string.pref_live_wallpaper_style_random_interval) -> {
                     updateRandomStyleTimerFromPreferences()
                 }
 
-                getString(R.string.pref_live_wallpaper_follow_location) -> {
+                getString(R.string.pref_live_wallpaper_location_follow) -> {
                 }
             }
         }
@@ -103,7 +103,7 @@ class WallmapperLiveService : WallpaperService() {
                 var preferencesChanged = resetCameraFromPreferences()
                 if (
                     !defaultSharedPreferences
-                        .getBoolean(getString(R.string.pref_live_wallpaper_random_style), false)
+                        .getBoolean(getString(R.string.pref_live_wallpaper_style_random), false)
                 )
                     preferencesChanged = resetStyleIndexFromPreferences()
                 refresh(preferencesChanged)
@@ -169,7 +169,7 @@ class WallmapperLiveService : WallpaperService() {
                 == PackageManager.PERMISSION_GRANTED
             ) {
                 var radius = defaultSharedPreferences
-                    .getString(getString(R.string.pref_live_wallpaper_radius), DefaultValue.LiveWallpaper.RADIUS.toString())
+                    .getString(getString(R.string.pref_live_wallpaper_location_radius), DefaultValue.LiveWallpaper.RADIUS.toString())
                     ?.toFloatOrNull()
                 if (radius == null) radius = DefaultValue.LiveWallpaper.RADIUS
                 val provider = getProvider()
@@ -183,7 +183,7 @@ class WallmapperLiveService : WallpaperService() {
                     locationListener.onLocationChanged(locationManager.getLastKnownLocation(provider))
             } else {
                 defaultSharedPreferences.edit {
-                    putBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+                    putBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
                 }
                 followLocation = false
             }
@@ -215,11 +215,11 @@ class WallmapperLiveService : WallpaperService() {
         private fun updateRandomStyleTimerFromPreferences() {
             if (
                 defaultSharedPreferences
-                    .getBoolean(getString(R.string.pref_live_wallpaper_random_style), false)
+                    .getBoolean(getString(R.string.pref_live_wallpaper_style_random), false)
             ) {
                 val newInterval =
                     defaultSharedPreferences.getString(
-                        getString(R.string.pref_live_wallpaper_random_style_interval),
+                        getString(R.string.pref_live_wallpaper_style_random_interval),
                         DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
                     )?.toIntOrNull()
                 if (newInterval == null || newInterval == 0) {
@@ -255,19 +255,19 @@ class WallmapperLiveService : WallpaperService() {
             var isReset = false
             val newFollowLocation =
                 defaultSharedPreferences
-                    .getBoolean(getString(R.string.pref_live_wallpaper_follow_location), false)
+                    .getBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
             if (followLocation != newFollowLocation) {
                 followLocation = newFollowLocation
                 isReset = true
             }
 
             val isCameraPositionDesignated = defaultSharedPreferences
-                .getBoolean(getString(R.string.pref_live_wallpaper_designate_camera), true)
+                .getBoolean(getString(R.string.pref_live_wallpaper_camera_designate), true)
 
             val newZoom =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_zoom), DefaultValue.Map.ZOOM.toInt()).toDouble()
+                        .getInt(getString(R.string.pref_live_wallpaper_camera_zoom), DefaultValue.Map.ZOOM.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
                         .getFloat(getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat())
@@ -282,7 +282,7 @@ class WallmapperLiveService : WallpaperService() {
             val newBearing =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_bearing), DefaultValue.Map.BEARING.toInt())
+                        .getInt(getString(R.string.pref_live_wallpaper_camera_bearing), DefaultValue.Map.BEARING.toInt())
                         .toDouble()
                 } else {
                     defaultSharedPreferences
@@ -300,7 +300,7 @@ class WallmapperLiveService : WallpaperService() {
             val newTilt =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_tilt), DefaultValue.Map.TILT.toInt()).toDouble()
+                        .getInt(getString(R.string.pref_live_wallpaper_camera_tilt), DefaultValue.Map.TILT.toInt()).toDouble()
                 } else {
                     defaultSharedPreferences
                         .getFloat(getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat())
@@ -334,7 +334,7 @@ class WallmapperLiveService : WallpaperService() {
 
         private fun getProvider(): String =
             when (defaultSharedPreferences
-                .getString(getString(R.string.pref_live_wallpaper_provider), "1")?.toIntOrNull()) {
+                .getString(getString(R.string.pref_live_wallpaper_location_provider), "1")?.toIntOrNull()) {
                 0 -> LocationManager.GPS_PROVIDER
                 else -> LocationManager.NETWORK_PROVIDER
             }

@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         style="@style/Widget.MaterialComponents.CardView"
-        android:id="@+id/cardStyle"
+        android:id="@+id/card_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -11,37 +11,29 @@
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:checkable="true"
+        android:foreground="?android:attr/selectableItemBackground" app:contentPadding="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:padding="16dp">
+            android:layout_height="wrap_content">
 
         <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textName" app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/text_name" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/radioSelected"
-                android:layout_marginEnd="8dp" android:text="@string/application_name"
-                android:textStyle="bold" android:textAllCaps="true"/>
-        <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/radioSelected" app:layout_constraintEnd_toEndOf="parent"
-                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                android:text="@string/application_name"
+                android:textStyle="bold" android:textAllCaps="true" app:layout_constraintEnd_toEndOf="parent"/>
         <TextView
                 android:text="@string/style_author"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textAuthor"
-                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/textName"
+                android:id="@+id/text_author"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/text_name"
                 app:layout_constraintStart_toStartOf="parent"
                 android:textStyle="italic"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toStartOf="@+id/radioSelected"/>
+                app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

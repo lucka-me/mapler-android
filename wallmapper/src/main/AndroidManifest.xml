@@ -26,22 +26,10 @@
         </activity>
 
         <activity
-                android:name=".MapStyleManagerActivity"
-                android:theme="@style/Theme.Wallpaper"
-                android:parentActivityName=".MainActivity"
-                android:label="@string/label_style_manager"/>
-
-        <activity
-                android:name=".PreferenceMainActivity"
-                android:label="@string/pref_main_title"
+                android:name=".PreferenceActivity"
+                android:label="@string/pref_main_screen_title"
                 android:screenOrientation="portrait"
-                android:parentActivityName=".MapStyleManagerActivity"/>
-
-        <activity
-                android:name=".PreferenceAboutActivity"
-                android:label="@string/about_title"
-                android:screenOrientation="portrait"
-                android:parentActivityName=".MapStyleManagerActivity"/>
+                android:parentActivityName=".MainActivity"/>
 
         <service
                 android:name=".WallmapperLiveService"

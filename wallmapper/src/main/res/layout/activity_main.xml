@@ -6,61 +6,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity"
-        android:id="@+id/mainLayout">
+        android:orientation="vertical">
 
     <com.mapbox.mapboxsdk.maps.MapView
-            android:id="@+id/mainMapView"
+            android:id="@+id/map_view_main"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-    </com.mapbox.mapboxsdk.maps.MapView>
+            android:layout_height="match_parent"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layoutFab"
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_anchorGravity="bottom|end"
-            android:layout_gravity="bottom|end">
+            android:id="@+id/fab_snapshot"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
+            android:layout_gravity="top|center_horizontal"
+            app:layout_anchor="@id/bottom_sheet_style_manager"
+            app:layout_anchorGravity="top|center_horizontal"
+            android:text="@string/button_snapshot"
+            android:contentDescription="@string/button_snapshot"
+            app:icon="@drawable/ic_snapshot"
+            android:backgroundTint="@color/colorPrimary"
+            android:insetBottom="16dp"
+    />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                app:srcCompat="@drawable/ic_snapshot"
-                android:id="@+id/fabSnapshot"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:fabSize="normal" android:tint="@color/colorWhite" android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"/>
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                app:srcCompat="@drawable/ic_style"
-                android:id="@+id/fabManageStyle"
-                app:fabSize="normal" android:tint="@color/colorWhite" android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:backgroundTint="@color/colorPrimary" app:layout_constraintBottom_toTopOf="@+id/fabSnapshot"
-                android:layout_marginBottom="16dp"/>
-
-        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-                android:id="@+id/progressBarSnapshot"
-                style="@style/Widget.MaterialProgressBar.ProgressBar.Large.NoPadding"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/fabSnapshot"
-                app:layout_constraintStart_toStartOf="@+id/fabSnapshot"
-                app:layout_constraintBottom_toBottomOf="@+id/fabSnapshot"
-                app:layout_constraintTop_toTopOf="@+id/fabSnapshot"
-                android:visibility="invisible"
-                android:indeterminate="true"
-                app:mpb_indeterminateTint="@color/colorPrimary"
-                app:mpb_progressStyle="circular"
-                app:mpb_useIntrinsicPadding="false"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+    <include layout="@layout/bottom_sheet_style_manager"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

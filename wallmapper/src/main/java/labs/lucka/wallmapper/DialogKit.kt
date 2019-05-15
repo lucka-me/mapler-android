@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AlertDialog
 import android.view.View
 import android.widget.ImageView
-import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.jetbrains.anko.defaultSharedPreferences
@@ -59,7 +60,7 @@ class DialogKit {
             cancelable: Boolean? = null
         ) {
 
-            val builder = AlertDialog.Builder(context)
+            val builder = MaterialAlertDialogBuilder(context)
                 .setTitle(titleId)
                 .setIcon(icon)
                 .setMessage(message)
@@ -135,9 +136,9 @@ class DialogKit {
             showSimpleAlert(context, context.getString(messageId))
         }
 
-        fun showSaveImageDialog(context: Context, image: Bitmap, onSaveButtonClick: () -> Unit) {
+        fun showSaveImageDialog(context: Context, image: Bitmap, onSaveButtonClick: () -> Unit, onDismiss: () -> Unit) {
             val dialogLayout = View.inflate(context, R.layout.dialog_image, null)
-            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_result)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.button_save) { dialog, _ ->
@@ -145,6 +146,7 @@ class DialogKit {
                     onSaveButtonClick()
                 }
                 .setNegativeButton(R.string.button_cancel, null)
+                .setOnDismissListener { onDismiss() }
                 .show()
             dialogLayout.findViewById<ImageView>(R.id.imageView).setImageBitmap(image)
         }
@@ -158,7 +160,7 @@ class DialogKit {
             ) {
                 itemList.add(context.getString(R.string.dialog_add_style_from_url))
             }
-            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_add_style_from)
                 .setItems(itemList.toTypedArray()) { _, which ->
                     val type = when (which) {
@@ -176,7 +178,7 @@ class DialogKit {
             val editTextName: TextInputEditText = layout.findViewById(R.id.text_input_edit_name)
             val editTextAuthor: TextInputEditText = layout.findViewById(R.id.text_input_edit_author)
 
-            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_add_style_from_json)
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
@@ -208,7 +210,7 @@ class DialogKit {
             val editTextName: TextInputEditText = layout.findViewById(R.id.text_input_edit_name)
             val editTextAuthor: TextInputEditText = layout.findViewById(R.id.text_input_edit_author)
 
-            val dialog = AlertDialog.Builder(context)
+            val dialog = MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_add_style_from_url)
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
@@ -244,13 +246,13 @@ class DialogKit {
             onEditClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit
         ) {
             val layout = View.inflate(context, R.layout.dialog_style_info, null)
-            val textName: TextView = layout.findViewById(R.id.textName)
-            val textAuthor: TextView = layout.findViewById(R.id.textAuthor)
-            val imageType: ImageView = layout.findViewById(R.id.imageType)
-            val imagePreview: ImageView = layout.findViewById(R.id.imagePreview)
-            val switchInRandom: Switch = layout.findViewById(R.id.switchInRandom)
+            val textName: TextView = layout.findViewById(R.id.text_name)
+            val textAuthor: TextView = layout.findViewById(R.id.text_author)
+            val imageType: ImageView = layout.findViewById(R.id.image_type)
+            val imagePreview: ImageView = layout.findViewById(R.id.image_preview)
+            val switchInRandom: SwitchMaterial = layout.findViewById(R.id.switch_in_random)
 
-            val dialog = AlertDialog.Builder(context)
+            val dialog = MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_style_information)
                 .setView(layout)
                 .setPositiveButton(R.string.button_edit) { _, _ -> onEditClick() }
@@ -292,7 +294,7 @@ class DialogKit {
             val editTextAuthor: TextInputEditText = layout.findViewById(R.id.text_input_edit_author)
             val editTextUrl: TextInputEditText = layout.findViewById(R.id.text_input_edit_url)
 
-            val dialog = AlertDialog.Builder(context)
+            val dialog = MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_edit_style)
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->

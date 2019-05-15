@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Base64
 import androidx.core.content.edit
@@ -178,6 +179,25 @@ class DataKit {
         private fun deleteStyleJson(context: Context, style: MapStyleIndex) {
             val file = File(context.filesDir, style.jsonPath)
             file.delete()
+        }
+
+        fun saveImage(context: Context, image: Bitmap, onSaved: (File) -> Unit, onError: (Exception) -> Unit) {
+            val directory =
+                File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
+                            + File.separator + context.getString(R.string.path_save_folder
+                    )
+                )
+            if (!directory.exists()) directory.mkdirs()
+            val file = File(directory.absolutePath, UUID.randomUUID().toString() + MapStyleIndex.PNG_SUFFIX)
+            try {
+                val fos = FileOutputStream(file)
+                image.compress(Bitmap.CompressFormat.PNG, 100, fos)
+                fos.close()
+                onSaved(file)
+            } catch (error: Exception) {
+                onError(error)
+            }
         }
 
         /**

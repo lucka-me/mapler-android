@@ -2,14 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="16dp" android:paddingTop="8dp">
 
     <ImageView
             android:layout_width="0dp"
-            android:id="@+id/imagePreview"
+            android:id="@+id/image_preview"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -21,42 +20,42 @@
             android:text="@string/title_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/textName"
-            app:layout_constraintTop_toBottomOf="@+id/imagePreview"
+            android:id="@+id/text_name"
+            app:layout_constraintTop_toBottomOf="@+id/image_preview"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp" android:textAppearance="@android:style/TextAppearance.Material.Title"
-            android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/imageType"
-            app:layout_constraintHorizontal_bias="0.0"/>
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/image_type"
+            app:layout_constraintHorizontal_bias="0.0" android:textStyle="bold"/>
     <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/textAuthor"
-            app:layout_constraintTop_toBottomOf="@+id/textName" app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/text_author"
+            app:layout_constraintTop_toBottomOf="@+id/text_name" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="24dp" android:layout_marginTop="8dp"
             android:text="@string/style_author" android:textStyle="italic" android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0"/>
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_online"
-            android:id="@+id/imageType" app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/image_type" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="24dp"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/imagePreview"/>
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/image_preview"/>
 
     <View
             android:id="@+id/divider"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"
-            app:layout_constraintTop_toBottomOf="@+id/textAuthor" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_author" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="24dp" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="24dp" android:layout_marginTop="8dp"/>
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
             android:text="@string/dialog_style_information_switch_on_random"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/switchInRandom" android:showText="false" app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/switch_in_random" android:showText="false" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="24dp" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="24dp" app:layout_constraintTop_toBottomOf="@+id/divider"
             android:layout_marginTop="8dp" android:checked="true"/>

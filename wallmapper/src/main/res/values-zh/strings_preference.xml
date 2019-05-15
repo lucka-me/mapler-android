@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="pref_main_title">首选项</string>
+    <!-- Screen: Main -->
+    <string name="pref_main_screen_title">首选项</string>
 
     <string name="pref_mapbox_use_default_token_title">使用默认访问令牌</string>
     <string name="pref_mapbox_use_default_token_summary_on">使用Lucka提供的令牌和样式</string>
@@ -18,24 +18,66 @@
     <string name="pref_live_wallpaper_category_title">动态壁纸</string>
     <string name="pref_live_wallpaper_set_title">预览&amp;设置</string>
     <string name="pref_live_wallpaper_set_summary">打开预览与设置页面</string>
-    <string name="pref_live_wallpaper_random_style_title">随机样式</string>
-    <string name="pref_live_wallpaper_random_style_summary_on">从列表中随机选择样式</string>
-    <string name="pref_live_wallpaper_random_style_summary_off">总是使用选定的样式</string>
-    <string name="pref_live_wallpaper_random_style_interval_title">随机样式间隔</string>
-    <string name="pref_live_wallpaper_random_style_interval_summary">每隔%s分钟随机更换样式</string>
-    <string name="pref_live_wallpaper_follow_location_title">定位</string>
-    <string name="pref_live_wallpaper_follow_location_summary_on">地图位置将根据定位更新</string>
-    <string name="pref_live_wallpaper_follow_location_summary_off">地图位置将与主页面地图一致</string>
-    <string name="pref_live_wallpaper_radius_title">更新半径</string>
-    <string name="pref_live_wallpaper_radius_summary">当移动超过%s千米时更新壁纸</string>
-    <string name="pref_live_wallpaper_provider_title">定位方式</string>
-    <string name="pref_live_wallpaper_provider_summary">选择动态壁纸的定位方式</string>
-    <string name="pref_live_wallpaper_designate_camera_title">指定地图视角</string>
-    <string name="pref_live_wallpaper_designate_camera_summary_on">在下方设置地图视角参数</string>
-    <string name="pref_live_wallpaper_designate_camera_summary_off">地图视角将与主页面地图一致</string>
-    <string name="pref_live_wallpaper_zoom_title">缩放等级</string>
-    <string name="pref_live_wallpaper_bearing_title">方位角</string>
-    <string name="pref_live_wallpaper_tilt_title">倾斜角</string>
-    <string name="pref_live_wallpaper_reset_camera_title">重置视角</string>
-    <string name="pref_live_wallpaper_reset_camera_summary">将参数重置为主视图地图视角</string>
+    <string name="pref_live_wallpaper_more_title">更多选项</string>
+    <string name="pref_live_wallpaper_more_summary">轻触以设置更多选项</string>
+
+    <string name="pref_other_category_title">其它</string>
+    <string name="pref_other_about_title">关于</string>
+
+    <!-- Screen: Live Wallpaper -->
+    <string name="pref_live_wallpaper_screen_title">动态壁纸</string>
+
+
+    <string name="pref_live_wallpaper_style_category_title">样式</string>
+    <string name="pref_live_wallpaper_style_random_title">随机样式</string>
+    <string name="pref_live_wallpaper_style_random_summary_on">从列表中随机选择样式</string>
+    <string name="pref_live_wallpaper_style_random_summary_off">总是使用选定的样式</string>
+    <string name="pref_live_wallpaper_style_random_interval_title">随机样式间隔</string>
+    <string name="pref_live_wallpaper_style_random_interval_summary">每隔%s分钟随机更换样式</string>
+
+    <string name="pref_live_wallpaper_location_category_title">定位</string>
+    <string name="pref_live_wallpaper_location_follow_title">定位</string>
+    <string name="pref_live_wallpaper_location_follow_summary_on">地图位置将根据定位更新</string>
+    <string name="pref_live_wallpaper_location_follow_summary_off">地图位置将与主页面地图一致</string>
+    <string name="pref_live_wallpaper_location_radius_title">更新半径</string>
+    <string name="pref_live_wallpaper_location_radius_summary">当移动超过%s千米时更新壁纸</string>
+    <string name="pref_live_wallpaper_location_provider_title">定位方式</string>
+    <string name="pref_live_wallpaper_location_provider_summary">选择动态壁纸的定位方式</string>
+
+    <string name="pref_live_wallpaper_camera_category_title">视角</string>
+    <string name="pref_live_wallpaper_camera_designate_title">指定地图视角</string>
+    <string name="pref_live_wallpaper_camera_designate_summary_on">在下方设置地图视角参数</string>
+    <string name="pref_live_wallpaper_camera_designate_summary_off">地图视角将与主页面地图一致</string>
+    <string name="pref_live_wallpaper_camera_zoom_title">缩放等级</string>
+    <string name="pref_live_wallpaper_camera_bearing_title">方位角</string>
+    <string name="pref_live_wallpaper_camera_tilt_title">倾斜角</string>
+    <string name="pref_live_wallpaper_camera_reset_title">重置视角</string>
+    <string name="pref_live_wallpaper_camera_reset_summary">将参数重置为主视图地图视角</string>
+
+    <!-- Screen: About -->
+    <string name="pref_about_screen_title">关于</string>
+
+    <string name="pref_about_summary_category_title">概览</string>
+    <string name="pref_about_summary_version_summary">%s (Build %d)</string>
+    <string name="pref_about_summary_github_title">GitHub</string>
+    <string name="pref_about_summary_github_summary">源代码&amp;更新</string>
+    <string name="pref_about_summary_license_title">许可证</string>
+    <string name="pref_about_summary_license_summary">Mozilla Public License 2.0</string>
+
+    <string name="pref_about_developer_category_title">开发者</string>
+    <string name="pref_about_developer_lucka_title">Lucka</string>
+
+    <string name="pref_about_discover_category_title">探索</string>
+    <string name="pref_about_discover_mapbox_studio_title">Mapbox Studio</string>
+    <string name="pref_about_discover_mapbox_studio_summary">创建并设计您自己的地图样式</string>
+
+    <string name="pref_about_dependency_category_title">依赖</string>
+    <string name="pref_about_dependency_mapbox_title">Mapbox Maps SDK</string>
+    <string name="pref_about_dependency_mapbox_summary">为Wallmapper展示地图</string>
+    <string name="pref_about_dependency_androidx_title">AndroidX</string>
+    <string name="pref_about_dependency_androidx_summary">为旧的Android版本提供新功能的兼容</string>
+    <string name="pref_about_dependency_anko_title">Anko</string>
+    <string name="pref_about_dependency_anko_summary">友好的Android开发工具</string>
+    <string name="pref_about_dependency_gson_title">Gson</string>
+    <string name="pref_about_dependency_gson_summary">Java对象与JSON间的转换</string>
 </resources>

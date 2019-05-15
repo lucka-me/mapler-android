@@ -2,6 +2,7 @@ package labs.lucka.wallmapper
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.os.Bundle
 import androidx.core.content.edit
 import com.google.gson.JsonParser
@@ -13,6 +14,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.windowManager
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.random.Random
@@ -23,7 +25,7 @@ class MapKit(private val context: Context) {
     private lateinit var map: MapboxMap
     private var mapInitialized: Boolean = false
     private val preInitializationTaskList: ArrayList<() -> Unit> = arrayListOf()
-    private var selectedStyleIndex: MapStyleIndex = MapStyleIndex(-1, "", "", fileId = "")
+    private var styleIndex: MapStyleIndex = MapStyleIndex(-1, "", "", fileId = "")
     private val snapshotKit: SnapshotKit
     var snapshot: Bitmap? = null
 
@@ -42,7 +44,6 @@ class MapKit(private val context: Context) {
         this.mapView.getMapAsync { newMap: MapboxMap ->
 
             map = newMap
-
 
             val centerLat: Float = context.defaultSharedPreferences
                 .getFloat(context.getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat())
@@ -67,22 +68,21 @@ class MapKit(private val context: Context) {
         }
     }
 
-    fun setStyle(callback: () -> Unit = { }) {
+    fun setStyleIndex(newStyleIndex: MapStyleIndex, force: Boolean = false, callback: () -> Unit = { }) {
         if (!mapInitialized) {
-            preInitializationTaskList.add { setStyle(callback) }
+            preInitializationTaskList.add { setStyleIndex(newStyleIndex, force, callback) }
             return
         }
-        val newSelectedStyleIndex = getSelectedStyleIndex(context)
-        if (newSelectedStyleIndex == selectedStyleIndex) {
+        if (!force && newStyleIndex == styleIndex) {
             callback()
             return
         }
-        selectedStyleIndex = newSelectedStyleIndex
+        styleIndex = newStyleIndex
         val styleBuilder: Style.Builder =
-            if (selectedStyleIndex.isLocal) {
-                Style.Builder().fromJson(DataKit.loadStyleJson(context, selectedStyleIndex))
+            if (styleIndex.isLocal) {
+                Style.Builder().fromJson(DataKit.loadStyleJson(context, styleIndex))
             } else {
-                Style.Builder().fromUrl(selectedStyleIndex.url)
+                Style.Builder().fromUrl(styleIndex.url)
             }
         map.setStyle(styleBuilder) { style ->
             handleLabels(context, style)
@@ -110,6 +110,13 @@ class MapKit(private val context: Context) {
         }
     }
 
+    fun getPreviewImage(target: MapStyleIndex, onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit) {
+        snapshotKit.refresh()
+        val size = Point()
+        context.windowManager.defaultDisplay.getSize(size)
+        snapshotKit.takeSnapshot(size.x, size.y, target, DefaultValue.Map.CAMERA_POSITION, onSnapshotReady, onError)
+    }
+
     fun onStart    () { mapView.onStart    () }
     fun onStop     () { mapView.onStop     () }
     fun onLowMemory() { mapView.onLowMemory() }
@@ -135,6 +142,9 @@ class MapKit(private val context: Context) {
         mapView.onPause()
         snapshotKit.onPause()
     }
+
+    fun deactivateMap() { map.uiSettings.setAllGesturesEnabled(false) }
+    fun activateMap() { map.uiSettings.setAllGesturesEnabled(true) }
 
     companion object {
 
