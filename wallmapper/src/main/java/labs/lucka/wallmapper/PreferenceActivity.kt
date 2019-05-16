@@ -266,10 +266,8 @@ class PreferenceActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefe
                     putBoolean(getString(R.string.pref_live_wallpaper_location_follow), true)
                 }
                 (supportFragmentManager.findFragmentById(R.id.preference_frame) as PreferenceLiveWallpaperFragment?)
-                    ?.apply {
-                        preferenceScreen.removeAll()
-                        addPreferencesFromResource(R.xml.preference_live_wallpaper)
-                    }
+                    ?.findPreference<SwitchPreferenceCompat>(getString(R.string.pref_live_wallpaper_location_follow))
+                    ?.isChecked = true
             }
         }
     }
