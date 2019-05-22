@@ -3,15 +3,15 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
-## [0.1.8] - TBR
-- 0.1.7(642) -> 0.1.8(796)
+## [0.1.8] - 2019-05-22
+- 0.1.7(642) -> 0.1.8(797)
 - UI redesigned
 
 ### Changed
 - Redesigned UI, simpler and more Material
 
 ### Fixed
-- The follow location won't turn on after permission granted at the first time
+- The follow location won't turn on after permission granted
 ```
 
 ```markdown
