@@ -3,9 +3,12 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
-## [0.1.9] - TBR
-- 0.1.8(797) -> 0.1.9(808)
+## [0.1.9] - 2019-06-02
+- 0.1.8(797) -> 0.1.9(812)
 - Fixed Preference crash
+
+### Changed
+- Updated dependencies
 
 ### Fixed
 - App will crash when try to open sub-screen of Preference - caused by minifying
