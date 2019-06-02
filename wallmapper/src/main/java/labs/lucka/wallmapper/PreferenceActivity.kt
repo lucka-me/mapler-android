@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -20,8 +21,10 @@ import androidx.core.content.edit
 import androidx.preference.*
 import org.jetbrains.anko.defaultSharedPreferences
 
+@Keep
 class PreferenceActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
+    @Keep
     class PreferenceMainFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
         var onSharedPreferenceChanged: (String) -> Unit = { }
@@ -64,6 +67,7 @@ class PreferenceActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefe
 
     }
 
+    @Keep
     class PreferenceLiveWallpaperFragment :
         PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -182,6 +186,7 @@ class PreferenceActivity : AppCompatActivity(), PreferenceFragmentCompat.OnPrefe
 
     }
 
+    @Keep
     class PreferenceAboutFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preference_about, rootKey)
