@@ -22,6 +22,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 
     applicationVariants.all { variant ->
         variant.outputs.all {
@@ -34,13 +42,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.2.0-alpha01'
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
+    implementation 'androidx.core:core-ktx:1.2.0-alpha04'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.1.0-alpha07'
-    implementation 'androidx.preference:preference-ktx:1.1.0-alpha05'
+    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'androidx.preference:preference-ktx:1.1.0'
     // Mapbox
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.0.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.4.0'
     // Anko
     implementation "org.jetbrains.anko:anko:$anko_version"
     // Gson
