@@ -23,13 +23,14 @@ class SnapshotKit(private val context: Context) {
         takeSnapshot(
             width, height, cameraPosition, {
 
-                if (styleData.isLocal) {
-                    snapshotter.setStyleJson(
-                        MapKit.handleLabels(context, DataKit.loadStyleJson(context, styleData))
-                    )
-                } else {
-                    snapshotter.setStyleUrl(styleData.uri)
-                }
+//                if (styleData.isLocal) {
+//                    snapshotter.setStyleJson(
+//                        MapKit.removeLabels(context, DataKit.loadStyleJson(context, styleData))
+//                    )
+//                } else {
+//                    snapshotter.setStyleUrl(styleData.uri)
+//                }
+                snapshotter.setStyleUrl(styleData.uri)
 
             }, onSnapshotReady, onError
         )
