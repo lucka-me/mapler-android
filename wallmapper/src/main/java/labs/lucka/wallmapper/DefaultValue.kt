@@ -33,17 +33,13 @@ class DefaultValue {
     enum class Request(val code: Int) {
         RequestPermissionWriteExternalStorage(1001),
         RequestPermissionFineLocation(1002),
-        ManageMapStyle(2001),
         SetPreference(2002),
         OpenJsonFile(3001)
     }
 
     class Data {
         companion object {
-            const val VERSION: Int = 1
-            const val STRUCTURE_VERSION_DEFAULT: Int = 0
-            const val STRUCTURE_VERSION_3: Int = 3
-            const val STRUCTURE_VERSION_LATEST: Int = 4
+            const val VERSION = 1
         }
     }
 

@@ -8,14 +8,10 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Base64
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import com.google.gson.Gson
-import org.jetbrains.anko.defaultSharedPreferences
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStreamReader
+import com.google.gson.GsonBuilder
+import java.io.*
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.collections.ArrayList
@@ -29,124 +25,59 @@ class DataKit {
             var result = ""
             if (uri == null) return  result
             val inputStream = context.contentResolver.openInputStream(uri)
-            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            var line: String? = bufferedReader.readLine()
-            while (line != null) {
-                result += line + "\n"
-                line = bufferedReader.readLine()
+            if (inputStream != null) {
+                val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+                var line: String? = bufferedReader.readLine()
+                while (line != null) {
+                    result += line + "\n"
+                    line = bufferedReader.readLine()
+                }
             }
             return result
         }
 
-        private fun getStyleIndexListFile(context: Context) =
-            File(context.filesDir, context.getString(R.string.file_style_index_list))
+        private fun getStyleDataListFile(context: Context) =
+            File(context.filesDir, context.getString(R.string.file_style_data_list))
 
-        private fun renameFile(context: Context, oldFilename: String, newFilename: String) {
-            val oldFile = File(context.filesDir, oldFilename)
-            val newFile = File(context.filesDir, newFilename)
-            oldFile.renameTo(newFile)
-        }
+        fun loadStyleIndexList(context: Context): ArrayList<StyleData> {
 
-        private fun upgradeDataStructure(context: Context) {
-            val currentVersion =
-                context.defaultSharedPreferences.getInt(
-                    context.getString(R.string.pref_data_structure_version), DefaultValue.Data.STRUCTURE_VERSION_DEFAULT
-                )
-            if (currentVersion == DefaultValue.Data.STRUCTURE_VERSION_LATEST) return
+            val file = getStyleDataListFile(context)
+            val list: ArrayList<StyleData>
 
-            MapStyleIndex.clearIdToZero(context)
-
-            if (currentVersion <= DefaultValue.Data.STRUCTURE_VERSION_3) {
-
-                val mapStyleIndexList: ArrayList<MapStyleIndex> = arrayListOf()
-
-                val oldDataHandler = fun (file: File) {
-                    if (file.exists()) {
-                        try {
-                            val mapStyleIndexCompatList =
-                                Gson().fromJson(file.readText(), Array<MapStyleIndex.CompatV3>::class.java)
-                            mapStyleIndexCompatList.forEach { item ->
-                                val newStyle = item.toMapStyleIndex(context)
-                                val imagePath = item.imagePath
-                                if (!imagePath.isNullOrEmpty()) {
-                                    renameFile(
-                                        context, imagePath, newStyle.imagePath
-                                    )
-                                }
-                                if (newStyle.isLocal) {
-                                    renameFile(
-                                        context, item.path, newStyle.jsonPath
-                                    )
-                                }
-                                mapStyleIndexList.add(newStyle)
-                            }
-                        } catch (error: Exception) {
-                            return
-                        }
-                    }
-                }
-
-                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list)))
-                oldDataHandler(File(context.filesDir, context.getString(R.string.file_style_index_list_own_token_v3)))
-
-                saveStyleIndexList(context, mapStyleIndexList)
-
-                context.defaultSharedPreferences.edit {
-                    putInt(context.getString(
-                        R.string.pref_data_structure_version), DefaultValue.Data.STRUCTURE_VERSION_LATEST
-                    )
-                }
-
-                return
-            }
-        }
-
-        fun loadFullStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
-
-            upgradeDataStructure(context)
-
-            val file = getStyleIndexListFile(context)
-            var list: Array<MapStyleIndex> = arrayOf()
-
-            if (file.exists()) {
+            list = if (file.exists()) {
+                val type = Array<StyleData>::class.java
                 try {
-                    list = Gson().fromJson(file.readText(), Array<MapStyleIndex>::class.java)
+                    GsonBuilder()
+                        .registerTypeAdapter(type, StyleData.ArrayReader())
+                        .create()
+                        .fromJson(FileReader(file), type).toCollection(ArrayList())
                 } catch (error: Exception) {
-                    return arrayListOf()
+                    MapKit.initStyleIndexList(context)
                 }
-            }
-
-            return list.toCollection(ArrayList())
-        }
-
-        fun loadStyleIndexList(context: Context): ArrayList<MapStyleIndex> {
-
-            val list = loadFullStyleIndexList(context)
-            if (MapKit.useDefaultToken(context)) {
-                list.removeAll { it.type == MapStyleIndex.StyleType.ONLINE }
             } else {
-                list.removeAll { it.type == MapStyleIndex.StyleType.LUCKA }
+                MapKit.initStyleIndexList(context)
             }
-            return list
-        }
 
-        fun saveStyleIndexList(context: Context, list: ArrayList<MapStyleIndex>) {
-
-            val file = getStyleIndexListFile(context)
-
-            try {
-                file.writeText(Gson().toJson(list.toArray()))
-            } catch (error: Exception) {
-                throw error
+            return if (list.isEmpty()) {
+                MapKit.initStyleIndexList(context)
+            } else {
+                list
             }
         }
 
-        fun deleteStyleFiles(context: Context, style: MapStyleIndex) {
+        fun saveStyleIndexList(context: Context, list: ArrayList<StyleData>) {
+
+            val file = getStyleDataListFile(context)
+
+            file.writeText(Gson().toJson(list))
+        }
+
+        fun deleteStyleFiles(context: Context, style: StyleData) {
             deleteStylePreviewImage(context, style)
             deleteStyleJson(context, style)
         }
 
-        fun loadStylePreviewImage(context: Context, style: MapStyleIndex): Bitmap? {
+        fun loadStylePreviewImage(context: Context, style: StyleData): Bitmap? {
             val file = File(context.filesDir, style.imagePath)
             return if (file.exists()) {
                 BitmapFactory.decodeFile(file.absolutePath)
@@ -155,41 +86,39 @@ class DataKit {
             }
         }
 
-        fun saveStylePreviewImage(context: Context, style: MapStyleIndex, image: Bitmap) {
+        fun saveStylePreviewImage(context: Context, style: StyleData, image: Bitmap) {
             val file = File(context.filesDir, style.imagePath)
             val fos = FileOutputStream(file)
             image.compress(Bitmap.CompressFormat.PNG, 100, fos)
             fos.close()
         }
 
-        private fun deleteStylePreviewImage(context: Context, style: MapStyleIndex) {
+        private fun deleteStylePreviewImage(context: Context, style: StyleData) {
             val file = File(context.filesDir, style.imagePath)
             if (file.exists()) file.delete()
         }
 
-        fun loadStyleJson(context: Context, style: MapStyleIndex): String {
+        fun loadStyleJson(context: Context, style: StyleData): String {
             val file = File(context.filesDir, style.jsonPath)
             return if (file.exists()) file.readText() else ""
         }
 
-        fun saveStyleJson(context: Context, json: String, style: MapStyleIndex) {
+        fun saveStyleJson(context: Context, json: String, style: StyleData) {
             File(context.filesDir, style.jsonPath).writeText(json)
         }
 
-        private fun deleteStyleJson(context: Context, style: MapStyleIndex) {
+        private fun deleteStyleJson(context: Context, style: StyleData) {
             val file = File(context.filesDir, style.jsonPath)
             file.delete()
         }
 
         fun saveImage(context: Context, image: Bitmap, onSaved: (File) -> Unit, onError: (Exception) -> Unit) {
-            val directory =
-                File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
-                            + File.separator + context.getString(R.string.path_save_folder
-                    )
-                )
+            val directory = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
+                        + File.separator + context.getString(R.string.path_save_folder)
+            )
             if (!directory.exists()) directory.mkdirs()
-            val file = File(directory.absolutePath, UUID.randomUUID().toString() + MapStyleIndex.PNG_SUFFIX)
+            val file = File(directory.absolutePath, UUID.randomUUID().toString() + StyleData.PNG_SUFFIX)
             try {
                 val fos = FileOutputStream(file)
                 image.compress(Bitmap.CompressFormat.PNG, 100, fos)
