@@ -14,16 +14,9 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.jetbrains.anko.defaultSharedPreferences
-import java.util.*
 
 /**
  * Display dialogs in a bit better way.
- *
- * ## Public Methods
- * - [showDialog]
- * - [showSimpleAlert]
- * - [showSaveImageDialog]
- * - [showAddNewStyleTypeSelectDialog]
  *
  * @author lucka-me
  * @since 0.1
@@ -136,7 +129,9 @@ class DialogKit {
             showSimpleAlert(context, context.getString(messageId))
         }
 
-        fun showSaveImageDialog(context: Context, image: Bitmap, onSaveButtonClick: () -> Unit, onDismiss: () -> Unit) {
+        fun showSaveImageDialog(
+            context: Context, image: Bitmap, onSaveButtonClick: () -> Unit, onDismiss: () -> Unit
+        ) {
             val dialogLayout = View.inflate(context, R.layout.dialog_image, null)
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.dialog_title_result)
@@ -151,60 +146,59 @@ class DialogKit {
             dialogLayout.findViewById<ImageView>(R.id.imageView).setImageBitmap(image)
         }
 
-        fun showAddNewStyleTypeSelectDialog(context: Context, onSelected: (type: MapStyleIndex.StyleType) -> Unit) {
-            val itemList: ArrayList<CharSequence> = arrayListOf()
-            itemList.add(context.getString(R.string.dialog_add_style_from_json))
-            if (
-                !context.defaultSharedPreferences
-                    .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
-            ) {
-                itemList.add(context.getString(R.string.dialog_add_style_from_url))
-            }
-            MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.dialog_title_add_style_from)
-                .setItems(itemList.toTypedArray()) { _, which ->
-                    val type = when (which) {
-                        0 -> MapStyleIndex.StyleType.LOCAL
-                        1 -> MapStyleIndex.StyleType.ONLINE
-                        else -> null
-                    } ?: return@setItems
-                    onSelected(type)
-                }
-                .show()
-        }
+//        fun showAddNewStyleTypeSelectDialog(context: Context, onSelected: (type: StyleData.Type) -> Unit) {
+//            val itemList: ArrayList<CharSequence> = arrayListOf()
+//            itemList.add(context.getString(R.string.dialog_add_style_from_json))
+//            if (
+//                !context.defaultSharedPreferences
+//                    .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
+//            ) {
+//                itemList.add(context.getString(R.string.dialog_add_style_from_url))
+//            }
+//            MaterialAlertDialogBuilder(context)
+//                .setTitle(R.string.dialog_title_add_style_from)
+//                .setItems(itemList.toTypedArray()) { _, which ->
+//                    val type = when (which) {
+//                        0 -> StyleData.Type.LOCAL
+//                        1 -> StyleData.Type.ONLINE
+//                        else -> null
+//                    } ?: return@setItems
+//                    onSelected(type)
+//                }
+//                .show()
+//        }
+//
+//        fun showAddNewStyleFromJsonDialog(context: Context, onAddClick: (StyleData) -> Unit) {
+//            val layout = View.inflate(context, R.layout.dialog_add_style_json, null)
+//            val editTextName: TextInputEditText = layout.findViewById(R.id.text_input_edit_name)
+//            val editTextAuthor: TextInputEditText = layout.findViewById(R.id.text_input_edit_author)
+//
+//            MaterialAlertDialogBuilder(context)
+//                .setTitle(R.string.dialog_title_add_style_from_json)
+//                .setView(layout)
+//                .setPositiveButton(R.string.button_save) { _, _ ->
+//                    context.defaultSharedPreferences.edit {
+//                        putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
+//                    }
+//                    onAddClick(
+//                        StyleData(
+//                            name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
+//                            type = StyleData.Type.LOCAL, inRandom = false
+//                        )
+//                    )
+//                }
+//                .setNegativeButton(R.string.button_cancel, null)
+//                .show()
+//
+//            editTextAuthor.setText(
+//                context.defaultSharedPreferences.getString(
+//                    context.getString(R.string.pref_style_author_last),
+//                    context.getString(R.string.pref_style_author_last_default)
+//                )
+//            )
+//        }
 
-        fun showAddNewStyleFromJsonDialog(context: Context, onAddClick: (MapStyleIndex) -> Unit) {
-            val layout = View.inflate(context, R.layout.dialog_add_style_json, null)
-            val editTextName: TextInputEditText = layout.findViewById(R.id.text_input_edit_name)
-            val editTextAuthor: TextInputEditText = layout.findViewById(R.id.text_input_edit_author)
-
-            MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.dialog_title_add_style_from_json)
-                .setView(layout)
-                .setPositiveButton(R.string.button_save) { _, _ ->
-                    context.defaultSharedPreferences.edit {
-                        putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
-                    }
-                    onAddClick(
-                        MapStyleIndex(
-                            id = MapStyleIndex.generateNewId(context),
-                            name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
-                            type = MapStyleIndex.StyleType.LOCAL, inRandom = false
-                        )
-                    )
-                }
-                .setNegativeButton(R.string.button_cancel, null)
-                .show()
-
-            editTextAuthor.setText(
-                context.defaultSharedPreferences.getString(
-                    context.getString(R.string.pref_style_author_last),
-                    context.getString(R.string.pref_style_author_last_default)
-                )
-            )
-        }
-
-        fun showAddNewStyleFromUrlDialog(context: Context, onSaveClick: (MapStyleIndex) -> Unit) {
+        fun showAddNewStyleFromUrlDialog(context: Context, onSaveClick: (StyleData) -> Unit) {
             val layout = View.inflate(context, R.layout.dialog_add_style_url, null)
             val textInputEditUrl: TextInputEditText = layout.findViewById(R.id.text_input_edit_url)
             val editTextName: TextInputEditText = layout.findViewById(R.id.text_input_edit_name)
@@ -217,10 +211,9 @@ class DialogKit {
                     context.defaultSharedPreferences.edit {
                         putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
                     }
-                    onSaveClick(MapStyleIndex(
-                        id = MapStyleIndex.generateNewId(context),
+                    onSaveClick(StyleData(
                         name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
-                        url = textInputEditUrl.text.toString()
+                        uri = textInputEditUrl.text.toString()
                     ))
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -242,7 +235,7 @@ class DialogKit {
         }
 
         fun showStyleInformationDialog(
-            context: Context, style: MapStyleIndex,
+            context: Context, style: StyleData,
             onEditClick: () -> Unit, onShouldLoadPreviewImage: (ImageView) -> Unit
         ) {
             val layout = View.inflate(context, R.layout.dialog_style_info, null)
@@ -268,7 +261,7 @@ class DialogKit {
             // Disable Edit button if it's default style
             when (style.type) {
 
-                MapStyleIndex.StyleType.MAPBOX, MapStyleIndex.StyleType.LUCKA -> {
+                StyleData.Type.MAPBOX, StyleData.Type.LUCKA -> {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                 }
 
@@ -279,7 +272,7 @@ class DialogKit {
             val image = DataKit.loadStylePreviewImage(context, style)
             if (image == null) {
                 // Prevent the snapshotter issue
-                if (style.type != MapStyleIndex.StyleType.LOCAL) onShouldLoadPreviewImage(imagePreview)
+                if (style.type != StyleData.Type.LOCAL) onShouldLoadPreviewImage(imagePreview)
             } else {
                 imagePreview.setImageBitmap(image)
             }
@@ -288,7 +281,7 @@ class DialogKit {
 
         }
 
-        fun showEditStyleDialog(context: Context, style: MapStyleIndex, onSaveClick: () -> Unit) {
+        fun showEditStyleDialog(context: Context, style: StyleData, onSaveClick: () -> Unit) {
             val layout = View.inflate(context, R.layout.dialog_edit_style, null)
             val editTextName: TextInputEditText = layout.findViewById(R.id.text_input_edit_name)
             val editTextAuthor: TextInputEditText = layout.findViewById(R.id.text_input_edit_author)
@@ -303,7 +296,7 @@ class DialogKit {
                     }
                     style.name = editTextName.text.toString()
                     style.author = editTextAuthor.text.toString()
-                    if (style.type == MapStyleIndex.StyleType.ONLINE) style.url = editTextUrl.text.toString()
+                    if (style.type == StyleData.Type.ONLINE) style.uri = editTextUrl.text.toString()
                     onSaveClick()
                 }
                 .setNegativeButton(R.string.button_cancel, null)
@@ -312,11 +305,11 @@ class DialogKit {
             editTextName.setText(style.name)
             editTextAuthor.setText(style.author)
 
-            // Handle the url
-            if (style.type == MapStyleIndex.StyleType.LOCAL) {
+            // Handle the uri
+            if (style.type == StyleData.Type.LOCAL) {
                 layout.findViewById<TextInputLayout>(R.id.text_input_layout_url).visibility = View.GONE
             } else {
-                editTextUrl.setText(style.url)
+                editTextUrl.setText(style.uri)
                 val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 saveButton.isEnabled = false
                 editTextUrl.setOnFocusChangeListener { _, hasFocus ->

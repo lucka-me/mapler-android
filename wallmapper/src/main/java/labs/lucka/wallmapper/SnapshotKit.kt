@@ -10,20 +10,25 @@ class SnapshotKit(private val context: Context) {
 
     private var pixelRatio: Float = context.resources.displayMetrics.density
     private var snapshotter = MapSnapshotter(
-        context,  MapSnapshotter.Options(100, 100).withLogo(false).withPixelRatio(pixelRatio)
+        context,
+        MapSnapshotter.Options(100, 100)
+            .withLogo(false)
+            .withPixelRatio(pixelRatio)
     )
 
     fun takeSnapshot(
-        width: Int, height: Int, styleIndex: MapStyleIndex, cameraPosition: CameraPosition,
+        width: Int, height: Int, styleData: StyleData, cameraPosition: CameraPosition,
         onSnapshotReady: (Bitmap) -> Unit, onError: (String?) -> Unit
     ) {
         takeSnapshot(
             width, height, cameraPosition, {
 
-                if (styleIndex.isLocal) {
-                    snapshotter.setStyleJson(MapKit.handleLabels(context, DataKit.loadStyleJson(context, styleIndex)))
+                if (styleData.isLocal) {
+                    snapshotter.setStyleJson(
+                        MapKit.handleLabels(context, DataKit.loadStyleJson(context, styleData))
+                    )
                 } else {
-                    snapshotter.setStyleUrl(styleIndex.url)
+                    snapshotter.setStyleUrl(styleData.uri)
                 }
 
             }, onSnapshotReady, onError
@@ -48,7 +53,9 @@ class SnapshotKit(private val context: Context) {
         snapshotter.setSize((width / pixelRatio).toInt(), (height / pixelRatio).toInt())
         snapshotter.setCameraPosition(cameraPosition)
         setStyleCallback()
-        snapshotter.start({ mapSnapshot: MapSnapshot -> onSnapshotReady(mapSnapshot.bitmap) }, onError)
+        snapshotter.start(
+            { mapSnapshot: MapSnapshot -> onSnapshotReady(mapSnapshot.bitmap) }, onError
+        )
     }
 
     fun onPause() {
@@ -66,7 +73,9 @@ class SnapshotKit(private val context: Context) {
         pixelRatio = context.resources.displayMetrics.density
         snapshotter = MapSnapshotter(
             context,
-            MapSnapshotter.Options(100, 100).withLogo(false).withPixelRatio(pixelRatio)
+            MapSnapshotter.Options(100, 100)
+                .withLogo(false)
+                .withPixelRatio(pixelRatio)
         )
     }
 }
