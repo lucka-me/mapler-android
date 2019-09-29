@@ -33,14 +33,14 @@
     <string name="pref_live_wallpaper_style_random_summary_on">从列表中随机选择样式</string>
     <string name="pref_live_wallpaper_style_random_summary_off">总是使用选定的样式</string>
     <string name="pref_live_wallpaper_style_random_interval_title">随机样式间隔</string>
-    <string name="pref_live_wallpaper_style_random_interval_summary">每隔%s分钟随机更换样式</string>
+    <string name="pref_live_wallpaper_style_random_interval_summary">每隔%1$s分钟随机更换样式</string>
 
     <string name="pref_live_wallpaper_location_category_title">定位</string>
     <string name="pref_live_wallpaper_location_follow_title">定位</string>
     <string name="pref_live_wallpaper_location_follow_summary_on">地图位置将根据定位更新</string>
     <string name="pref_live_wallpaper_location_follow_summary_off">地图位置将与主页面地图一致</string>
     <string name="pref_live_wallpaper_location_radius_title">更新半径</string>
-    <string name="pref_live_wallpaper_location_radius_summary">当移动超过%s千米时更新壁纸</string>
+    <string name="pref_live_wallpaper_location_radius_summary">当移动超过%1$s千米时更新壁纸</string>
     <string name="pref_live_wallpaper_location_provider_title">定位方式</string>
     <string name="pref_live_wallpaper_location_provider_summary">选择动态壁纸的定位方式</string>
 
@@ -58,7 +58,7 @@
     <string name="pref_about_screen_title">关于</string>
 
     <string name="pref_about_summary_category_title">概览</string>
-    <string name="pref_about_summary_version_summary">%s (Build %d)</string>
+    <string name="pref_about_summary_version_summary">%1$s (Build %2$d)</string>
     <string name="pref_about_summary_github_title">GitHub</string>
     <string name="pref_about_summary_github_summary">源代码&amp;更新</string>
     <string name="pref_about_summary_license_title">许可证</string>

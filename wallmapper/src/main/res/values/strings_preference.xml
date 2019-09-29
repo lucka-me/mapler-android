@@ -2,13 +2,13 @@
 <resources>
     <string name="pref_data_version" translatable="false">pref_data_version</string>
     <string name="pref_data_structure_version" translatable="false">pref_data_structure_version</string>
-    <string name="pref_data_last_style_id" translatable="false">pref_data_last_style_id</string>
+    <string name="pref_data_last_style_uid" translatable="false">pref_data_last_style_uid</string>
     <string name="pref_map_last_position_latitude" translatable="false">pref_map_last_position_latitude</string>
     <string name="pref_map_last_position_longitude" translatable="false">pref_map_last_position_longitude</string>
     <string name="pref_map_last_position_zoom" translatable="false">pref_map_last_position_zoom</string>
     <string name="pref_map_last_position_tilt" translatable="false">pref_map_last_position_tilt</string>
     <string name="pref_map_last_position_bearing" translatable="false">pref_map_last_position_bearing</string>
-    <string name="pref_style_manager_selected_id" translatable="false">pref_style_manager_selected_id</string>
+    <string name="pref_style_manager_selected_uid" translatable="false">pref_style_manager_selected_uid</string>
     <string name="pref_style_author_last" translatable="false">pref_style_author_last</string>
     <string name="pref_style_author_last_default" translatable="false">Myself</string>
 
@@ -52,7 +52,7 @@
     <string name="pref_live_wallpaper_style_random_summary_off">Always use the selected style</string>
     <string name="pref_live_wallpaper_style_random_interval" translatable="false">pref_live_wallpaper_style_random_interval</string>
     <string name="pref_live_wallpaper_style_random_interval_title">Random Style Interval</string>
-    <string name="pref_live_wallpaper_style_random_interval_summary">Change style randomly for every %s minutes</string>
+    <string name="pref_live_wallpaper_style_random_interval_summary">Change style randomly for every %1$s minutes</string>
 
     <string name="pref_live_wallpaper_location_category_title">Location</string>
     <string name="pref_live_wallpaper_location_follow" translatable="false">pref_live_wallpaper_location_follow</string>
@@ -61,7 +61,7 @@
     <string name="pref_live_wallpaper_location_follow_summary_off">The center will be the same as the main map</string>
     <string name="pref_live_wallpaper_location_radius" translatable="false">pref_live_wallpaper_location_radius</string>
     <string name="pref_live_wallpaper_location_radius_title">Refresh Radius</string>
-    <string name="pref_live_wallpaper_location_radius_summary">Refresh the wallpaper when move further than %s km</string>
+    <string name="pref_live_wallpaper_location_radius_summary">Refresh the wallpaper when move further than %1$s km</string>
     <string name="pref_live_wallpaper_location_provider" translatable="false">pref_live_wallpaper_location_provider</string>
     <string name="pref_live_wallpaper_location_provider_title">Location Provider</string>
     <string name="pref_live_wallpaper_location_provider_summary">Choose which provider will the live wallpaper get location from</string>
@@ -86,7 +86,7 @@
 
     <string name="pref_about_summary_category_title">Summary</string>
     <string name="pref_about_summary_version_key" translatable="false">pref_about_summary_version</string>
-    <string name="pref_about_summary_version_summary">%s (Build %d)</string>
+    <string name="pref_about_summary_version_summary">%1$s (Build %2$d)</string>
     <string name="pref_about_summary_github_title">GitHub</string>
     <string name="pref_about_summary_github_summary">Source code &amp; Updates</string>
     <string name="pref_about_summary_github_url" translatable="false">https://github.com/lucka-me/Wallmapper-android</string>
