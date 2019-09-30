@@ -41,6 +41,6 @@
 
     <!-- Delete Style -->
     <string name="dialog_title_delete_style">删除</string>
-    <string name="dialog_content_delete_style">确认删除样式「%s」（作者：%s），这一操作无法撤销。</string>
+    <string name="dialog_content_delete_style">确认删除 %2$s 的样式「%1$s」，这一操作无法撤销。</string>
     <string name="dialog_content_delete_default_style">无法删除默认样式。</string>
 </resources>

@@ -41,7 +41,7 @@
 
     <!-- Delete Style -->
     <string name="dialog_title_delete_style">Delete</string>
-    <string name="dialog_content_delete_style">Confirm to delete map style \"%s\" by %s, it\'s not undoable.</string>
+    <string name="dialog_content_delete_style">Confirm to delete map style \"%1$s\" by %2$s, it\'s not undoable.</string>
     <string name="dialog_content_delete_default_style">Default style could not be deleted.</string>
 
 </resources>

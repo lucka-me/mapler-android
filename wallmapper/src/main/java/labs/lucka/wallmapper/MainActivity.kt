@@ -21,17 +21,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapKit: MapKit
     private lateinit var wallpaperManager: WallpaperManager
 
-    private lateinit var recyclerViewAdapter: MapStyleManagerRecyclerViewAdapter
-    private val recyclerViewAdapterListener: MapStyleManagerRecyclerViewAdapter.Listener =
-        object : MapStyleManagerRecyclerViewAdapter.Listener {
+    private lateinit var recyclerViewAdapter: StyleRecyclerViewAdapter
+    private val recyclerViewAdapterListener: StyleRecyclerViewAdapter.Listener =
+        object : StyleRecyclerViewAdapter.Listener {
 
-            override fun onSelectedStyleIndexChanged(newStyleIndex: MapStyleIndex) {
-                mapKit.setStyleIndex(newStyleIndex)
+            override fun onSelectedStyleDataChanged(newStyleData: StyleData) {
+                mapKit.setStyle(newStyleData)
             }
 
-            override fun onSwipeToDelete(target: MapStyleIndex, position: Int, onConfirmed: () -> MapStyleIndex) {
+            override fun onSwipeToDelete(
+                target: StyleData, position: Int, onConfirmed: () -> StyleData
+            ) {
 
-                if (target.type == MapStyleIndex.StyleType.MAPBOX || target.type == MapStyleIndex.StyleType.LUCKA) {
+                if (target.type == StyleData.Type.MAPBOX || target.type == StyleData.Type.LUCKA) {
                     DialogKit.showSimpleAlert(
                         this@MainActivity, R.string.dialog_content_delete_default_style
                     )
@@ -42,27 +44,18 @@ class MainActivity : AppCompatActivity() {
                 DialogKit.showDialog(
                     this@MainActivity,
                     R.string.dialog_title_delete_style,
-                    String.format(
-                        getString(R.string.dialog_content_delete_style), target.name, target.author
-                    ),
-                    positiveButtonListener = { _, _ ->
-
-                        mapKit.setStyleIndex(onConfirmed())
-
-
-                    },
+                    getString(R.string.dialog_content_delete_style, target.name, target.author),
+                    positiveButtonListener = { _, _ -> mapKit.setStyle(onConfirmed()) },
                     negativeButtonTextId = R.string.button_cancel,
                     negativeButtonListener = { _, _ ->
-
                         recyclerViewAdapter.notifyItemChanged(position)
-
                     },
                     cancelable = false
                 )
 
             }
 
-            override fun onSwipeToInfo(target: MapStyleIndex, position: Int) {
+            override fun onSwipeToInfo(target: StyleData, position: Int) {
 
                 DialogKit.showStyleInformationDialog(
                     this@MainActivity, target,
@@ -75,13 +68,18 @@ class MainActivity : AppCompatActivity() {
                         mapKit.getPreviewImage(
                             target,
                             { image ->
-                                DataKit.saveStylePreviewImage(this@MainActivity, target, image)
+                                DataKit.saveStylePreviewImage(
+                                    this@MainActivity, target, image
+                                )
                                 imageView.setImageBitmap(image)
                             },
-                            { error -> DialogKit.showSimpleAlert(this@MainActivity, error) }
+                            { error ->
+                                DialogKit.showSimpleAlert(this@MainActivity, error)
+                            }
                         )
                     }
                 )
+
             }
         }
 
@@ -100,7 +98,9 @@ class MainActivity : AppCompatActivity() {
             mapKit.takeSnapshot(
                 wallpaperManager.desiredMinimumWidth, wallpaperManager.desiredMinimumHeight,
                 { image ->
-                    DialogKit.showSaveImageDialog(this, image, { saveImage(image) }, { activateButtons() })
+                    DialogKit.showSaveImageDialog(
+                        this, image, { saveImage(image) }, { activateButtons() }
+                    )
                 },
                 { error ->
                     DialogKit.showSimpleAlert(this, error)
@@ -110,54 +110,59 @@ class MainActivity : AppCompatActivity() {
         }
 
         button_preferences.setOnClickListener {
-            startActivityForResult(
-                Intent(this, PreferenceActivity::class.java), DefaultValue.Request.SetPreference.code
-            )
+            startActivity(Intent(this, PreferenceActivity::class.java))
         }
 
         button_add_style.setOnClickListener {
-            DialogKit.showAddNewStyleTypeSelectDialog(this) { type ->
-                when (type) {
 
-                    MapStyleIndex.StyleType.ONLINE -> {
-                        DialogKit.showAddNewStyleFromUrlDialog(this) { newStyleIndex ->
-                            recyclerViewAdapter.add(newStyleIndex)
-                        }
-                    }
+            DialogKit.showAddNewStyleFromUrlDialog(this) { newStyleIndex ->
+                recyclerViewAdapter.add(newStyleIndex)
 
-                    MapStyleIndex.StyleType.LOCAL -> {
-                        startActivityForResult(
-                            Intent(Intent.ACTION_GET_CONTENT)
-                                .addCategory(Intent.CATEGORY_OPENABLE)
-                                .setType(getString(R.string.mime_json)),
-                            DefaultValue.Request.OpenJsonFile.code
-                        )
-                    }
-
-                    else -> { }
-                }
+                // Snapshotter.fromStyleJson() still doesn't work properly, disable the feature temporarily
+//            DialogKit.showAddNewStyleTypeSelectDialog(this) { type ->
+//                when (type) {
+//
+//                    StyleData.Type.ONLINE -> {
+//                        DialogKit.showAddNewStyleFromUrlDialog(this) { newStyleIndex ->
+//                            recyclerViewAdapter.add(newStyleIndex)
+//                        }
+//                    }
+//
+//                    StyleData.Type.LOCAL -> {
+//                        startActivityForResult(
+//                            Intent(Intent.ACTION_GET_CONTENT)
+//                                .addCategory(Intent.CATEGORY_OPENABLE)
+//                                .setType(getString(R.string.mime_json)),
+//                            DefaultValue.Request.OpenJsonFile.code
+//                        )
+//                    }
+//
+//                    else -> { }
+//                }
             }
         }
 
         mapKit.onCreate(savedInstanceState, map_view_main) { activateButtons() }
 
-        recyclerViewAdapter =
-            MapStyleManagerRecyclerViewAdapter(this, recyclerViewAdapterListener)
+        recyclerViewAdapter = StyleRecyclerViewAdapter(this, recyclerViewAdapterListener)
         recycler_view_style_manager.layoutManager = LinearLayoutManager(this)
         recycler_view_style_manager.adapter = recyclerViewAdapter
         recyclerViewAdapter.attachItemTouchHelperTo(recycler_view_style_manager)
 
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet_style_manager)
-        bottomSheetBehavior.setBottomSheetCallback(
-            object: BottomSheetBehavior.BottomSheetCallback() {
+        BottomSheetBehavior
+            .from(bottom_sheet_style_manager)
+            .bottomSheetCallback = object: BottomSheetBehavior.BottomSheetCallback() {
 
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING) mapKit.deactivateMap() else mapKit.activateMap()
-                }
-
-                override fun onSlide(bottomSheet: View, slideOffset: Float) { }
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_DRAGGING)
+                    mapKit.deactivateMap()
+                else
+                    mapKit.activateMap()
             }
-        )
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) { }
+
+        }
     }
 
     override fun onStart() {
@@ -167,9 +172,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        mapKit.onResume()
         deactivateButtons()
-        mapKit.setStyleIndex(recyclerViewAdapter.refreshSelectedStyleIndexFromPreferences()) { activateButtons() }
+        mapKit.onResume()
+        mapKit.setStyle(recyclerViewAdapter.onResume()) {
+            activateButtons()
+        }
     }
 
     override fun onPause() {
@@ -199,7 +206,9 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             DefaultValue.Request.RequestPermissionWriteExternalStorage.code -> {
@@ -208,63 +217,43 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-
-            DefaultValue.Request.SetPreference.code -> {
-                if (data == null) return
-                if (
-                    data.getBooleanExtra(
-                        getString(R.string.activity_result_should_reset_token), false
-                    )
-                ) {
-                    deactivateButtons()
-                    MapKit.setToken(this)
-                    mapKit.setStyleIndex(recyclerViewAdapter.reloadStyleIndexList()) { activateButtons() }
-                }
-                if (
-                    data.getBooleanExtra(getString(R.string.activity_result_should_reset_style), false)
-                ) {
-                    deactivateButtons()
-                    mapKit.setStyleIndex(recyclerViewAdapter.refreshSelectedStyleIndexFromPreferences(), true) {
-                        activateButtons()
-                    }
-                }
-            }
-
-            DefaultValue.Request.OpenJsonFile.code -> {
-                if (resultCode == RESULT_OK && data != null) {
-                    val json: String = DataKit.readFile(this, data.data)
-                    DialogKit.showAddNewStyleFromJsonDialog(this) { newStyleIndex ->
-                        recyclerViewAdapter.add(newStyleIndex)
-                        DataKit.saveStyleJson(this, json, newStyleIndex)
-                    }
-                }
-            }
-
-        }
-
-
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        when (requestCode) {
+//
+//            DefaultValue.Request.OpenJsonFile.code -> {
+//                if (resultCode == RESULT_OK && data != null) {
+//                    val json: String = DataKit.readFile(this, data.data)
+//                    DialogKit.showAddNewStyleFromJsonDialog(this) { newStyleIndex ->
+//                        recyclerViewAdapter.add(newStyleIndex)
+//                        DataKit.saveStyleJson(this, json, newStyleIndex)
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//    }
 
     private fun deactivateButtons() {
-        fab_snapshot.shrink()
-        fab_snapshot.isEnabled = false
+        fab_snapshot.hide()
     }
 
     private fun activateButtons() {
-        fab_snapshot.extend()
-        fab_snapshot.isEnabled = true
+        fab_snapshot.show()
     }
 
     private fun saveImage(image: Bitmap) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
             != PackageManager.PERMISSION_GRANTED
         ) {
-            if (ActivityCompat
-                    .shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
             ) {
                 DialogKit.showDialog(
                     this,
@@ -290,8 +279,9 @@ class MainActivity : AppCompatActivity() {
                     .setAnchorView(fab_snapshot)
                     .setAction(R.string.snack_saved_action_set) {
                         startActivity(
-                            wallpaperManager
-                                .getCropAndSetWallpaperIntent(DataKit.getImageContentUri(this, file))
+                            wallpaperManager.getCropAndSetWallpaperIntent(
+                                DataKit.getImageContentUri(this, file)
+                            )
                         )
                     }
                     .show()

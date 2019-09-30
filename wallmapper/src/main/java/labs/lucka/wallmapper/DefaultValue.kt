@@ -33,8 +33,8 @@ class DefaultValue {
     enum class Request(val code: Int) {
         RequestPermissionWriteExternalStorage(1001),
         RequestPermissionFineLocation(1002),
-        SetPreference(2002),
-        OpenJsonFile(3001)
+//        SetPreference(2002),
+//        OpenJsonFile(3001)
     }
 
     class Data {

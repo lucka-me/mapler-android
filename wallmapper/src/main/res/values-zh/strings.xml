@@ -3,7 +3,7 @@
     <!-- UI -->
     <string name="button_snapshot">拍照</string>
     <string name="label_style_manager">样式</string>
-    <string name="style_author">By %s</string>
+    <string name="style_author">By %1$s</string>
 
     <!-- Service -->
     <string name="service_live_label">Wallmapper Live</string>

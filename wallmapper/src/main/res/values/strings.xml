@@ -1,14 +1,13 @@
 <resources>
     <string name="application_name" translatable="false">Wallmapper</string>
-    <string name="file_style_index_list" translatable="false">styleIndexList.json</string>
-    <string name="file_style_index_list_own_token_v3" translatable="false">styleIndexListOwnToken.json</string>
+    <string name="file_style_data_list" translatable="false">StyleDataList.json</string>
     <string name="path_save_folder" translatable="false">Wallmapper</string>
     <!--<string name="mapbox_default_access_token" translatable="false">YOUR_OWN_MAPBOX_TOKEN</string>-->
 
     <!-- UI -->
     <string name="button_snapshot">Snapshot</string>
     <string name="label_style_manager">Styles</string>
-    <string name="style_author">By %s</string>
+    <string name="style_author">By %1$s</string>
 
     <!-- Service -->
     <string name="service_live_label">Wallmapper Live</string>
