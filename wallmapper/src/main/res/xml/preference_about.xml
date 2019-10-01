@@ -49,21 +49,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-            android:title="@string/pref_about_discover_category_title"
-            app:iconSpaceReserved="false">
-
-        <Preference
-                android:title="@string/pref_about_discover_mapbox_studio_title"
-                android:summary="@string/pref_about_discover_mapbox_studio_summary"
-                app:iconSpaceReserved="false" >
-            <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="@string/pref_about_discover_mapbox_studio_url" />
-        </Preference>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
             android:title="@string/pref_about_dependency_category_title"
             app:iconSpaceReserved="false">
 

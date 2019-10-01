@@ -64,6 +64,15 @@
             app:iconSpaceReserved="false" >
 
         <Preference
+                android:title="@string/pref_other_mapbox_studio_title"
+                android:summary="@string/pref_other_mapbox_studio_summary"
+                app:iconSpaceReserved="false" >
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="@string/pref_other_mapbox_studio_url" />
+        </Preference>
+
+        <Preference
                 android:title="@string/pref_other_about_title"
                 app:fragment="labs.lucka.wallmapper.PreferenceActivity$PreferenceAboutFragment"
                 app:iconSpaceReserved="false" />

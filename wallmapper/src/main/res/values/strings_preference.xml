@@ -40,6 +40,9 @@
     <string name="pref_live_wallpaper_more_summary">Touch to configure more of live wallpaper</string>
 
     <string name="pref_other_category_title">Other</string>
+    <string name="pref_other_mapbox_studio_title">Mapbox Studio</string>
+    <string name="pref_other_mapbox_studio_summary">Create and design your own map style</string>
+    <string name="pref_other_mapbox_studio_url" translatable="false">https://studio.mapbox.com</string>
     <string name="pref_other_about_title">About</string>
 
     <!-- Screen: Live Wallpaper -->
@@ -97,11 +100,6 @@
     <string name="pref_about_developer_category_title">Developer</string>
     <string name="pref_about_developer_lucka_title">Lucka</string>
     <string name="pref_about_developer_lucka_url" translatable="false">https://lucka.moe</string>
-
-    <string name="pref_about_discover_category_title">Discover</string>
-    <string name="pref_about_discover_mapbox_studio_title">Mapbox Studio</string>
-    <string name="pref_about_discover_mapbox_studio_summary">Create and design your own map style</string>
-    <string name="pref_about_discover_mapbox_studio_url" translatable="false">https://studio.mapbox.com</string>
 
     <string name="pref_about_dependency_category_title">Dependencies</string>
     <string name="pref_about_dependency_mapbox_title">Mapbox Maps SDK</string>

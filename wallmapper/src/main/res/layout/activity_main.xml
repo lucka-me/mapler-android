@@ -25,7 +25,6 @@
             android:text="@string/button_snapshot"
             android:contentDescription="@string/button_snapshot"
             app:icon="@drawable/ic_snapshot"
-            android:backgroundTint="@color/colorPrimary"
             android:insetBottom="16dp"
     />
 

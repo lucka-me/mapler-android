@@ -22,6 +22,8 @@
     <string name="pref_live_wallpaper_more_summary">轻触以设置更多选项</string>
 
     <string name="pref_other_category_title">其它</string>
+    <string name="pref_other_mapbox_studio_title">Mapbox Studio</string>
+    <string name="pref_other_mapbox_studio_summary">创建并设计您自己的地图样式</string>
     <string name="pref_other_about_title">关于</string>
 
     <!-- Screen: Live Wallpaper -->
@@ -66,10 +68,6 @@
 
     <string name="pref_about_developer_category_title">开发者</string>
     <string name="pref_about_developer_lucka_title">Lucka</string>
-
-    <string name="pref_about_discover_category_title">探索</string>
-    <string name="pref_about_discover_mapbox_studio_title">Mapbox Studio</string>
-    <string name="pref_about_discover_mapbox_studio_summary">创建并设计您自己的地图样式</string>
 
     <string name="pref_about_dependency_category_title">依赖</string>
     <string name="pref_about_dependency_mapbox_title">Mapbox Maps SDK</string>
