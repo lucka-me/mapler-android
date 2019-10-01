@@ -20,6 +20,16 @@ class StyleRecyclerViewAdapter(
 
     interface Listener {
         fun onSelectedStyleDataChanged(newStyleData: StyleData)
+        /**
+         * Triggered when card is swiped to delete (left)
+         *
+         * @param target The style to delete
+         * @param position The position of the style
+         * @param onConfirmed Triggered when confirm to delete, remove the style and card, returns the new selected style
+         *
+         * @author lucka-me
+         * @since 0.1
+         */
         fun onSwipeToDelete(target: StyleData, position: Int, onConfirmed: () -> StyleData)
         fun onSwipeToInfo(target: StyleData, position: Int)
     }
@@ -100,9 +110,17 @@ class StyleRecyclerViewAdapter(
 
                             if (selectedPosition >= position) {
                                 selectedPosition--
-                                notifyItemChanged(selectedPosition)
                             }
-                            return@onSwipeToDelete findStyleDataBy(selectedPosition)
+                            val newStyleData = findStyleDataBy(selectedPosition)
+                            if (newStyleData != null) {
+                                selectedStyleData = newStyleData
+                            } else {
+                                selectedStyleData = styleDataList[0]
+                                selectedPosition = 0
+                            }
+                            notifyItemChanged(selectedPosition)
+
+                            return@onSwipeToDelete selectedStyleData
                         }
                     }
 
@@ -156,9 +174,11 @@ class StyleRecyclerViewAdapter(
             styleDataList[0].uid
         )
         if (selectedStyleUid != null) {
-            val tmpSelectedStyleData = findStyleDataBy(selectedStyleUid)
-            if (tmpSelectedStyleData == null) {
+            val styleData = findStyleDataBy(selectedStyleUid)
+            val position = findPositionBy(selectedStyleUid)
+            if ((styleData == null) || (position == null)) {
                 selectedStyleData = styleDataList[0]
+                selectedPosition = 0
                 context.defaultSharedPreferences.edit {
                     putString(
                         context.getString(R.string.pref_style_manager_selected_uid),
@@ -166,10 +186,12 @@ class StyleRecyclerViewAdapter(
                     )
                 }
             } else {
-                selectedStyleData = tmpSelectedStyleData
+                selectedStyleData = styleData
+                selectedPosition = position
             }
         } else {
             selectedStyleData = styleDataList[0]
+            selectedPosition = 0
         }
 
     }
@@ -191,7 +213,7 @@ class StyleRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ViewHolderStyleCard) {
-            val styleData = findStyleDataBy(position)
+            val styleData = findStyleDataBy(position) ?: return
             holder.setFrom(context, styleData, (selectedStyleData.uid == styleData.uid))
         }
     }
@@ -217,16 +239,25 @@ class StyleRecyclerViewAdapter(
         return selectedStyleData
     }
 
-    private fun findStyleDataBy(position: Int): StyleData {
+    private fun findPositionBy(uid: String): Int? {
         var count = 0
-        var availableStyleData = styleDataList[0]
         for (styleData in styleDataList) {
             if (!useDefaultToken && styleData.type == StyleData.Type.LUCKA) continue
-            availableStyleData = styleData
-            if (count >= position) break
+            if (styleData.uid == uid) return count
             count += 1
         }
-        return availableStyleData
+        return null
+    }
+
+    private fun findStyleDataBy(position: Int): StyleData? {
+        var count = 0
+        for (styleData in styleDataList) {
+            if (count > position) return null
+            if (!useDefaultToken && styleData.type == StyleData.Type.LUCKA) continue
+            if (count == position) return styleData
+            count += 1
+        }
+        return null
     }
 
     private fun findStyleDataBy(uid: String): StyleData? {
