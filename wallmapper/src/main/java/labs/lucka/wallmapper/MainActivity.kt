@@ -245,15 +245,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveImage(image: Bitmap) {
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-            != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat
+                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+            PackageManager.PERMISSION_GRANTED
         ) {
-            if (
-                ActivityCompat.shouldShowRequestPermissionRationale(
-                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
+            if (ActivityCompat
+                    .shouldShowRequestPermissionRationale(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
             ) {
                 DialogKit.showDialog(
                     this,

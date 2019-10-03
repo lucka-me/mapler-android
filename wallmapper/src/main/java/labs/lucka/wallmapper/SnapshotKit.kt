@@ -72,11 +72,12 @@ class SnapshotKit(private val context: Context) {
     fun refresh() {
         snapshotter.cancel()
         pixelRatio = context.resources.displayMetrics.density
-        snapshotter = MapSnapshotter(
-            context,
-            MapSnapshotter.Options(100, 100)
-                .withLogo(false)
-                .withPixelRatio(pixelRatio)
-        )
+        snapshotter =
+            MapSnapshotter(
+                context,
+                MapSnapshotter.Options(100, 100)
+                    .withLogo(false)
+                    .withPixelRatio(pixelRatio)
+            )
     }
 }

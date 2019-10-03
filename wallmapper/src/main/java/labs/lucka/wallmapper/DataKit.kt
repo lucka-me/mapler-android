@@ -51,7 +51,8 @@ class DataKit {
                     GsonBuilder()
                         .registerTypeAdapter(type, StyleData.ArrayReader())
                         .create()
-                        .fromJson(FileReader(file), type).toCollection(ArrayList())
+                        .fromJson(FileReader(file), type)
+                        .toCollection(ArrayList())
                 } catch (error: Exception) {
                     MapKit.initStyleIndexList(context)
                 }
@@ -68,12 +69,11 @@ class DataKit {
 
         private fun checkStyleDataVersion(context: Context, list: ArrayList<StyleData>) {
 
-            if (
-                context.defaultSharedPreferences
+            if (context.defaultSharedPreferences
                     .getInt(
                         context.getString(R.string.pref_data_version), DefaultValue.Data.VERSION
-                    )
-                == CURRENT_DATA_VERSION
+                    ) ==
+                CURRENT_DATA_VERSION
             ) return
 
             var startInsertPosition = list.size - 1
@@ -139,10 +139,7 @@ class DataKit {
 //        }
 
         fun saveImage(context: Context, image: Bitmap, onSaved: (File) -> Unit, onError: (Exception) -> Unit) {
-            val directory = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
-                        + File.separator + context.getString(R.string.path_save_folder)
-            )
+            val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + File.separator + context.getString(R.string.path_save_folder))
             if (!directory.exists()) directory.mkdirs()
             val file = File(directory.absolutePath, UUID.randomUUID().toString() + StyleData.PNG_SUFFIX)
             try {

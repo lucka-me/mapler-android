@@ -25,7 +25,8 @@ class StyleRecyclerViewAdapter(
          *
          * @param target The style to delete
          * @param position The position of the style
-         * @param onConfirmed Triggered when confirm to delete, remove the style and card, returns the new selected style
+         * @param onConfirmed Triggered when confirm to delete, remove the style and card, returns
+         * the new selected style
          *
          * @author lucka-me
          * @since 0.1
@@ -39,7 +40,7 @@ class StyleRecyclerViewAdapter(
         private val onStyleSelected: (styleData: StyleData, position: Int) -> Unit
     ): RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        var styleData = StyleData("", "")
+        var styleData = StyleData("", "", "")
         private val cardView: MaterialCardView = itemView.findViewById(R.id.card_style)
         private val textName: TextView = itemView.findViewById(R.id.text_name)
         private val textAuthor: TextView = itemView.findViewById(R.id.text_author)
@@ -77,94 +78,98 @@ class StyleRecyclerViewAdapter(
 
     }
 
-    private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(
-        object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.ACTION_STATE_IDLE,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        ) {
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-                if (viewHolder !is ViewHolderStyleCard) {
-                    return
-                }
-                val styleData = viewHolder.styleData
-                val position = viewHolder.adapterPosition
-
-                when (direction) {
-
-                    ItemTouchHelper.LEFT -> {
-                        adapterListener.onSwipeToDelete(styleData, position) {
-
-                            DataKit.deleteStyleFiles(context, styleData)
-                            styleDataList.removeAt(position)
-                            notifyItemRemoved(position)
-
-                            if (selectedPosition >= position) {
-                                selectedPosition--
-                            }
-                            val newStyleData = findStyleDataBy(selectedPosition)
-                            if (newStyleData != null) {
-                                selectedStyleData = newStyleData
-                            } else {
-                                selectedStyleData = styleDataList[0]
-                                selectedPosition = 0
-                            }
-                            notifyItemChanged(selectedPosition)
-
-                            return@onSwipeToDelete selectedStyleData
-                        }
-                    }
-
-                    ItemTouchHelper.RIGHT -> {
-                        notifyItemChanged(position)
-                        adapterListener.onSwipeToInfo(styleData, position)
-                    }
-
-                }
-
-            }
-
-            override fun onChildDraw(
-                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+    private val itemTouchHelper =
+        ItemTouchHelper(
+            object : ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.ACTION_STATE_IDLE,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
             ) {
-                val icon = ContextCompat.getDrawable(
-                    context, if (dX < 0) R.drawable.ic_delete_forever else R.drawable.ic_info
-                ) ?: return
-                val iconSize = icon.intrinsicWidth
-                val itemView = viewHolder.itemView
-                val itemHeight = itemView.bottom - itemView.top
-                val iconTop = itemView.top + (itemHeight - iconSize) / 2
-                val iconBottom = iconTop + iconSize
-                val iconMargin = (itemHeight - iconSize) / 2
-                if (dX < 0) {
-                    // Remove
-                    val iconLeft = itemView.right - iconMargin - iconSize
-                    val iconRight = itemView.right - iconMargin
-                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    icon.draw(c)
-                } else {
-                    // Info
-                    val iconLeft = itemView.left + iconMargin
-                    val iconRight = iconLeft + iconSize
-                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
-                    icon.draw(c)
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
                 }
-                super.onChildDraw(
-                    c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
-                )
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                    if (viewHolder !is ViewHolderStyleCard) {
+                        return
+                    }
+                    val styleData = viewHolder.styleData
+                    val position = viewHolder.adapterPosition
+
+                    when (direction) {
+
+                        ItemTouchHelper.LEFT -> {
+                            adapterListener.onSwipeToDelete(styleData, position) {
+
+                                DataKit.deleteStyleFiles(context, styleData)
+                                styleDataList.removeAt(position)
+                                notifyItemRemoved(position)
+
+                                if (selectedPosition >= position) {
+                                    selectedPosition--
+                                }
+                                val newStyleData = findStyleDataBy(selectedPosition)
+                                if (newStyleData != null) {
+                                    selectedStyleData = newStyleData
+                                } else {
+                                    selectedStyleData = styleDataList[0]
+                                    selectedPosition = 0
+                                }
+                                notifyItemChanged(selectedPosition)
+
+                                return@onSwipeToDelete selectedStyleData
+                            }
+                        }
+
+                        ItemTouchHelper.RIGHT -> {
+                            notifyItemChanged(position)
+                            adapterListener.onSwipeToInfo(styleData, position)
+                        }
+
+                    }
+
+                }
+
+                override fun onChildDraw(
+                    c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                    dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+                ) {
+                    val icon = ContextCompat
+                        .getDrawable(
+                            context,
+                            if (dX < 0) R.drawable.ic_delete_forever else R.drawable.ic_info
+                        )
+                        ?: return
+                    val iconSize = icon.intrinsicWidth
+                    val itemView = viewHolder.itemView
+                    val itemHeight = itemView.bottom - itemView.top
+                    val iconTop = itemView.top + (itemHeight - iconSize) / 2
+                    val iconBottom = iconTop + iconSize
+                    val iconMargin = (itemHeight - iconSize) / 2
+                    if (dX < 0) {
+                        // Remove
+                        val iconLeft = itemView.right - iconMargin - iconSize
+                        val iconRight = itemView.right - iconMargin
+                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                        icon.draw(c)
+                    } else {
+                        // Info
+                        val iconLeft = itemView.left + iconMargin
+                        val iconRight = iconLeft + iconSize
+                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                        icon.draw(c)
+                    }
+                    super.onChildDraw(
+                        c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
+                    )
+                }
             }
-        }
-    )
+        )
 
     init {
         useDefaultToken = MapKit.useDefaultToken(context)

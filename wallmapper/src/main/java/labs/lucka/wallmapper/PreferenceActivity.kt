@@ -58,11 +58,11 @@ class PreferenceActivity :
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preference_live_wallpaper, rootKey)
 
-            if (
-                ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                != PackageManager.PERMISSION_GRANTED
+            if (ContextCompat
+                    .checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    ) !=
+                PackageManager.PERMISSION_GRANTED
             ) {
                 requireContext().defaultSharedPreferences.edit {
                     putBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
@@ -72,81 +72,92 @@ class PreferenceActivity :
             // Set input type
             findPreference<EditTextPreference>(
                 getString(R.string.pref_live_wallpaper_style_random_interval)
-            )?.apply {
-                setOnBindEditTextListener { editText ->
-                    editText.inputType = InputType.TYPE_CLASS_NUMBER
+            )
+                ?.apply {
+                    setOnBindEditTextListener { editText ->
+                        editText.inputType = InputType.TYPE_CLASS_NUMBER
+                    }
+                    summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
+                        getString(
+                            R.string.pref_live_wallpaper_style_random_interval_summary, preference.text
+                        )
+                    }
                 }
-                summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
-                    getString(
-                        R.string.pref_live_wallpaper_style_random_interval_summary, preference.text
-                    )
-                }
-            }
             findPreference<EditTextPreference>(
                 getString(R.string.pref_live_wallpaper_location_radius)
-            )?.apply {
-                setOnBindEditTextListener { editText ->
-                    editText.inputType =
-                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            )
+                ?.apply {
+                    setOnBindEditTextListener { editText ->
+                        editText.inputType =
+                            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    }
+                    summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
+                        getString(R.string.pref_live_wallpaper_location_radius_summary, preference.text)
+                    }
                 }
-                summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
-                    getString(R.string.pref_live_wallpaper_location_radius_summary, preference.text)
-                }
-            }
 
             findPreference<SwitchPreferenceCompat>(
                 getString(R.string.pref_live_wallpaper_location_follow)
-            )?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                if (newValue as Boolean) {
-                    if (
-                        ContextCompat.checkSelfPermission(
-                            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                        )
-                        == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        true
-                    } else {
-                        if (
-                            ActivityCompat.shouldShowRequestPermissionRationale(
-                                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
-                            )
+            )
+                ?.onPreferenceChangeListener = Preference
+                .OnPreferenceChangeListener { _, newValue ->
+                    if (newValue as Boolean) {
+                        if (ContextCompat
+                                .checkSelfPermission(
+                                    requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                                ) ==
+                            PackageManager.PERMISSION_GRANTED
                         ) {
-                            DialogKit.showDialog(
-                                requireContext(),
-                                R.string.dialog_title_request_permission,
-                                R.string.request_permission_fine_location,
-                                cancelable = false
-                            )
+                            true
                         } else {
-                            ActivityCompat.requestPermissions(
-                                requireActivity(),
-                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                DefaultValue.Request.RequestPermissionFineLocation.code
-                            )
+                            if (
+                                ActivityCompat
+                                    .shouldShowRequestPermissionRationale(
+                                        requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+                                    )
+                            ) {
+                                DialogKit.showDialog(
+                                    requireContext(),
+                                    R.string.dialog_title_request_permission,
+                                    R.string.request_permission_fine_location,
+                                    cancelable = false
+                                )
+                            } else {
+                                ActivityCompat.requestPermissions(
+                                    requireActivity(),
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                    DefaultValue.Request.RequestPermissionFineLocation.code
+                                )
+                            }
+                            false
                         }
-                        false
+                    } else {
+                        true
                     }
-                } else {
-                    true
                 }
-            }
 
             findPreference<Preference>(getString(R.string.pref_live_wallpaper_camera_reset))
                 ?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
 
                 val sharedPreferences = requireContext().defaultSharedPreferences
-                val zoom = sharedPreferences.getFloat(
-                    getString(R.string.pref_map_last_position_zoom),
-                    DefaultValue.Map.ZOOM.toFloat()
-                ).toInt()
-                val tilt = sharedPreferences.getFloat(
-                    getString(R.string.pref_map_last_position_tilt),
-                    DefaultValue.Map.TILT.toFloat()
-                ).toInt()
-                val bearing = sharedPreferences.getFloat(
-                    getString(R.string.pref_map_last_position_bearing),
-                    DefaultValue.Map.BEARING.toFloat()
-                ).toInt()
+                val zoom = sharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_zoom),
+                        DefaultValue.Map.ZOOM.toFloat()
+                    )
+                    .toInt()
+                val tilt = sharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_tilt),
+                        DefaultValue.Map.TILT.toFloat()
+                    )
+                    .toInt()
+                val bearing = sharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_bearing),
+                        DefaultValue.Map.BEARING.toFloat()
+                    )
+                    .toInt()
 
                 sharedPreferences.edit {
                     putInt(getString(R.string.pref_live_wallpaper_camera_zoom), zoom)
@@ -179,15 +190,16 @@ class PreferenceActivity :
 
     @Keep
     class PreferenceAboutFragment : PreferenceFragmentCompat() {
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preference_about, rootKey)
 
-            findPreference<Preference>(
-                getString(R.string.pref_about_summary_version_key)
-            )?.summary = getString(
-                R.string.pref_about_summary_version_summary,
-                BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE
-            )
+            findPreference<Preference>(getString(R.string.pref_about_summary_version_key))
+                ?.summary =
+                getString(
+                    R.string.pref_about_summary_version_summary,
+                    BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE
+                )
 
         }
 
@@ -206,20 +218,15 @@ class PreferenceActivity :
 
         supportFragmentManager
             .beginTransaction()
-            .add(
-                R.id.preference_frame,
-                PreferenceMainFragment()
-            )
+            .add(R.id.preference_frame, PreferenceMainFragment())
             .commit()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item != null) {
-            when (item.itemId) {
-                android.R.id.home -> {
-                    onBackPressed()
-                    return true
-                }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
             }
         }
         return super.onOptionsItemSelected(item)
@@ -234,8 +241,9 @@ class PreferenceActivity :
                 defaultSharedPreferences.edit {
                     putBoolean(getString(R.string.pref_live_wallpaper_location_follow), true)
                 }
-                (supportFragmentManager.findFragmentById(R.id.preference_frame)
-                        as PreferenceLiveWallpaperFragment?)
+                val fragment = supportFragmentManager
+                    .findFragmentById(R.id.preference_frame) as PreferenceLiveWallpaperFragment?
+                fragment
                     ?.findPreference<SwitchPreferenceCompat>(
                         getString(R.string.pref_live_wallpaper_location_follow)
                     )
@@ -256,8 +264,8 @@ class PreferenceActivity :
             )
             .replace(
                 R.id.preference_frame,
-                supportFragmentManager.fragmentFactory
-                    .instantiate(classLoader, pref.fragment).apply {
+                supportFragmentManager.fragmentFactory.instantiate(classLoader, pref.fragment)
+                    .apply {
                         arguments = pref.extras
                         setTargetFragment(caller, 0)
                     }

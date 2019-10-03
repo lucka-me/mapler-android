@@ -209,12 +209,18 @@ class DialogKit {
                 .setView(layout)
                 .setPositiveButton(R.string.button_save) { _, _ ->
                     context.defaultSharedPreferences.edit {
-                        putString(context.getString(R.string.pref_style_author_last), editTextAuthor.text.toString())
+                        putString(
+                            context.getString(R.string.pref_style_author_last),
+                            editTextAuthor.text.toString()
+                        )
                     }
-                    onSaveClick(StyleData(
-                        name = editTextName.text.toString(), author = editTextAuthor.text.toString(),
-                        uri = textInputEditUrl.text.toString()
-                    ))
+                    onSaveClick(
+                        StyleData(
+                            name = editTextName.text.toString(),
+                            author = editTextAuthor.text.toString(),
+                            uri = textInputEditUrl.text.toString()
+                        )
+                    )
                 }
                 .setNegativeButton(R.string.button_cancel, null)
                 .show()
@@ -255,8 +261,9 @@ class DialogKit {
                 .show()
 
             textName.text = style.name
-            textAuthor.text = String.format(context.getString(R.string.style_author), style.author)
-            imageType.setImageResource(if (style.isLocal) R.drawable.ic_local else R.drawable.ic_online)
+            textAuthor.text = context.getString(R.string.style_author, style.author)
+            imageType
+                .setImageResource(if (style.isLocal) R.drawable.ic_local else R.drawable.ic_online)
 
             // Disable Edit button if it's default style
             when (style.type) {
@@ -307,7 +314,8 @@ class DialogKit {
 
             // Handle the uri
             if (style.type == StyleData.Type.LOCAL) {
-                layout.findViewById<TextInputLayout>(R.id.text_input_layout_url).visibility = View.GONE
+                layout.findViewById<TextInputLayout>(R.id.text_input_layout_url)
+                    .visibility = View.GONE
             } else {
                 editTextUrl.setText(style.uri)
                 val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)

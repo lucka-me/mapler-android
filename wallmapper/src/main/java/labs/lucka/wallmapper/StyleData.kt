@@ -64,8 +64,8 @@ data class StyleData(
     val imagePath: String
         get() = uid + PNG_SUFFIX
 
-    val jsonPath: String
-        get() = uid + JSON_SUFFIX
+//    val jsonPath: String
+//        get() = uid + JSON_SUFFIX
 
     val isLocal: Boolean
         get() = (type == Type.LOCAL || type == Type.DOWNLOADED)
@@ -87,7 +87,7 @@ data class StyleData(
     companion object {
 
         const val PNG_SUFFIX: String = ".png"
-        const val JSON_SUFFIX: String = ".json"
+//        const val JSON_SUFFIX: String = ".json"
 
     }
 }

@@ -48,27 +48,32 @@ class MapKit(private val context: Context) {
         this.mapView.getMapAsync { newMap: MapboxMap ->
 
             map = newMap
-
-            val centerLat: Float = context.defaultSharedPreferences.getFloat(
-                context.getString(R.string.pref_map_last_position_latitude),
-                DefaultValue.Map.LATITUDE.toFloat()
-            )
-            val centerLng: Float = context.defaultSharedPreferences.getFloat(
-                context.getString(R.string.pref_map_last_position_longitude),
-                DefaultValue.Map.LONGITUDE.toFloat()
-            )
-            val zoom: Float = context.defaultSharedPreferences.getFloat(
-                context.getString(R.string.pref_map_last_position_zoom),
-                DefaultValue.Map.ZOOM.toFloat()
-            )
-            val tilt: Float = context.defaultSharedPreferences.getFloat(
-                context.getString(R.string.pref_map_last_position_tilt),
-                DefaultValue.Map.TILT.toFloat()
-            )
-            val bearing: Float = context.defaultSharedPreferences.getFloat(
-                context.getString(R.string.pref_map_last_position_bearing),
-                DefaultValue.Map.BEARING.toFloat()
-            )
+            val preferences = context.defaultSharedPreferences
+            val centerLat: Float = preferences
+                .getFloat(
+                    context.getString(R.string.pref_map_last_position_latitude),
+                    DefaultValue.Map.LATITUDE.toFloat()
+                )
+            val centerLng: Float = preferences
+                .getFloat(
+                    context.getString(R.string.pref_map_last_position_longitude),
+                    DefaultValue.Map.LONGITUDE.toFloat()
+                )
+            val zoom: Float = preferences
+                .getFloat(
+                    context.getString(R.string.pref_map_last_position_zoom),
+                    DefaultValue.Map.ZOOM.toFloat()
+                )
+            val tilt: Float = preferences
+                .getFloat(
+                    context.getString(R.string.pref_map_last_position_tilt),
+                    DefaultValue.Map.TILT.toFloat()
+                )
+            val bearing: Float = preferences
+                .getFloat(
+                    context.getString(R.string.pref_map_last_position_bearing),
+                    DefaultValue.Map.BEARING.toFloat()
+                )
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(centerLat.toDouble(), centerLng.toDouble()))
                 .zoom(zoom.toDouble())
@@ -99,10 +104,12 @@ class MapKit(private val context: Context) {
                     position.target.longitude.toFloat()
                 )
                 putFloat(
-                    context.getString(R.string.pref_map_last_position_zoom), position.zoom.toFloat()
+                    context.getString(R.string.pref_map_last_position_zoom),
+                    position.zoom.toFloat()
                 )
                 putFloat(
-                    context.getString(R.string.pref_map_last_position_tilt), position.tilt.toFloat()
+                    context.getString(R.string.pref_map_last_position_tilt),
+                    position.tilt.toFloat()
                 )
                 putFloat(
                     context.getString(R.string.pref_map_last_position_bearing),
@@ -192,18 +199,20 @@ class MapKit(private val context: Context) {
     companion object {
 
         fun getToken(context: Context): String {
-            var token: String = if (
-                context.defaultSharedPreferences.getBoolean(
-                    context.getString(R.string.pref_mapbox_use_default_token), true
-                )
-            ) {
-                context.getString(R.string.mapbox_default_access_token)
-            } else {
-                context.defaultSharedPreferences.getString(
-                    context.getString(R.string.pref_mapbox_token),
-                    context.getString(R.string.pref_mapbox_token_default)
-                ) ?: context.getString(R.string.pref_mapbox_token_default)
-            }
+            var token: String =
+                if (
+                    context.defaultSharedPreferences
+                        .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
+                ) {
+                    context.getString(R.string.mapbox_default_access_token)
+                } else {
+                    context.defaultSharedPreferences
+                        .getString(
+                            context.getString(R.string.pref_mapbox_token),
+                            context.getString(R.string.pref_mapbox_token_default)
+                        )
+                        ?: context.getString(R.string.pref_mapbox_token_default)
+                }
             if (token.isBlank()) token = context.getString(R.string.pref_mapbox_token_default)
             return token
         }
@@ -215,7 +224,7 @@ class MapKit(private val context: Context) {
         fun useDefaultToken(context: Context) = context.defaultSharedPreferences
             .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
 
-        fun displayLabels(context: Context) =context.defaultSharedPreferences
+        fun displayLabels(context: Context) = context.defaultSharedPreferences
             .getBoolean(context.getString(R.string.pref_display_label), true)
 
         fun initStyleIndexList(context: Context): ArrayList<StyleData> {
@@ -275,17 +284,20 @@ class MapKit(private val context: Context) {
 
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
 
-            val selectedStyleUid = context.defaultSharedPreferences.getString(
-                context.getString(R.string.pref_style_manager_selected_uid),
-                mapStyleIndexList[0].uid
-            )
+            val selectedStyleUid = context.defaultSharedPreferences
+                .getString(
+                    context.getString(R.string.pref_style_manager_selected_uid),
+                    mapStyleIndexList[0].uid
+                )
             mapStyleIndexList.forEach {
                 if (it.uid == selectedStyleUid) return it
             }
             // Not found
             context.defaultSharedPreferences.edit {
-                putString(context.getString(R.string.pref_style_manager_selected_uid),
-                    mapStyleIndexList[0].uid)
+                putString(
+                    context.getString(R.string.pref_style_manager_selected_uid),
+                    mapStyleIndexList[0].uid
+                )
             }
             return mapStyleIndexList[0]
         }
@@ -293,9 +305,11 @@ class MapKit(private val context: Context) {
         fun getRandomStyleData(context: Context): StyleData {
 
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
-            val selectedStyleId = context.defaultSharedPreferences.getString(
-                context.getString(R.string.pref_style_manager_selected_uid), mapStyleIndexList[0].uid
-            )
+            val selectedStyleId = context.defaultSharedPreferences
+                .getString(
+                    context.getString(R.string.pref_style_manager_selected_uid),
+                    mapStyleIndexList[0].uid
+                )
             val onRandomIndexList = arrayListOf<Int>()
             for (i in 0 until mapStyleIndexList.size) {
                 val style = mapStyleIndexList[i]
