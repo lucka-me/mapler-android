@@ -13,21 +13,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+    <include layout="@layout/bottom_sheet_style_manager"/>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fab_snapshot"
-            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
-            android:layout_gravity="top|center_horizontal"
             app:layout_anchor="@id/bottom_sheet_style_manager"
             app:layout_anchorGravity="top|center_horizontal"
+            app:icon="@drawable/ic_snapshot"
             android:text="@string/button_snapshot"
             android:contentDescription="@string/button_snapshot"
-            app:icon="@drawable/ic_snapshot"
-            android:insetBottom="16dp"
-    />
-
-    <include layout="@layout/bottom_sheet_style_manager"/>
+            app:layout_insetEdge="bottom"
+            android:insetTop="16dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

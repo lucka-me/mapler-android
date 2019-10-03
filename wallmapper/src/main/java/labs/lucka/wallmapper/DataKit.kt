@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
-import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
