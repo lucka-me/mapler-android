@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -245,29 +246,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveImage(image: Bitmap) {
-        if (ContextCompat
-                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat
-                    .shouldShowRequestPermissionRationale(
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ContextCompat
+                    .checkSelfPermission(
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
+                    ) !=
+                PackageManager.PERMISSION_GRANTED
             ) {
-                DialogKit.showDialog(
-                    this,
-                    R.string.dialog_title_request_permission,
-                    R.string.request_permission_write_external_permission,
-                    cancelable = false
-                )
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    DefaultValue.Request.RequestPermissionWriteExternalStorage.code
-                )
+                if (ActivityCompat
+                        .shouldShowRequestPermissionRationale(
+                            this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                ) {
+                    DialogKit.showDialog(
+                        this,
+                        R.string.dialog_title_request_permission,
+                        R.string.request_permission_write_external_permission,
+                        cancelable = false
+                    )
+                } else {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        DefaultValue.Request.RequestPermissionWriteExternalStorage.code
+                    )
+                }
+                return
             }
-            return
         }
 
         deactivateButtons()
