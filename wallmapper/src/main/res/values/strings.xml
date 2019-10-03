@@ -1,7 +1,8 @@
 <resources>
     <string name="application_name" translatable="false">Wallmapper</string>
     <string name="file_style_data_list" translatable="false">StyleDataList.json</string>
-    <string name="path_save_folder" translatable="false">Wallmapper</string>
+    <string name="path_wallpaper" translatable="false">Pictures/Wallmapper</string>
+    <string name="file_wallpaper" translatable="false">%1$d.png</string>
     <!--<string name="mapbox_default_access_token" translatable="false">YOUR_OWN_MAPBOX_TOKEN</string>-->
 
     <!-- UI -->

@@ -5,9 +5,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Environment
+import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -138,56 +139,40 @@ class DataKit {
 //            file.delete()
 //        }
 
-        fun saveImage(context: Context, image: Bitmap, onSaved: (File) -> Unit, onError: (Exception) -> Unit) {
-            val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + File.separator + context.getString(R.string.path_save_folder))
-            if (!directory.exists()) directory.mkdirs()
-            val file = File(directory.absolutePath, UUID.randomUUID().toString() + StyleData.PNG_SUFFIX)
-            try {
-                val fos = FileOutputStream(file)
-                image.compress(Bitmap.CompressFormat.PNG, 100, fos)
-                fos.close()
-                onSaved(file)
-            } catch (error: Exception) {
-                onError(error)
+        fun saveImage(
+            context: Context, image: Bitmap, onSaved: (Uri) -> Unit, onError: (Exception) -> Unit
+        ) {
+
+            val contentValues = ContentValues().apply {
+                put(
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    context.getString(R.string.file_wallpaper, System.currentTimeMillis())
+                )
+                put(MediaStore.MediaColumns.MIME_TYPE, context.getString(R.string.mime_png))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    put(
+                        MediaStore.MediaColumns.RELATIVE_PATH,
+                        context.getString(R.string.path_wallpaper)
+                    )
             }
-        }
-
-        /**
-         * Convert image file to content URI, which is required by WallpaperManager.getCropAndSetWallpaperIntent().
-         *
-         * @param [context] The context.
-         * @param [imageFile] Target file.
-         *
-         * @return The content URI of [imageFile].
-         *
-         * @author lucka-me
-         * @since 0.1
-         * @see <a href="https://stackoverflow.com/a/13338647">Convert file uri to content uri | Stack Overflow</a>
-         */
-        fun getImageContentUri(context: Context, imageFile: File): Uri? {
-            val filePath = imageFile.absolutePath
-            val externalContenUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            val cursor = context.contentResolver.query(
-                externalContenUri,
-                arrayOf(MediaStore.Images.Media._ID),
-                MediaStore.Images.Media.DATA + "=? ",
-                arrayOf(filePath), null
-            )
-
-            return if (cursor != null && cursor.moveToFirst()) {
-                val id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-                cursor.close()
-                Uri.withAppendedPath(externalContenUri, id.toString())
+            val resolver = context.contentResolver
+            val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
             } else {
-                cursor?.close()
-                if (imageFile.exists()) {
-                    val values = ContentValues()
-                    values.put(MediaStore.Images.Media.DATA, filePath)
-                    context.contentResolver.insert(externalContenUri, values)
-                } else {
-                    null
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            }
+            val item = resolver.insert(collection, contentValues)
+            if (item != null) {
+                try {
+                    val outputStream = resolver.openOutputStream(item)
+                    image.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    outputStream?.close()
+                    onSaved(item)
+                } catch (error: Exception) {
+                    onError(error)
                 }
             }
+
         }
 
         /**

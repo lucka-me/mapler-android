@@ -273,13 +273,14 @@ class MainActivity : AppCompatActivity() {
         deactivateButtons()
         DataKit.saveImage(
             this, image,
-            { file ->
+            { uri ->
                 Snackbar.make(fab_snapshot, R.string.snack_saved_text, Snackbar.LENGTH_LONG)
                     .setAnchorView(fab_snapshot)
                     .setAction(R.string.snack_saved_action_set) {
                         startActivity(
                             wallpaperManager.getCropAndSetWallpaperIntent(
-                                DataKit.getImageContentUri(this, file)
+                                uri
+                                //DataKit.getImageContentUri(this, file)
                             )
                         )
                     }

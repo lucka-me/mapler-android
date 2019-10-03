@@ -5,12 +5,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     def newVersionCode = getVersionCode()
     defaultConfig {
         applicationId "labs.lucka.wallmapper"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode newVersionCode
         versionName "0.1.9"
     }
