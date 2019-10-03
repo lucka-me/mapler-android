@@ -2,7 +2,7 @@ package labs.lucka.wallmapper
 
 import android.Manifest
 import android.app.WallpaperColors
-import android.content.SharedPreferences
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
@@ -14,6 +14,7 @@ import android.service.wallpaper.WallpaperService
 import android.view.SurfaceHolder
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.content.getSystemService
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -22,44 +23,96 @@ import org.jetbrains.anko.runOnUiThread
 import java.util.*
 import kotlin.concurrent.timer
 
+/**
+ * The service for live wallpaper.
+ *
+ * @property FOLLOW_POSITION_RADIUS_BUFFER When the distance between last position and updated
+ * position is in the buffer range, remove the old updates and request the regular one.
+ *
+ * @author lucka-me
+ * @since 0.1
+ */
 class WallmapperLiveService : WallpaperService() {
 
-    private inner class WallmapperLiveEngine : Engine() {
+    private inner class WallmapperLiveEngine(val context: Context) : Engine() {
 
         private var timerRandomStyle: Timer = Timer()
         private var timerRandomStyleEnabled: Boolean = false
         private var timerRandomStyleInterval: Int = 0
-        private val  timerTaskRandomStyle: TimerTask.() -> Unit =  {
-            styleIndex = MapKit.getRandomStyleIndex(this@WallmapperLiveService)
-            runOnUiThread { takeSnapshot() }
-        }
-
-        private var followLocation: Boolean = false
-        private lateinit var locationManager: LocationManager
+        private lateinit var timerTaskRandomStyle: TimerTask.() -> Unit
 
         private val cameraBuilder: CameraPosition.Builder = CameraPosition.Builder()
         private var zoom: Double = -1.0
         private var bearing: Double = -1.0
         private var tilt: Double = -1.0
-        private var styleIndex: MapStyleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
-        private val snapshotKit: SnapshotKit = SnapshotKit(this@WallmapperLiveService)
+        private var styleData: StyleData = StyleData("", "", "")
+        private lateinit var snapshotKit: SnapshotKit
 
-        private val lastLatLng: LatLng = LatLng()
         private var lastImage: Bitmap? = null
-
         val onSnapshotReady: (Bitmap) -> Unit = { image ->
             lastImage = image
             redraw(image)
         }
         val onSnapshotError: (String?) -> Unit = { takeSnapshot() }
 
-        val locationListener: LocationListener = object : LocationListener {
+        private var followPosition: Boolean = false
+        private var followPositionRadius: Float = -1.0F
+        private val lastLatLng: LatLng = LatLng()
+        private var locationManager: LocationManager? = null
+        private val locationListenerFirst: LocationListener = object : LocationListener {
 
             override fun onLocationChanged(location: Location?) {
-                if (location == null) return
-                lastLatLng.latitude = location.latitude
-                lastLatLng.longitude = location.longitude
+
+                if (location != null) {
+                    val distance = lastLatLng.distanceTo(LatLng(location))
+                    if (distance >= followPositionRadius) {
+                        lastLatLng.latitude = location.latitude
+                        lastLatLng.longitude = location.longitude
+                        requestLocationUpdates()
+                    } else {
+                        requestLocationUpdates(
+                            (followPositionRadius - distance - FOLLOW_POSITION_RADIUS_BUFFER)
+                                .toFloat()
+                        )
+                    }
+                } else {
+                    requestLocationUpdates()
+                }
                 takeSnapshot()
+
+            }
+
+            override fun onProviderDisabled(provider: String?) { }
+            override fun onProviderEnabled(provider: String?) { }
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) { }
+
+        }
+        private val locationListener: LocationListener = object : LocationListener {
+
+            override fun onLocationChanged(location: Location?) {
+
+                if (location == null) return
+
+                val distance = lastLatLng.distanceTo(LatLng(location))
+                if (distance >= followPositionRadius) {
+                    lastLatLng.latitude = location.latitude
+                    lastLatLng.longitude = location.longitude
+                    takeSnapshot()
+                } else {
+                    locationManager?.removeUpdates(this)
+                    if (distance >= (followPositionRadius - FOLLOW_POSITION_RADIUS_BUFFER)) {
+                        lastLatLng.latitude = location.latitude
+                        lastLatLng.longitude = location.longitude
+                        takeSnapshot()
+                        requestLocationUpdates()
+                    } else {
+                        requestLocationUpdates(
+                            (followPositionRadius - distance - FOLLOW_POSITION_RADIUS_BUFFER)
+                                .toFloat()
+                        )
+                    }
+                }
+
             }
 
             override fun onProviderDisabled(provider: String?) { }
@@ -67,52 +120,35 @@ class WallmapperLiveService : WallpaperService() {
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) { }
         }
 
-        val onSharedPreferenceChangeListener: (SharedPreferences, String) -> Unit = { _, key ->
-            when (key) {
-                getString(R.string.pref_live_wallpaper_style_random),
-                getString(R.string.pref_live_wallpaper_style_random_interval) -> {
-                    updateRandomStyleTimerFromPreferences()
-                }
-
-                getString(R.string.pref_live_wallpaper_location_follow) -> {
-                }
-            }
-        }
-
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
             super.onSurfaceCreated(holder)
 
-            Mapbox.getInstance(this@WallmapperLiveService, MapKit.getToken(this@WallmapperLiveService))
+            Mapbox.getInstance(context, MapKit.getToken(context))
 
-            lastLatLng.latitude = defaultSharedPreferences
-                .getFloat(getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat()).toDouble()
-            lastLatLng.longitude = defaultSharedPreferences
-                .getFloat(getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat()).toDouble()
-            cameraBuilder.target(lastLatLng)
+            snapshotKit = SnapshotKit(context)
 
-            resetAllFromPreferences()
-            defaultSharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
+            locationManager = getSystemService()
 
-            locationManager = getSystemService(LocationManager::class.java)
-            refresh(isFirst = true)
+            timerTaskRandomStyle = {
+                styleData = MapKit.getRandomStyleData(context)
+                runOnUiThread { takeSnapshot() }
+            }
+
+            if (checkCameraPreferences()) takeSnapshot()
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
             super.onVisibilityChanged(visible)
             if (visible) {
-                var preferencesChanged = resetCameraFromPreferences()
-                if (
-                    !defaultSharedPreferences
-                        .getBoolean(getString(R.string.pref_live_wallpaper_style_random), false)
-                )
-                    preferencesChanged = resetStyleIndexFromPreferences()
-                refresh(preferencesChanged)
+                if (checkPreferences()) takeSnapshot()
             } else {
-                locationManager.removeUpdates(locationListener)
+                locationManager?.removeUpdates(locationListener)
             }
         }
 
-        override fun onSurfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+        override fun onSurfaceChanged(
+            holder: SurfaceHolder?, format: Int, width: Int, height: Int
+        ) {
             super.onSurfaceChanged(holder, format, width, height)
             takeSnapshot()
         }
@@ -121,8 +157,7 @@ class WallmapperLiveService : WallpaperService() {
             super.onSurfaceDestroyed(holder)
             timerRandomStyle.cancel()
             snapshotKit.onPause()
-            locationManager.removeUpdates(locationListener)
-            defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
+            locationManager?.removeUpdates(locationListener)
         }
 
         override fun onComputeColors(): WallpaperColors? {
@@ -138,61 +173,11 @@ class WallmapperLiveService : WallpaperService() {
             }
         }
 
-        private fun refresh(preferencesChanged: Boolean = true, isFirst: Boolean = false) {
-            var shouldTakeSnapshot = preferencesChanged
-            if (followLocation) {
-                requestLocationUpdates(isFirst)
-                if (isFirst) shouldTakeSnapshot = false // Will take snapshot
-            } else {
-                val newLatitude = defaultSharedPreferences
-                    .getFloat(getString(R.string.pref_map_last_position_latitude), DefaultValue.Map.LATITUDE.toFloat())
-                    .toDouble()
-                val newLongitude = defaultSharedPreferences
-                    .getFloat(
-                        getString(R.string.pref_map_last_position_longitude), DefaultValue.Map.LONGITUDE.toFloat()
-                    )
-                    .toDouble()
-                if (newLatitude != lastLatLng.latitude || newLongitude != newLongitude) {
-                    lastLatLng.latitude = newLatitude
-                    lastLatLng.longitude = newLongitude
-                    shouldTakeSnapshot = true
-                }
-            }
-            if (shouldTakeSnapshot) takeSnapshot()
-        }
-
-        private fun requestLocationUpdates(getLocationImmediately: Boolean = false) {
-            if (
-                ContextCompat.checkSelfPermission(
-                    this@WallmapperLiveService, Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                var radius = defaultSharedPreferences
-                    .getString(getString(R.string.pref_live_wallpaper_location_radius), DefaultValue.LiveWallpaper.RADIUS.toString())
-                    ?.toFloatOrNull()
-                if (radius == null) radius = DefaultValue.LiveWallpaper.RADIUS
-                val provider = getProvider()
-                locationManager.requestLocationUpdates(
-                    provider, 0L,
-                    radius * 1000,
-                    locationListener
-                )
-                // May not return a location immediately
-                if (getLocationImmediately)
-                    locationListener.onLocationChanged(locationManager.getLastKnownLocation(provider))
-            } else {
-                defaultSharedPreferences.edit {
-                    putBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
-                }
-                followLocation = false
-            }
-        }
-
         private fun takeSnapshot() {
             snapshotKit.refresh()
+            cameraBuilder.target(lastLatLng)
             snapshotKit.takeSnapshot(
-                desiredMinimumWidth, desiredMinimumHeight, styleIndex, cameraBuilder.build(),
+                desiredMinimumWidth, desiredMinimumHeight, styleData, cameraBuilder.build(),
                 onSnapshotReady, onSnapshotError
             )
         }
@@ -206,139 +191,277 @@ class WallmapperLiveService : WallpaperService() {
             }
         }
 
-        private fun resetAllFromPreferences() {
-            updateRandomStyleTimerFromPreferences()
-            resetCameraFromPreferences()
-            resetStyleIndexFromPreferences()
-        }
-
-        private fun updateRandomStyleTimerFromPreferences() {
-            if (
-                defaultSharedPreferences
-                    .getBoolean(getString(R.string.pref_live_wallpaper_style_random), false)
-            ) {
-                val newInterval =
-                    defaultSharedPreferences.getString(
-                        getString(R.string.pref_live_wallpaper_style_random_interval),
-                        DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
-                    )?.toIntOrNull()
-                if (newInterval == null || newInterval == 0) {
-                    timerRandomStyleInterval = 0
-                    timerRandomStyle.cancel()
-                    timerRandomStyleEnabled = false
-                } else if (!timerRandomStyleEnabled || newInterval != timerRandomStyleInterval) {
-                    timerRandomStyle.cancel()
-                    timerRandomStyle =
-                        timer(
-                            initialDelay = newInterval * 60000L, period = newInterval * 60000L,
-                            action = timerTaskRandomStyle
-                        )
-                    timerRandomStyleInterval = newInterval
-                    timerRandomStyleEnabled = true
-                }
-            } else {
-                if (timerRandomStyleEnabled) {
-                    timerRandomStyle.cancel()
-                    timerRandomStyleEnabled = false
-                }
-            }
-        }
-
         /**
-         * Reset [followLocation] and [cameraBuilder] from preferences
+         * Check preferences and update the members, may request single location update with
+         * [checkLocationPreferences].
          *
-         * @return [Boolean] Whether the values are reset or not
+         * @return Whether should take snapshot or not
+         *
          * @author lucka-me
-         * @since 0.1.4
+         * @since 0.1.10
          */
-        private fun resetCameraFromPreferences(): Boolean {
-            var isReset = false
-            val newFollowLocation =
-                defaultSharedPreferences
-                    .getBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
-            if (followLocation != newFollowLocation) {
-                followLocation = newFollowLocation
-                isReset = true
+        private fun checkPreferences(): Boolean {
+            var shouldRefresh = false
+
+            // Check timer
+            var shouldResetTimer = false
+            val newTimerRandomStyleEnabled = defaultSharedPreferences.getBoolean(
+                getString(R.string.pref_live_wallpaper_style_random), false
+            )
+            if (timerRandomStyleEnabled != newTimerRandomStyleEnabled) {
+                timerRandomStyleEnabled = newTimerRandomStyleEnabled
+                if (timerRandomStyleEnabled) {
+                    shouldResetTimer = true
+                } else {
+                    timerRandomStyle.cancel()
+                }
+            }
+            val newTimerRandomStyleInterval = defaultSharedPreferences.getString(
+                getString(R.string.pref_live_wallpaper_style_random_interval),
+                DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
+            )?.toIntOrNull() ?: 0
+            if (newTimerRandomStyleInterval != timerRandomStyleInterval) {
+                if (newTimerRandomStyleInterval > 0) {
+                    timerRandomStyleInterval = newTimerRandomStyleInterval
+                    shouldResetTimer = true
+                } else {
+                    timerRandomStyle.cancel()
+                }
+            }
+            if (shouldResetTimer) {
+                timerRandomStyle.cancel()
+                timerRandomStyle = timer(
+                    initialDelay = timerRandomStyleInterval * 60000L,
+                    period = timerRandomStyleInterval * 60000L,
+                    action = timerTaskRandomStyle
+                )
             }
 
-            val isCameraPositionDesignated = defaultSharedPreferences
-                .getBoolean(getString(R.string.pref_live_wallpaper_camera_designate), true)
-
-            val newZoom =
-                if (isCameraPositionDesignated) {
-                    defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_camera_zoom), DefaultValue.Map.ZOOM.toInt()).toDouble()
-                } else {
-                    defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_zoom), DefaultValue.Map.ZOOM.toFloat())
-                        .toDouble()
+            // Check style
+            if (!timerRandomStyleEnabled) {
+                val newStyleData = MapKit.getSelectedStyleData(context)
+                if (newStyleData.uid != styleData.uid) {
+                    styleData = newStyleData
+                    shouldRefresh = true
                 }
+            }
+
+            // Check Camera
+            if (checkCameraPreferences()) shouldRefresh = true
+
+            // Check location
+            return checkLocationPreferences(shouldRefresh)
+        }
+
+        private fun checkCameraPreferences(): Boolean {
+            var shouldRefresh = false
+
+            val isCameraPositionDesignated = defaultSharedPreferences.getBoolean(
+                getString(R.string.pref_live_wallpaper_camera_designate), true
+            )
+
+            val newZoom = if (isCameraPositionDesignated) {
+                defaultSharedPreferences
+                    .getInt(
+                        getString(R.string.pref_live_wallpaper_camera_zoom),
+                        DefaultValue.Map.ZOOM.toInt()
+                    )
+                    .toDouble()
+            } else {
+                defaultSharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_zoom),
+                        DefaultValue.Map.ZOOM.toFloat()
+                    )
+                    .toDouble()
+            }
             if (zoom != newZoom) {
                 zoom = newZoom
                 cameraBuilder.zoom(zoom)
-                isReset = true
+                shouldRefresh = true
             }
 
-            val newBearing =
-                if (isCameraPositionDesignated) {
-                    defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_camera_bearing), DefaultValue.Map.BEARING.toInt())
-                        .toDouble()
-                } else {
-                    defaultSharedPreferences
-                        .getFloat(
-                            getString(R.string.pref_map_last_position_bearing), DefaultValue.Map.BEARING.toFloat()
-                        )
-                        .toDouble()
-                }
+            val newBearing = if (isCameraPositionDesignated) {
+                defaultSharedPreferences
+                    .getInt(
+                        getString(R.string.pref_live_wallpaper_camera_bearing),
+                        DefaultValue.Map.BEARING.toInt()
+                    )
+                    .toDouble()
+            } else {
+                defaultSharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_bearing),
+                        DefaultValue.Map.BEARING.toFloat()
+                    )
+                    .toDouble()
+            }
             if (bearing != newBearing) {
                 bearing = newBearing
                 cameraBuilder.bearing(bearing)
-                isReset = true
+                shouldRefresh = true
             }
 
             val newTilt =
                 if (isCameraPositionDesignated) {
                     defaultSharedPreferences
-                        .getInt(getString(R.string.pref_live_wallpaper_camera_tilt), DefaultValue.Map.TILT.toInt()).toDouble()
+                        .getInt(
+                            getString(R.string.pref_live_wallpaper_camera_tilt),
+                            DefaultValue.Map.TILT.toInt()
+                        )
+                        .toDouble()
                 } else {
                     defaultSharedPreferences
-                        .getFloat(getString(R.string.pref_map_last_position_tilt), DefaultValue.Map.TILT.toFloat())
+                        .getFloat(
+                            getString(R.string.pref_map_last_position_tilt),
+                            DefaultValue.Map.TILT.toFloat()
+                        )
                         .toDouble()
                 }
             if (tilt != newTilt) {
                 tilt = newTilt
                 cameraBuilder.tilt(tilt)
-                isReset = true
+                shouldRefresh = true
             }
 
-            return isReset
+            return shouldRefresh
         }
 
         /**
-         * Reset [styleIndex] from preferences
+         * Check preferences related to location and update the members, may request single location
+         * update.
          *
-         * @return [Boolean] Whether the [styleIndex] is reset or not
+         * @param preShouldRefresh The conclusion of whether should refresh or not before calling
+         * this method
+         * @return Whether should refresh or not
+         *
          * @author lucka-me
-         * @since 0.1.4
+         * @since 0.1.10
          */
-        private fun resetStyleIndexFromPreferences(): Boolean {
-            val newStyleIndex = MapKit.getSelectedStyleIndex(this@WallmapperLiveService)
-            return if (styleIndex != newStyleIndex) {
-                styleIndex = newStyleIndex
-                true
+        private fun checkLocationPreferences(preShouldRefresh: Boolean): Boolean {
+
+            var shouldRequestUpdates = false
+            var shouldRefresh = false
+
+            followPosition = defaultSharedPreferences
+                .getBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
+            if (followPosition &&
+                ContextCompat
+                    .checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                defaultSharedPreferences.edit {
+                    putBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
+                }
+                followPosition = false
+            }
+
+            followPositionRadius = defaultSharedPreferences
+                .getString(
+                    getString(R.string.pref_live_wallpaper_location_radius),
+                    DefaultValue.LiveWallpaper.RADIUS.toString()
+                )
+                ?.toFloatOrNull()
+                ?: -1.0F
+            followPositionRadius *= 1000.0F
+            if (followPositionRadius <= 0.0) followPosition = false
+
+            if (followPosition) {
+                shouldRequestUpdates = true
             } else {
-                false
+                val newLatitude = defaultSharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_latitude),
+                        DefaultValue.Map.LATITUDE.toFloat()
+                    )
+                    .toDouble()
+                val newLongitude = defaultSharedPreferences
+                    .getFloat(
+                        getString(R.string.pref_map_last_position_longitude),
+                        DefaultValue.Map.LONGITUDE.toFloat()
+                    )
+                    .toDouble()
+                if (
+                    (lastLatLng.latitude != newLatitude) || (lastLatLng.longitude != newLongitude)
+                ) {
+                    lastLatLng.latitude = newLatitude
+                    lastLatLng.longitude = newLongitude
+                    shouldRefresh = true
+                }
+            }
+
+            var hasRequestedUpdate = false
+            if (shouldRequestUpdates) {
+                if (
+                    ContextCompat
+                        .checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    val provider = getProvider()
+                    val newLocation =  locationManager?.getLastKnownLocation(provider)
+                    if (newLocation != null) {
+                        if (lastLatLng.distanceTo(LatLng(newLocation)) >= followPositionRadius) {
+                            lastLatLng.longitude = newLocation.longitude
+                            lastLatLng.latitude = newLocation.latitude
+                            shouldRefresh = true
+                        }
+                    } else {
+                        requestFirstLocationUpdate()
+                        hasRequestedUpdate = true
+                    }
+                }
+            }
+
+            return if (hasRequestedUpdate) false else shouldRefresh || preShouldRefresh
+        }
+
+        private fun requestFirstLocationUpdate() {
+            if (ContextCompat
+                    .checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                locationManager
+                    ?.requestSingleUpdate(getProvider(), locationListenerFirst, null)
+            } else {
+                defaultSharedPreferences.edit {
+                    putBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
+                }
+                followPosition = false
             }
         }
 
-        private fun getProvider(): String =
-            when (defaultSharedPreferences
-                .getString(getString(R.string.pref_live_wallpaper_location_provider), "1")?.toIntOrNull()) {
+        private fun requestLocationUpdates(distance: Float = followPositionRadius) {
+            if (ContextCompat
+                    .checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                locationManager
+                    ?.requestLocationUpdates(getProvider(), 0L, distance, locationListener)
+            } else {
+                defaultSharedPreferences.edit {
+                    putBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
+                }
+                followPosition = false
+            }
+        }
+
+        private fun getProvider(): String {
+            val index = defaultSharedPreferences
+                .getString(getString(R.string.pref_live_wallpaper_location_provider), "1")
+                ?.toIntOrNull()
+
+            return when (index) {
                 0 -> LocationManager.GPS_PROVIDER
                 else -> LocationManager.NETWORK_PROVIDER
             }
+        }
+
     }
 
-    override fun onCreateEngine(): Engine { return WallmapperLiveEngine() }
+    override fun onCreateEngine(): Engine { return WallmapperLiveEngine(this) }
+
+    companion object {
+        const val FOLLOW_POSITION_RADIUS_BUFFER = 40.0
+    }
+
 }
