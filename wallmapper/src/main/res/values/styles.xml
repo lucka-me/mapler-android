@@ -2,7 +2,10 @@
 
     <style name="Theme.Wallpaper" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_dark</item>
     </style>
 
     <style name="Theme.Wallpaper.NoActionBar">
@@ -21,6 +24,15 @@
         <item name="android:padding">0dp</item>
         <item name="strokeWidth">0dp</item>
         <item name="iconTint">?attr/colorControlNormal</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Wallmapper.BottomSheet" parent="ShapeAppearanceOverlay.MaterialComponents.BottomSheet">
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+    </style>
+
+    <style name="Widget.Wallmapper.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Wallmapper.BottomSheet</item>
     </style>
 
 </resources>
