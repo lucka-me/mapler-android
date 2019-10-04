@@ -268,7 +268,7 @@ class DialogKit {
             // Disable Edit button if it's default style
             when (style.type) {
 
-                StyleData.Type.MAPBOX, StyleData.Type.LUCKA -> {
+                StyleData.Type.MAPBOX, StyleData.Type.EXTRA -> {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                 }
 

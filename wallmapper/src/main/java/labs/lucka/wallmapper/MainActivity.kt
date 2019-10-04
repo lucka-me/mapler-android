@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                 target: StyleData, position: Int, onConfirmed: () -> StyleData
             ) {
 
-                if (target.type == StyleData.Type.MAPBOX || target.type == StyleData.Type.LUCKA) {
+                if (target.type == StyleData.Type.MAPBOX || target.type == StyleData.Type.EXTRA) {
                     DialogKit.showSimpleAlert(
                         this@MainActivity, R.string.dialog_content_delete_default_style
                     )
@@ -282,12 +282,7 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(fab_snapshot, R.string.snack_saved_text, Snackbar.LENGTH_LONG)
                     .setAnchorView(fab_snapshot)
                     .setAction(R.string.snack_saved_action_set) {
-                        startActivity(
-                            wallpaperManager.getCropAndSetWallpaperIntent(
-                                uri
-                                //DataKit.getImageContentUri(this, file)
-                            )
-                        )
+                        startActivity(wallpaperManager.getCropAndSetWallpaperIntent(uri))
                     }
                     .show()
                 activateButtons()

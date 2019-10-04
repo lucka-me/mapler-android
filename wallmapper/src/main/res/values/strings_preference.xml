@@ -8,7 +8,7 @@
     <string name="pref_map_last_position_zoom" translatable="false">pref_map_last_position_zoom</string>
     <string name="pref_map_last_position_tilt" translatable="false">pref_map_last_position_tilt</string>
     <string name="pref_map_last_position_bearing" translatable="false">pref_map_last_position_bearing</string>
-    <string name="pref_style_manager_selected_uid" translatable="false">pref_style_manager_selected_uid</string>
+    <string name="pref_selected_style_uid" translatable="false">pref_selected_style_uid</string>
     <string name="pref_style_author_last" translatable="false">pref_style_author_last</string>
     <string name="pref_style_author_last_default" translatable="false">Myself</string>
 

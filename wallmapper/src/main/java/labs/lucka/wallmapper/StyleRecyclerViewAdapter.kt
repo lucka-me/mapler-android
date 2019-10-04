@@ -60,7 +60,6 @@ class StyleRecyclerViewAdapter(
     }
 
     private val styleDataList: ArrayList<StyleData> = arrayListOf()
-    private var useDefaultToken: Boolean = true
 
     private var selectedStyleData: StyleData = StyleData("", "", "")
     private var selectedPosition: Int = -1
@@ -113,13 +112,8 @@ class StyleRecyclerViewAdapter(
                                 if (selectedPosition >= position) {
                                     selectedPosition--
                                 }
-                                val newStyleData = findStyleDataBy(selectedPosition)
-                                if (newStyleData != null) {
-                                    selectedStyleData = newStyleData
-                                } else {
-                                    selectedStyleData = styleDataList[0]
-                                    selectedPosition = 0
-                                }
+                                val newStyleData = styleDataList[selectedPosition]
+                                selectedStyleData = newStyleData
                                 notifyItemChanged(selectedPosition)
 
                                 return@onSwipeToDelete selectedStyleData
@@ -172,12 +166,9 @@ class StyleRecyclerViewAdapter(
         )
 
     init {
-        useDefaultToken = MapKit.useDefaultToken(context)
         styleDataList.addAll(DataKit.loadStyleIndexList(context))
-        val selectedStyleUid = context.defaultSharedPreferences.getString(
-            context.getString(R.string.pref_style_manager_selected_uid),
-            styleDataList[0].uid
-        )
+        val selectedStyleUid = context.defaultSharedPreferences
+            .getString(context.getString(R.string.pref_selected_style_uid), styleDataList[0].uid)
         if (selectedStyleUid != null) {
             val styleData = findStyleDataBy(selectedStyleUid)
             val position = findPositionBy(selectedStyleUid)
@@ -186,8 +177,7 @@ class StyleRecyclerViewAdapter(
                 selectedPosition = 0
                 context.defaultSharedPreferences.edit {
                     putString(
-                        context.getString(R.string.pref_style_manager_selected_uid),
-                        selectedStyleData.uid
+                        context.getString(R.string.pref_selected_style_uid), selectedStyleData.uid
                     )
                 }
             } else {
@@ -201,14 +191,7 @@ class StyleRecyclerViewAdapter(
 
     }
 
-    override fun getItemCount(): Int {
-        var count = 0
-        for (styleData in styleDataList) {
-            if (!useDefaultToken && styleData.type == StyleData.Type.LUCKA) continue
-            count += 1
-        }
-        return count
-    }
+    override fun getItemCount(): Int = styleDataList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(context)
@@ -218,7 +201,7 @@ class StyleRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ViewHolderStyleCard) {
-            val styleData = findStyleDataBy(position) ?: return
+            val styleData = styleDataList[position]
             holder.setFrom(context, styleData, (selectedStyleData.uid == styleData.uid))
         }
     }
@@ -226,20 +209,34 @@ class StyleRecyclerViewAdapter(
     fun onPause() {
         context.defaultSharedPreferences.edit {
             putString(
-                context.getString(R.string.pref_style_manager_selected_uid), selectedStyleData.uid
+                context.getString(R.string.pref_selected_style_uid), selectedStyleData.uid
             )
         }
         DataKit.saveStyleIndexList(context, styleDataList)
     }
 
     fun onResume(): StyleData {
-        val newUseDefaultToken = MapKit.useDefaultToken(context)
-        if (useDefaultToken != useDefaultToken) {
-            MapKit.setToken(context)
-            useDefaultToken = newUseDefaultToken
-            selectedPosition = 0
+        val newSelectedUid = context.defaultSharedPreferences
+            .getString(context.getString(R.string.pref_selected_style_uid), styleDataList[0].uid)
+        if (newSelectedUid == null) {
             selectedStyleData = styleDataList[0]
-            notifyDataSetChanged()
+            notifyItemChanged(selectedPosition)
+            selectedPosition = 0
+            notifyItemChanged(selectedPosition)
+        } else if (selectedStyleData.uid != newSelectedUid) {
+            val newSelectedStyleData = findStyleDataBy(newSelectedUid)
+            val newSelectedPosition = findPositionBy(newSelectedUid)
+            if ((newSelectedStyleData != null) && (newSelectedPosition != null)) {
+                selectedStyleData = newSelectedStyleData
+                notifyItemChanged(selectedPosition)
+                selectedPosition = newSelectedPosition
+                notifyItemChanged(selectedPosition)
+            } else {
+                selectedStyleData = styleDataList[0]
+                notifyItemChanged(selectedPosition)
+                selectedPosition = 0
+            }
+            notifyItemChanged(selectedPosition)
         }
         return selectedStyleData
     }
@@ -247,19 +244,7 @@ class StyleRecyclerViewAdapter(
     private fun findPositionBy(uid: String): Int? {
         var count = 0
         for (styleData in styleDataList) {
-            if (!useDefaultToken && styleData.type == StyleData.Type.LUCKA) continue
             if (styleData.uid == uid) return count
-            count += 1
-        }
-        return null
-    }
-
-    private fun findStyleDataBy(position: Int): StyleData? {
-        var count = 0
-        for (styleData in styleDataList) {
-            if (count > position) return null
-            if (!useDefaultToken && styleData.type == StyleData.Type.LUCKA) continue
-            if (count == position) return styleData
             count += 1
         }
         return null
@@ -267,7 +252,6 @@ class StyleRecyclerViewAdapter(
 
     private fun findStyleDataBy(uid: String): StyleData? {
         for (styleData in styleDataList) {
-            if (!useDefaultToken && styleData.type == StyleData.Type.LUCKA) continue
             if (styleData.uid == uid) return styleData
         }
         return null

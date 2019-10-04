@@ -11,7 +11,10 @@
     </string-array>
     <string name="map_style_default_author" translatable="false">Mapbox</string>
 
-    <string-array name="style_lucka_name">
+    <string-array name="styles_extra_name">
+        <item>Pencil</item>
+        <item>Bubble</item>
+        <item>Frank</item>
         <item>Minimo</item>
         <item>Lè Shine</item>
         <item>Cali Terrain</item>
@@ -19,15 +22,17 @@
         <item>Decimal</item>
         <item>North Star</item>
         <item>Moonlight</item>
-
-        <item>Blue Print</item>
+        <item>Mineral</item>
         <item>Standard</item>
-        <item>X-Ray</item>
 
         <item>Dark</item>
         <item>Hack</item>
     </string-array>
-    <string-array name="style_lucka_author">
+
+    <string-array name="styles_extra_author">
+        <item>Madison Draper</item>
+        <item>Madison Draper</item>
+        <item>Clare Trainor</item>
         <item>Nat Slaughter</item>
         <item>Nat Slaughter</item>
         <item>Amy Lee Walton</item>
@@ -35,26 +40,26 @@
         <item>Tristen Brown</item>
         <item>Nat Slaughter</item>
         <item>Rasagy Sharma</item>
-
-        <item>Amy Lee Walton</item>
+        <item>Madison Draper</item>
         <item>Saman Bemel Benrud</item>
-        <item>The Mapbox cartography team</item>
 
         <item>Lucka</item>
         <item>Lucka</item>
     </string-array>
-    <string-array name="style_lucka_url">
-        <item>mapbox://styles/lucka-me/cjruwln7e01si1fmwb1c5zz4h</item>
-        <item>mapbox://styles/lucka-me/cjruwm3yj0w0i1flypuy5o3is</item>
-        <item>mapbox://styles/lucka-me/cjruwm44g0hqv1fmcg1x0xh43</item>
-        <item>mapbox://styles/lucka-me/cjruwm7z20w7q1focv0us0t4h</item>
-        <item>mapbox://styles/lucka-me/cjruwm8uc0w711fqh2w2g2ka3</item>
-        <item>mapbox://styles/lucka-me/cjruwmaeg0w721fqhhf1uzf5b</item>
-        <item>mapbox://styles/lucka-me/cjruwmbef0fxp1fpc1k8nzyjk</item>
 
-        <item>mapbox://styles/lucka-me/cjrvlef1a1iue1fp3cm7lo6i7</item>
-        <item>mapbox://styles/lucka-me/cjk2hmfmi3soj2rqfgr140hqp</item>
-        <item>mapbox://styles/lucka-me/cjrvlnu9005l81fmiw0ie8cvx</item>
+    <string-array name="styles_extra_url">
+        <item>mapbox://styles/mapbox/cjzoh882k2njo1crylb28iiz3</item>
+        <item>mapbox://styles/mapbox/cjyknt4bl00tf1cny916vrpid</item>
+        <item>mapbox://styles/mapbox/cjvshts5l1et01coz11pa6jam</item>
+        <item>mapbox://styles/mapbox/cjku6bhmo15oz2rs8p2n9s2hm</item>
+        <item>mapbox://styles/mapbox/cjcunv5ae262f2sm9tfwg8i0w</item>
+        <item>mapbox://styles/mapbox/cjerxnqt3cgvp2rmyuxbeqme7</item>
+        <item>mapbox://styles/mapbox/cj7t3i5yj0unt2rmt3y4b5e32</item>
+        <item>mapbox://styles/mapbox/cj5l80zrp29942rmtg0zctjto</item>
+        <item>mapbox://styles/mapbox/cj44mfrt20f082snokim4ungi</item>
+        <item>mapbox://styles/mapbox/cj3kbeqzo00022smj7akz3o1e</item>
+        <item>mapbox://styles/mapbox/cjtep62gq54l21frr1whf27ak</item>
+        <item>mapbox://styles/mapbox/cj4k8wmwy5lbt2smsigkbh18e</item>
 
         <item>mapbox://styles/lucka-me/cjjvmr0mn5csl2rmx5cbgmb0y</item>
         <item>mapbox://styles/lucka-me/cjjzm06vz0cwl2rnnzgdgkf7j</item>

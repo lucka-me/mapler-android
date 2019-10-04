@@ -18,7 +18,7 @@ data class StyleData(
 
     @Keep
     enum class Type {
-        ONLINE, LOCAL, DOWNLOADED, MAPBOX, LUCKA
+        ONLINE, LOCAL, DOWNLOADED, MAPBOX, EXTRA
     }
 
     @Keep

@@ -1,5 +1,5 @@
 <resources>
-    <string name="application_name" translatable="false">Wallmapper</string>
+    <string name="application_name" translatable="false">Mappia</string>
     <string name="file_style_data_list" translatable="false">StyleDataList.json</string>
     <string name="path_wallpaper" translatable="false">Pictures/Wallmapper</string>
     <string name="file_wallpaper" translatable="false">%1$d.png</string>

@@ -255,7 +255,7 @@ class MapKit(private val context: Context) {
                 name = mapboxStyleNameList[5], author = authorMapbox,
                 type = StyleData.Type.MAPBOX, uri = Style.SATELLITE_STREETS
             ))
-            list.addAll(generateLuckaStyleDataList(context))
+            list.addAll(generateExtraStyleDataList(context))
             DataKit.saveStyleIndexList(context, list)
             context.defaultSharedPreferences.edit {
                 putInt(context.getString(R.string.pref_data_version), DataKit.CURRENT_DATA_VERSION)
@@ -263,17 +263,17 @@ class MapKit(private val context: Context) {
             return list
         }
 
-        fun generateLuckaStyleDataList(context: Context): ArrayList<StyleData> {
+        fun generateExtraStyleDataList(context: Context): ArrayList<StyleData> {
             val list = arrayListOf<StyleData>()
-            val luckaStyleNameList = context.resources.getStringArray(R.array.style_lucka_name)
-            val luckaStyleAuthorList = context.resources.getStringArray(R.array.style_lucka_author)
-            val luckaStyleUrlList = context.resources.getStringArray(R.array.style_lucka_url)
-            val count = luckaStyleNameList.size
+            val extraStyleNameList = context.resources.getStringArray(R.array.styles_extra_name)
+            val extraStyleAuthorList = context.resources.getStringArray(R.array.styles_extra_author)
+            val extraStyleUrlList = context.resources.getStringArray(R.array.styles_extra_url)
+            val count = extraStyleNameList.size
             for (i in 0 until count) {
                 list.add(
                     StyleData(
-                        name = luckaStyleNameList[i], author = luckaStyleAuthorList[i],
-                        type = StyleData.Type.LUCKA, uri = luckaStyleUrlList[i]
+                        name = extraStyleNameList[i], author = extraStyleAuthorList[i],
+                        type = StyleData.Type.EXTRA, uri = extraStyleUrlList[i]
                     )
                 )
             }
@@ -286,7 +286,7 @@ class MapKit(private val context: Context) {
 
             val selectedStyleUid = context.defaultSharedPreferences
                 .getString(
-                    context.getString(R.string.pref_style_manager_selected_uid),
+                    context.getString(R.string.pref_selected_style_uid),
                     mapStyleIndexList[0].uid
                 )
             mapStyleIndexList.forEach {
@@ -295,7 +295,7 @@ class MapKit(private val context: Context) {
             // Not found
             context.defaultSharedPreferences.edit {
                 putString(
-                    context.getString(R.string.pref_style_manager_selected_uid),
+                    context.getString(R.string.pref_selected_style_uid),
                     mapStyleIndexList[0].uid
                 )
             }
@@ -307,7 +307,7 @@ class MapKit(private val context: Context) {
             val mapStyleIndexList = DataKit.loadStyleIndexList(context)
             val selectedStyleId = context.defaultSharedPreferences
                 .getString(
-                    context.getString(R.string.pref_style_manager_selected_uid),
+                    context.getString(R.string.pref_selected_style_uid),
                     mapStyleIndexList[0].uid
                 )
             val onRandomIndexList = arrayListOf<Int>()
@@ -322,7 +322,7 @@ class MapKit(private val context: Context) {
                 val style = mapStyleIndexList[onRandomIndexList[0]]
                 context.defaultSharedPreferences.edit {
                     putString(
-                        context.getString(R.string.pref_style_manager_selected_uid), style.uid
+                        context.getString(R.string.pref_selected_style_uid), style.uid
                     )
                 }
                 return style
@@ -332,7 +332,7 @@ class MapKit(private val context: Context) {
             ]
             val style = mapStyleIndexList[randomIndex]
             context.defaultSharedPreferences.edit {
-                putString(context.getString(R.string.pref_style_manager_selected_uid), style.uid)
+                putString(context.getString(R.string.pref_selected_style_uid), style.uid)
             }
             return style
         }

@@ -39,7 +39,7 @@ class DefaultValue {
 
     class Data {
         companion object {
-            const val VERSION = 1
+            const val VERSION = 0
         }
     }
 

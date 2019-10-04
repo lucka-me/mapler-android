@@ -78,12 +78,13 @@ class DataKit {
 
             var startInsertPosition = list.size - 1
             for (i in (list.size - 1) downTo 0) {
-                if (list[i].type == StyleData.Type.LUCKA) {
+                if (list[i].type == StyleData.Type.EXTRA) {
+                    deleteStyleFiles(context, list[i])
                     list.removeAt(i)
                     startInsertPosition = i
                 }
             }
-            list.addAll(startInsertPosition, MapKit.generateLuckaStyleDataList(context))
+            list.addAll(startInsertPosition, MapKit.generateExtraStyleDataList(context))
 
             saveStyleIndexList(context, list)
             context.defaultSharedPreferences.edit {
@@ -188,7 +189,7 @@ class DataKit {
             val byteBuffer = ByteBuffer.wrap(ByteArray(16))
             byteBuffer.putLong(uuid.mostSignificantBits)
             byteBuffer.putLong(uuid.leastSignificantBits)
-            return Base64.encodeToString(byteBuffer.array(), Base64.DEFAULT)
+            return Base64.encodeToString(byteBuffer.array(), Base64.NO_WRAP)
                 .replace("=", "").replace("/", "-")
         }
 
