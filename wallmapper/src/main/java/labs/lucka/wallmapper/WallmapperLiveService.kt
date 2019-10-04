@@ -244,6 +244,9 @@ class WallmapperLiveService : WallpaperService() {
                     styleData = newStyleData
                     shouldRefresh = true
                 }
+            } else if (styleData.uri.isEmpty()) {
+                styleData = MapKit.getSelectedStyleData(context)
+                shouldRefresh = true
             }
 
             // Check Camera
@@ -347,7 +350,7 @@ class WallmapperLiveService : WallpaperService() {
                 .getBoolean(getString(R.string.pref_live_wallpaper_location_follow), false)
             if (followPosition &&
                 ContextCompat
-                    .checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    .checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
             ) {
                 defaultSharedPreferences.edit {
@@ -398,7 +401,7 @@ class WallmapperLiveService : WallpaperService() {
                     PackageManager.PERMISSION_GRANTED
                 ) {
                     val provider = getProvider()
-                    val newLocation =  locationManager?.getLastKnownLocation(provider)
+                    val newLocation = locationManager?.getLastKnownLocation(provider)
                     if (newLocation != null) {
                         if (lastLatLng.distanceTo(LatLng(newLocation)) >= followPositionRadius) {
                             lastLatLng.longitude = newLocation.longitude

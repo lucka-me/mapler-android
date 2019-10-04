@@ -31,7 +31,8 @@
                 android:name=".PreferenceActivity"
                 android:label="@string/pref_main_screen_title"
                 android:screenOrientation="portrait"
-                android:parentActivityName=".MainActivity"/>
+                android:parentActivityName=".MainActivity"
+                android:exported="true" />
 
         <service
                 android:name=".WallmapperLiveService"
