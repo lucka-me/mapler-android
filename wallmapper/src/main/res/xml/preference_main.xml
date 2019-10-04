@@ -4,29 +4,6 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-            android:title="@string/pref_mapbox_category_title"
-            app:iconSpaceReserved="false" >
-
-        <CheckBoxPreference
-                android:key="@string/pref_mapbox_use_default_token"
-                android:defaultValue="true"
-                android:title="@string/pref_mapbox_use_default_token_title"
-                android:summaryOn="@string/pref_mapbox_use_default_token_summary_on"
-                android:summaryOff="@string/pref_mapbox_use_default_token_summary_off"
-                android:disableDependentsState="true"
-                app:iconSpaceReserved="false"/>
-
-        <EditTextPreference
-                android:key="@string/pref_mapbox_token"
-                android:title="@string/pref_mapbox_token_title"
-                android:summary="@string/pref_mapbox_token_summary"
-                android:hint="@string/pref_mapbox_token_hint"
-                android:dependency="@string/pref_mapbox_use_default_token"
-                app:iconSpaceReserved="false"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/pref_display_category_title"
         app:iconSpaceReserved="false" >
 

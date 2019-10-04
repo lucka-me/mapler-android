@@ -3,13 +3,6 @@
     <!-- Screen: Main -->
     <string name="pref_main_screen_title">首选项</string>
 
-    <string name="pref_mapbox_use_default_token_title">使用默认访问令牌</string>
-    <string name="pref_mapbox_use_default_token_summary_on">使用Lucka提供的令牌和样式</string>
-    <string name="pref_mapbox_use_default_token_summary_off">使用您自己的令牌并从URL添加自己的样式</string>
-    <string name="pref_mapbox_token_title">访问令牌</string>
-    <string name="pref_mapbox_token_summary">您的Mapbox访问令牌</string>
-    <string name="pref_mapbox_token_hint">您的Mapbox访问令牌</string>
-
     <string name="pref_display_category_title">显示</string>
     <string name="pref_display_label_title">地图注记</string>
     <string name="pref_display_label_summary_on">在浏览地图和生成图片时显示注记</string>

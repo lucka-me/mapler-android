@@ -15,17 +15,6 @@
     <!-- Screen: Main -->
     <string name="pref_main_screen_title">Preference</string>
 
-    <string name="pref_mapbox_category_title" translatable="false">Mapbox</string>
-    <string name="pref_mapbox_use_default_token" translatable="false">pref_mapbox_use_default_token</string>
-    <string name="pref_mapbox_use_default_token_title">Use Default Token</string>
-    <string name="pref_mapbox_use_default_token_summary_on">Use the token and styles provided by Lucka</string>
-    <string name="pref_mapbox_use_default_token_summary_off">Use your own token and add yours own styles from url</string>
-    <string name="pref_mapbox_token" translatable="false">pref_mapbox_token</string>
-    <string name="pref_mapbox_token_title">Token</string>
-    <string name="pref_mapbox_token_summary">Your own Mapbox token</string>
-    <string name="pref_mapbox_token_hint">Your Mapbox Access Token</string>
-    <string name="pref_mapbox_token_default" translatable="false">YOUR OWN TOKEN</string>
-
     <string name="pref_display_category_title">Display</string>
     <string name="pref_display_label" translatable="false">pref_display_label</string>
     <string name="pref_display_label_title">Labels On Map</string>

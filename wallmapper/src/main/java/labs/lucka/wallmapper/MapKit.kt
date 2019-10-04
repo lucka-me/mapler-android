@@ -28,13 +28,11 @@ class MapKit(private val context: Context) {
     private val snapshotKit: SnapshotKit
     var snapshot: Bitmap? = null
 
-    private var useDefaultToken: Boolean
     private var displayLabels: Boolean
 
     init {
         Mapbox.getInstance(context, getToken(context))
         snapshotKit = SnapshotKit(context)
-        useDefaultToken = useDefaultToken(context)
         displayLabels = displayLabels(context)
     }
 
@@ -198,31 +196,7 @@ class MapKit(private val context: Context) {
 
     companion object {
 
-        fun getToken(context: Context): String {
-            var token: String =
-                if (
-                    context.defaultSharedPreferences
-                        .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
-                ) {
-                    context.getString(R.string.mapbox_default_access_token)
-                } else {
-                    context.defaultSharedPreferences
-                        .getString(
-                            context.getString(R.string.pref_mapbox_token),
-                            context.getString(R.string.pref_mapbox_token_default)
-                        )
-                        ?: context.getString(R.string.pref_mapbox_token_default)
-                }
-            if (token.isBlank()) token = context.getString(R.string.pref_mapbox_token_default)
-            return token
-        }
-
-        fun setToken(context: Context) {
-            Mapbox.setAccessToken(getToken(context))
-        }
-
-        fun useDefaultToken(context: Context) = context.defaultSharedPreferences
-            .getBoolean(context.getString(R.string.pref_mapbox_use_default_token), true)
+        fun getToken(context: Context) = context.getString(R.string.mapbox_default_access_token)
 
         fun displayLabels(context: Context) = context.defaultSharedPreferences
             .getBoolean(context.getString(R.string.pref_display_label), true)
