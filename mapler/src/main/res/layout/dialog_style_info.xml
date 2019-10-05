@@ -47,7 +47,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/text_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_name"
-            app:srcCompat="@drawable/ic_online" />
+            app:srcCompat="@drawable/ic_online"
+            android:contentDescription="@string/dialog_style_information_type_description" />
 
     <View
             android:id="@+id/divider"
