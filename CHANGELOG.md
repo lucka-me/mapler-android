@@ -1,6 +1,6 @@
-<div align=center><a href="https://github.com/lucka-me/mapler-android"><img src="./Resource/Banner.svg" alt="Banner"></a></div>
+[![Banner](./resource/banner.svg)](https://github.com/lucka-me/mapler-android)
 
-<h1 align=center>Changelog</h1>
+# Changelog
 
 ```markdown
 ## [0.1.9] - 2019-06-02
