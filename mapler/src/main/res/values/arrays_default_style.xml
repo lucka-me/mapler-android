@@ -13,7 +13,6 @@
 
     <string-array name="styles_extra_name">
         <item>Pencil</item>
-        <item>Bubble</item>
         <item>Frank</item>
         <item>Minimo</item>
         <item>Lè Shine</item>
@@ -30,7 +29,6 @@
     </string-array>
 
     <string-array name="styles_extra_author">
-        <item>Madison Draper</item>
         <item>Madison Draper</item>
         <item>Clare Trainor</item>
         <item>Nat Slaughter</item>
@@ -49,7 +47,6 @@
 
     <string-array name="styles_extra_url">
         <item>mapbox://styles/mapbox/cjzoh882k2njo1crylb28iiz3</item>
-        <item>mapbox://styles/mapbox/cjyknt4bl00tf1cny916vrpid</item>
         <item>mapbox://styles/mapbox/cjvshts5l1et01coz11pa6jam</item>
         <item>mapbox://styles/mapbox/cjku6bhmo15oz2rs8p2n9s2hm</item>
         <item>mapbox://styles/mapbox/cjcunv5ae262f2sm9tfwg8i0w</item>
