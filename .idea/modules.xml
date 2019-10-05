@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Wallmapper-android.iml" filepath="$PROJECT_DIR$/Wallmapper-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wallmapper/wallmapper.iml" filepath="$PROJECT_DIR$/wallmapper/wallmapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mapler/mapler.iml" filepath="$PROJECT_DIR$/mapler/mapler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mapler-android.iml" filepath="$PROJECT_DIR$/mapler-android.iml" />
     </modules>
   </component>
 </project>

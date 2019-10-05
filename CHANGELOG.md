@@ -1,4 +1,4 @@
-<div align=center><a href="https://github.com/lucka-me/Wallmapper-android"><img src="./Resource/Banner.svg" alt="Banner"></a></div>
+<div align=center><a href="https://github.com/lucka-me/mapler-android"><img src="./Resource/Banner.svg" alt="Banner"></a></div>
 
 <h1 align=center>Changelog</h1>
 
