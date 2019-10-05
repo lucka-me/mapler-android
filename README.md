@@ -1,7 +1,7 @@
 # [![Banner](./resource/banner.svg)](https://github.com/lucka-me/mapler-android)
 
 [![Version](https://img.shields.io/github/release/lucka-me/mapler-android.svg?color=yellow&label=version)](./CHANGELOG.md "Changelog") [![Author](https://img.shields.io/badge/author-Lucka-2578B5.svg)](https://lucka.moe "Blog") [![MPL 2.0](https://img.shields.io/badge/license-MPL_2.0-000000.svg)](./LICENSE "License")  
-[![Platform](https://img.shields.io/badge/Android-6.0+-78C257.svg)](https://www.android.com/versions/marshmallow-6-0/ "Android 6.0")
+[![Platform](https://img.shields.io/badge/android-6.0+-78C257.svg)](https://www.android.com/versions/marshmallow-6-0/ "Android 6.0")
 
 Make map as wallpaper, under development.
 
