@@ -22,6 +22,7 @@
 - Live wallpaper: Follow location doesn't work properly
 
 ### Removed
+- Support for 32-bit devices
 - Customizing Mapbox Token
 - Adding style from JSON
 ```
