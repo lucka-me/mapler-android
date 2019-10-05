@@ -3,6 +3,30 @@
 # Changelog
 
 ```markdown
+## [0.2.0-beta01] - 2019-10-05
+- 0.1.9(812) -> 0.2.0-beta01(1062)
+- [BETA] Major update
+
+### Added
+- Various new styles
+
+### Changed
+- App name: Wallmapper -> Mapler
+- Support Android 10
+- No longer request external storage permission in Android 10 to save image
+- UI improved, especially for dark mode
+- Data structure updated and code re-constructed
+
+### Fixed
+- Live wallpaper: Crash when preview in system wallpaper selector
+- Live wallpaper: Follow location doesn't work properly
+
+### Removed
+- Customizing Mapbox Token
+- Adding style from JSON
+```
+
+```markdown
 ## [0.1.9] - 2019-06-02
 - 0.1.8(797) -> 0.1.9(812)
 - Fixed Preference crash
@@ -11,7 +35,8 @@
 - Updated dependencies
 
 ### Fixed
-- App will crash when try to open sub-screen of Preference - caused by minifying
+- App will crash when try to open sub-screen of Preference - caused by
+  minifying
 
 ### Known Issues
 - Color of buttons is unsuitable in Dark Mode
