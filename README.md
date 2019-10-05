@@ -1,6 +1,6 @@
 # [![Banner](./resource/banner.svg)](https://github.com/lucka-me/mapler-android)
 
-[![Version](https://img.shields.io/github/release/lucka-me/mapler-android.svg?color=yellow&label=version)](./CHANGELOG.md "Changelog") [![Author](https://img.shields.io/badge/author-Lucka-2578B5.svg)](https://lucka.moe "Blog") [![MPL 2.0](https://img.shields.io/badge/license-MPL_2.0-000000.svg)](./LICENSE "License")  
+[![Release](https://img.shields.io/github/release/lucka-me/mapler-android.svg?color=yellow)](https://github.com/lucka-me/mapler-android/releases/latest "Latest release") [![Author](https://img.shields.io/badge/author-Lucka-2578B5.svg)](https://lucka.moe "Blog") [![MPL 2.0](https://img.shields.io/badge/license-MPL_2.0-000000.svg)](./LICENSE "License")  
 [![Platform](https://img.shields.io/badge/android-6.0+-78C257.svg)](https://www.android.com/versions/marshmallow-6-0/ "Android 6.0")
 
 Make map as wallpaper, under development.
@@ -8,7 +8,7 @@ Make map as wallpaper, under development.
 [Download](https://github.com/lucka-me/mapler-android/releases "Releases")
 
 ## Features
-- Generate wallpaper-size images from map with styles created with Mapbox
+- Generate wallpaper-size image from map with styles created with [Mapbox Studio](https://www.mapbox.com/mapbox-studio/)
 - Add new map style from URL
 - Customizable live wallpaper:
   - Follow location of the device
@@ -31,5 +31,5 @@ NOTES
 The default styles included in the application all credit to their designers.
 
 The Mapbox token included in the release apk is owned by Lucka and ONLY for
-useage in the application.
+usage in the application.
 ```
