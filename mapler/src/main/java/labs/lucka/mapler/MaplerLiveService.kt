@@ -205,9 +205,8 @@ class MaplerLiveService : WallpaperService() {
 
             // Check timer
             var shouldResetTimer = false
-            val newTimerRandomStyleEnabled = defaultSharedPreferences.getBoolean(
-                getString(R.string.pref_live_wallpaper_style_random), false
-            )
+            val newTimerRandomStyleEnabled = defaultSharedPreferences
+                .getBoolean(getString(R.string.pref_live_wallpaper_style_random), false)
             if (timerRandomStyleEnabled != newTimerRandomStyleEnabled) {
                 timerRandomStyleEnabled = newTimerRandomStyleEnabled
                 if (timerRandomStyleEnabled) {
@@ -216,10 +215,12 @@ class MaplerLiveService : WallpaperService() {
                     timerRandomStyle.cancel()
                 }
             }
-            val newTimerRandomStyleInterval = defaultSharedPreferences.getString(
-                getString(R.string.pref_live_wallpaper_style_random_interval),
-                DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
-            )?.toIntOrNull() ?: 0
+            val newTimerRandomStyleInterval = defaultSharedPreferences
+                .getString(
+                    getString(R.string.pref_live_wallpaper_style_random_interval),
+                    DefaultValue.LiveWallpaper.RANDOM_STYLE_INTERVAL.toString()
+                )
+                ?.toIntOrNull() ?: 0
             if (newTimerRandomStyleInterval != timerRandomStyleInterval) {
                 if (newTimerRandomStyleInterval > 0) {
                     timerRandomStyleInterval = newTimerRandomStyleInterval

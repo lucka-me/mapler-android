@@ -46,9 +46,6 @@ data class StyleData(
                         "uri"       -> styleData.uri        = reader.nextString()
                         "inRandom"  -> styleData.inRandom   = reader.nextBoolean()
                         "themeType" -> styleData.themeType  = ThemeType.valueOf(reader.nextString())
-                        // Legacy
-                        "url"       -> styleData.uri        = reader.nextString()
-                        "fileId"    -> styleData.uid        = reader.nextString()
                     }
                 }
                 list.add(styleData)
@@ -70,12 +67,7 @@ data class StyleData(
     val isLocal: Boolean
         get() = (type == Type.LOCAL || type == Type.DOWNLOADED)
 
-    override fun equals(other: Any?) =
-        if (other is StyleData) {
-            (uid == other.uid) && (name == other.name) && (author == other.author)
-        } else {
-            false
-        }
+    override fun equals(other: Any?) = if (other is StyleData) (uid == other.uid) else false
 
     override fun hashCode(): Int {
         var result =  name.hashCode()

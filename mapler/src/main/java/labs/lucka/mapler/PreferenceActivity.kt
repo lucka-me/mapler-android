@@ -79,7 +79,8 @@ class PreferenceActivity :
                     }
                     summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
                         getString(
-                            R.string.pref_live_wallpaper_style_random_interval_summary, preference.text
+                            R.string.pref_live_wallpaper_style_random_interval_summary,
+                            preference.text
                         )
                     }
                 }
@@ -92,7 +93,9 @@ class PreferenceActivity :
                             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                     }
                     summaryProvider = Preference.SummaryProvider { preference: EditTextPreference ->
-                        getString(R.string.pref_live_wallpaper_location_radius_summary, preference.text)
+                        getString(
+                            R.string.pref_live_wallpaper_location_radius_summary, preference.text
+                        )
                     }
                 }
 
@@ -167,13 +170,16 @@ class PreferenceActivity :
                 // Refresh the preferences
                 findPreference<SeekBarPreference>(
                     getString(R.string.pref_live_wallpaper_camera_zoom)
-                )?.value = zoom
+                )
+                    ?.value = zoom
                 findPreference<SeekBarPreference>(
                     getString(R.string.pref_live_wallpaper_camera_tilt)
-                )?.value = tilt
+                )
+                    ?.value = tilt
                 findPreference<SeekBarPreference>(
                     getString(R.string.pref_live_wallpaper_camera_bearing)
-                )?.value = bearing
+                )
+                    ?.value = bearing
 
                 true
             }
